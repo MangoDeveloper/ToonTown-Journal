@@ -1,6 +1,6 @@
 # Client
-window-title Toontown United[Alpha]
-server-version TTU-version-1.0
+window-title Toontown Journey[Alpha]
+server-version TTJ-version-1.0
 audio-library-name p3fmod_audio
 sync-video #f
 want-dev #f
