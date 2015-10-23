@@ -1,0 +1,11 @@
+#If you really need these you can extract them from tt.exe yourself
+*.pyc
+*.pyo
+settings.json
+logs
+/logs
+logs/
+tools/build
+preferences.json
+panel_save.mp
+backups/
