@@ -1,6 +1,6 @@
 # Client
-window-title Toontown United [Pre Alpha]
-server-version TTU-version-1.0
+window-title Toontown Journey [Pre Alpha]
+server-version TTJ-version-1.0
 sync-video #f
 want-dev #f
 preload-avatars #t
