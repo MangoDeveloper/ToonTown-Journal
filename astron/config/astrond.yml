@@ -54,7 +54,7 @@ uberdogs:
 roles:
     - type: clientagent
       bind: 0.0.0.0:7198
-      version: "TTU-version-1.0"
+      version: "TTJ-version-1.0"
       #tls:
         # Required SSL configuration
        # certificate: TTU.crt # Required, a ".pem" format certificate file
