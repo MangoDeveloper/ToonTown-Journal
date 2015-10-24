@@ -36,6 +36,8 @@ server-timezone EST/EDT/-5
 server-port 7199
 account-server-endpoint https://toontownjourney.com/api/
 account-bridge-filename astron/databases/account-bridge.db
+# The key should be manually specified to prevent intruders since otherwise the real key would be exposed in the data.
+account-server-key NOKEYSPECIFIEDTHIRDPARTYLOGINDETECTED
 
 # Performance:
 sync-video #f
