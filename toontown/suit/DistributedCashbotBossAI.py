@@ -4,14 +4,14 @@ from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSafeAI
 from toontown.suit import DistributedCashbotBossGoonAI
-from toontown.coghq import DistributedCashbotBossTreasureAI
+#from toontown.coghq import DistributedCashbotBossTreasureAI
 from toontown.battle import BattleExperienceAI
 from toontown.chat import ResistanceChat
 from direct.fsm import FSM
-from otp.ai.MagicWordGlobal import *
 import DistributedBossCogAI
 import SuitDNA
 import random
+from otp.ai.MagicWordGlobal import *
 import math
 
 class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
@@ -95,14 +95,14 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __makeBattleThreeObjects(self):
         if self.cranes == None:
             self.cranes = []
-            for index in range(len(ToontownGlobals.CashbotBossCranePosHprs)):
+            for index in xrange(len(ToontownGlobals.CashbotBossCranePosHprs)):
                 crane = DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI(self.air, self, index)
                 crane.generateWithRequired(self.zoneId)
                 self.cranes.append(crane)
 
         if self.safes == None:
             self.safes = []
-            for index in range(len(ToontownGlobals.CashbotBossSafePosHprs)):
+            for index in xrange(len(ToontownGlobals.CashbotBossSafePosHprs)):
                 safe = DistributedCashbotBossSafeAI.DistributedCashbotBossSafeAI(self.air, self, index)
                 safe.generateWithRequired(self.zoneId)
                 self.safes.append(safe)
@@ -168,6 +168,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.toonsToAttack.append(avId)
 
     def makeTreasure(self, goon):
+        return
         if self.state != 'BattleThree':
             return
         pos = goon.getPos(self)
@@ -197,8 +198,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             treasure.b_setPosition(pos[0], pos[1], 0)
             treasure.b_setFinalPosition(fpos[0], fpos[1], 0)
         else:
-            treasure = DistributedCashbotBossTreasureAI.DistributedCashbotBossTreasureAI(self.air, self, goon, style, fpos[0], fpos[1], 0)
-            treasure.generateWithRequired(self.zoneId)
+            #treasure = DistributedCashbotBossTreasureAI.DistributedCashbotBossTreasureAI(self.air, self, goon, style, fpos[0], fpos[1], 0)
+            #treasure.generateWithRequired(self.zoneId)
+            pass
         treasure.healAmount = healAmount
         self.treasures[treasure.doId] = treasure
 
@@ -217,7 +219,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 treasure.d_setReject()
 
     def __recycleTreasure(self, treasure):
-        if self.grabbingTreasures.has_key(treasure.doId):
+        if treasure.doId in self.grabbingTreasures:
             del self.grabbingTreasures[treasure.doId]
             self.recycledTreasures.append(treasure)
 
@@ -387,6 +389,21 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             if toon:
                 toon.doResistanceEffect(self.rewardId)
 
+            if simbase.config.GetBool('cfo-staff-event', False):
+
+                withStaff = False
+                for avId in self.involvedToons:
+                    av = self.air.doId2do.get(avId)
+                    if av:
+                        if av.adminAccess > 100:
+                            withStaff = True
+
+                if withStaff:
+                    participants = simbase.backups.load('cfo-staff-event', ('participants',), default={'doIds': []})
+                    if avId not in participants['doIds']:
+                        participants['doIds'].append(toon.doId)
+                    simbase.backups.save('cfo-staff-event', ('participants',), participants)
+
     def enterOff(self):
         DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
         self.rewardedToons = []
@@ -484,7 +501,28 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         DistributedBossCogAI.DistributedBossCogAI.enterEpilogue(self)
         self.d_setRewardId(self.rewardId)
 
-@magicWord(category=CATEGORY_OVERRIDE)
+
+@magicWord(category=CATEGORY_ADMINISTRATOR)
+def restartCraneRound():
+    """
+    Restarts the crane round in the CFO.
+    """
+    invoker = spellbook.getInvoker()
+    boss = None
+    for do in simbase.air.doId2do.values():
+        if isinstance(do, DistributedCashbotBossAI):
+            if invoker.doId in do.involvedToons:
+                boss = do
+                break
+    if not boss:
+        return "You aren't in a CFO!"
+    boss.exitIntroduction()
+    boss.b_setState('PrepareBattleThree')
+    boss.b_setState('BattleThree')
+    return 'Restarting the crane round...'
+
+
+@magicWord(category=CATEGORY_ADMINISTRATOR)
 def skipCFO():
     """
     Skips to the final round of the CFO.
@@ -504,16 +542,19 @@ def skipCFO():
     boss.b_setState('PrepareBattleThree')
     return 'Skipping the first round...'
 
-@magicWord(category=CATEGORY_OVERRIDE, types=[])
-def endCFO():
-    toon = spellbook.getTarget()
-    if toon:
-        z = toon.zoneId
-        for obj in simbase.air.doId2do.values():
-            zone = getattr(obj, "zoneId", -1)
-            if zone == z:
-                if obj.__class__.__name__ == "DistributedCashbotBossAI":
-                    obj.b_setState('Victory')
-                    return "CFO defeated!"
-        return "CFO not found!"
-    return "Error!"
+@magicWord(category=CATEGORY_ADMINISTRATOR)
+def killCFO():
+    """
+    Kills the CFO.
+    """
+    invoker = spellbook.getInvoker()
+    boss = None
+    for do in simbase.air.doId2do.values():
+        if isinstance(do, DistributedCashbotBossAI):
+            if invoker.doId in do.involvedToons:
+                boss = do
+                break
+    if not boss:
+        return "You aren't in a CFO!"
+    boss.b_setState('Victory')
+    return 'Killed CFO.'

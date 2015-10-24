@@ -93,7 +93,7 @@ class AvatarPanelBase(AvatarPanel.AvatarPanel):
         self.freeLocalAvatar()
 
     def handleReport(self):
-        if base.cr.csm.hasReportedPlayer(self.avId):
+        if base.cr.centralLogger.hasReportedPlayer(self.playerId, self.avId):
             self.alreadyReported()
         else:
             self.confirmReport()
@@ -148,7 +148,12 @@ class AvatarPanelBase(AvatarPanel.AvatarPanel):
     def handleReportCategory(self, value):
         self.cleanupDialog()
         if value >= 0:
-            self.category = value
+            cat = [CentralLogger.ReportFoulLanguage,
+             CentralLogger.ReportPersonalInfo,
+             CentralLogger.ReportRudeBehavior,
+             CentralLogger.ReportBadName,
+             CentralLogger.ReportHacking]
+            self.category = cat[value]
             self.confirmReportCategory(value)
         else:
             self.requestWalk()
@@ -167,7 +172,10 @@ class AvatarPanelBase(AvatarPanel.AvatarPanel):
         removed = 0
         isPlayer = 0
         if value > 0:
-            base.cr.csm.d_reportPlayer(self.avId, self.category)
+            if self.category == CentralLogger.ReportHacking:
+                base.cr.centralLogger.reportPlayer(self.category, self.playerId, self.avId)
+                self.category = CentralLogger.ReportRudeBehavior
+            base.cr.centralLogger.reportPlayer(self.category, self.playerId, self.avId)
             if base.cr.isFriend(self.avId):
                 base.cr.removeFriend(self.avId)
                 removed = 1
@@ -204,12 +212,14 @@ class AvatarPanelBase(AvatarPanel.AvatarPanel):
 
     def cleanupDialog(self):
         if self.dialog:
+            base.cr.openAvatarPanels.discard(self)
             self.dialog.ignore('exitingStoppedState')
             self.dialog.cleanup()
             self.dialog = None
         return
 
     def requestStopped(self):
+        base.cr.openAvatarPanels.add(self)
         if not base.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'stickerBook':
             if base.cr.playGame.getPlace().fsm.hasStateNamed('stopped'):
                 base.cr.playGame.getPlace().fsm.request('stopped')

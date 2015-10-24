@@ -102,7 +102,7 @@ def __getSuitTrack(sound, lastSoundThatHit, delay, hitCount, targets, totalDamag
                 suitTrack.append(Func(battle.unlureSuit, suit))
             bonusTrack = None
             if hpbonus > 0:
-                bonusTrack = Sequence(Wait(delay + tSuitReact + delay + 0.75 + uberDelay), Func(suit.showHpText, -hpbonus, 1, openEnded=0), Func(suit.updateHealthBar, hpbonus))
+                bonusTrack = Sequence(Wait(delay + tSuitReact + delay + 0.75 + uberDelay), Func(suit.showHpText, -hpbonus, 1, openEnded=0))
             suitTrack.append(Func(suit.loop, 'neutral'))
             if bonusTrack == None:
                 tracks.append(suitTrack)
@@ -129,7 +129,7 @@ def __doSoundsLevel(sounds, delay, hitCount, npcs):
     deathTracks = Parallel()
     for sound in sounds:
         toon = sound['toon']
-        if sound.has_key('npc'):
+        if 'npc' in sound:
             toon = sound['npc']
         level = sound['level']
         targets = sound['target']

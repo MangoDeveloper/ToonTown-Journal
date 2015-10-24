@@ -1,14 +1,12 @@
-from direct.showbase.ShowBase import ShowBase
-from pandac.PandaModules import Camera, TPLow, VBase4, ColorWriteAttrib, Filename, getModelPath, NodePath, TexturePool, Multifile
-import OTPRender
-import time
 import math
 import re
+import time
 
+import OTPGlobals
+import OTPRender
+from direct.showbase.ShowBase import ShowBase
 from otp.ai.MagicWordGlobal import *
-import glob
-from panda3d.core import VirtualFileSystem
-import os
+from pandac.PandaModules import Camera, TPLow, VBase4, ColorWriteAttrib, Filename, getModelPath, NodePath, Vec4
 
 class OTPBase(ShowBase):
 
@@ -45,7 +43,7 @@ class OTPBase(ShowBase):
         return
 
     def setTaskChainNetThreaded(self):
-        if config.GetBool('want-threaded-network', 0):
+        if base.config.GetBool('want-threaded-network', 0):
             taskMgr.setupTaskChain('net', numThreads=1, frameBudget=0.001, threadPriority=TPLow)
 
     def setTaskChainNetNonthreaded(self):
@@ -178,7 +176,7 @@ class OTPBase(ShowBase):
         return task.cont
 
     def getShardPopLimits(self):
-        return (300, 600, 1200)
+        return (100, 200, -1)
 
     def setLocationCode(self, locationCode):
         if locationCode != self.locationCode:
@@ -254,93 +252,86 @@ class OTPBase(ShowBase):
             traceback.print_exc()
 
 
-@magicWord(category=CATEGORY_GRAPHICAL)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def oobe():
-    'Toggle "out of body experience" view.'
+    """
+    Toggle the 'out of body experience' view.
+    """
     base.oobe()
 
-@magicWord(category=CATEGORY_GRAPHICAL)
+@magicWord(category=CATEGORY_PROGRAMMER)
 def oobeCull():
-    'Toggle "out of body experience" view, with culling debugging.'
+    """
+    Toggle the 'out of body experience' view with culling debugging.
+    """
     base.oobeCull()
 
-@magicWord(category=CATEGORY_GRAPHICAL)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def wire():
-    'Toggle wireframe view.'
+    """
+    Toggle the 'wireframe' view.
+    """
     base.toggleWireframe()
 
-@magicWord(category=CATEGORY_GRAPHICAL)
-def textures():
-    'Toggle textures on and off.'
-    base.toggleTexture()
-
-@magicWord(category=CATEGORY_GRAPHICAL)
-def fps():
-    'Toggle frame rate meter on or off.'
-    base.setFrameRateMeter(not base.frameRateMeter)
-
-@magicWord(category=CATEGORY_GUI)
-def showAvIds():
-    'Show avId in Nametags.'
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
+def idNametags():
+    """
+    Display avatar IDs inside nametags.
+    """
     messenger.send('nameTagShowAvId')
 
-@magicWord(category=CATEGORY_GUI)
-def showNames():
-    'Remove avIds in Nametags.'
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
+def nameNametags():
+    """
+    Display only avatar names inside nametags.
+    """
     messenger.send('nameTagShowName')
 
-@magicWord(access=200)
-def showAccess():
-    return "Access level: " + str(spellbook.getTarget().getAdminAccess())
-
-@magicWord(category=CATEGORY_GUI)
-def toga2d():
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
+def a2d():
+    """
+    Toggle aspect2d.
+    """
     if aspect2d.isHidden():
         aspect2d.show()
     else:
         aspect2d.hide()
 
-@magicWord(category=CATEGORY_GUI)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def placer():
+    """
+    Toggle the camera placer.
+    """
     base.camera.place()
 
-@magicWord(category=CATEGORY_GUI)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def explorer():
+    """
+    Toggle the scene graph explorer.
+    """
     base.render.explore()
 
-@magicWord(category=CATEGORY_GRAPHICAL, aliases=['syncTextures', 'reloadTex', 'synctex', 'rt'], types=[str])
-def reloadTextures(textureName=''):
+
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
+def neglect():
     """
-    Artfart command to reload all of the textures.
-
-    TODO: A panel that says "Reloading textures... Please wait!"
-    ...though it's not important since it's a staff command and
-    only staff will see it.
-
-    Stolen from ToontownStart.py
-    Remount all phase files. This maybe might work? Idk. Lets see
-    if Panda craps itself.
-
-    Place raw files in /resources/non-mf/phase_*/ and they will be
-    mounted without needing to multify!
+    toggle the neglection of network updates on the invoker's client.
     """
-
-    # Lock ...
-    vfs = VirtualFileSystem.getGlobalPtr()
-    for file in glob.glob('resources/non-mf/phase_*/'):
-        # Slightly hacky. We remove the trailing slash so we have a tail,
-        # and select the tail value from the returned tuple. Finally we
-        # prepend a slash for the mount point.
-        mount_point = '/' + str(os.path.split(file[:-1])[1])
-        vfs.mount(Filename(file), Filename(mount_point), 0)
-
-    # ... and load.
-    if textureName:
-        pool = TexturePool.findAllTextures('*'+textureName+'*')
+    if base.cr.networkPlugPulled():
+        base.cr.restoreNetworkPlug()
+        return 'You are no longer neglecting network updates.'
     else:
-        pool = TexturePool.findAllTextures()
-    for texture in pool:
-        texture.reload()
-    if textureName:
-        return "Reloaded all textures matching '%s'" % textureName
-    return "Reloaded all of the textures!"
+        base.cr.pullNetworkPlug()
+        return 'You are now neglecting network updates.'
+
+
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER, types=[float, float, float, float])
+def backgroundColor(r=None, g=1, b=1, a=1):
+    """
+    set the background color. Specify no arguments for the default background
+    color.
+    """
+    if r is None:
+        r, g, b, a = OTPGlobals.DefaultBackgroundColor
+    base.setBackgroundColor(Vec4(r, g, b, a))
+    return 'The background color has been changed.'

@@ -1,21 +1,23 @@
-from pandac.PandaModules import *
-from direct.directnotify.DirectNotifyGlobal import *
-from direct.showbase.MessengerGlobal import *
-from direct.showbase.BulletinBoardGlobal import *
-from direct.task.TaskManagerGlobal import *
-from direct.showbase.JobManagerGlobal import *
-from direct.showbase.EventManagerGlobal import *
-from direct.showbase.PythonUtil import *
-from direct.showbase import PythonUtil
-from direct.interval.IntervalManager import ivalMgr
-from direct.task import Task
-from direct.showbase import EventManager
-from direct.showbase import ExceptionVarDump
-from otp.otpbase import BackupManager
+import gc
 import math
 import sys
 import time
-import gc
+
+from direct.directnotify.DirectNotifyGlobal import *
+from direct.interval.IntervalManager import ivalMgr
+from direct.showbase import EventManager
+from direct.showbase import ExceptionVarDump
+from direct.showbase import PythonUtil
+from direct.showbase.BulletinBoardGlobal import *
+from direct.showbase.EventManagerGlobal import *
+from direct.showbase.JobManagerGlobal import *
+from direct.showbase.MessengerGlobal import *
+from direct.showbase.PythonUtil import *
+from direct.task import Task
+from direct.task.TaskManagerGlobal import *
+from otp.otpbase import BackupManager
+from pandac.PandaModules import *
+
 
 class AIBase:
     notify = directNotify.newCategory('AIBase')
@@ -70,13 +72,12 @@ class AIBase:
             loadPrcFileData('aibase', 'textures-header-only 1')
         self.wantPets = self.config.GetBool('want-pets', 1)
         if self.wantPets:
-            if game.name == 'toontown':
-                from toontown.pets import PetConstants
-                self.petMoodTimescale = self.config.GetFloat('pet-mood-timescale', 1.0)
-                self.petMoodDriftPeriod = self.config.GetFloat('pet-mood-drift-period', PetConstants.MoodDriftPeriod)
-                self.petThinkPeriod = self.config.GetFloat('pet-think-period', PetConstants.ThinkPeriod)
-                self.petMovePeriod = self.config.GetFloat('pet-move-period', PetConstants.MovePeriod)
-                self.petPosBroadcastPeriod = self.config.GetFloat('pet-pos-broadcast-period', PetConstants.PosBroadcastPeriod)
+            from toontown.pets import PetConstants
+            self.petMoodTimescale = self.config.GetFloat('pet-mood-timescale', 1.0)
+            self.petMoodDriftPeriod = self.config.GetFloat('pet-mood-drift-period', PetConstants.MoodDriftPeriod)
+            self.petThinkPeriod = self.config.GetFloat('pet-think-period', PetConstants.ThinkPeriod)
+            self.petMovePeriod = self.config.GetFloat('pet-move-period', PetConstants.MovePeriod)
+            self.petPosBroadcastPeriod = self.config.GetFloat('pet-pos-broadcast-period', PetConstants.PosBroadcastPeriod)
         self.wantBingo = self.config.GetBool('want-fish-bingo', 1)
         self.wantKarts = self.config.GetBool('wantKarts', 1)
         self.newDBRequestGen = self.config.GetBool('new-database-request-generate', 1)
@@ -92,10 +93,9 @@ class AIBase:
             extension=self.config.GetString('backups-extension', '.json'))
         self.createStats()
         self.restart()
-        return
 
     def setupCpuAffinities(self, minChannel):
-        if game.name == 'uberDog':
+        if process == 'uberdog':
             affinityMask = self.config.GetInt('uberdog-cpu-affinity-mask', -1)
         else:
             affinityMask = self.config.GetInt('ai-cpu-affinity-mask', -1)
@@ -103,7 +103,7 @@ class AIBase:
             TrueClock.getGlobalPtr().setCpuAffinity(affinityMask)
         else:
             autoAffinity = self.config.GetBool('auto-single-cpu-affinity', 0)
-            if game.name == 'uberDog':
+            if process == 'uberdog':
                 affinity = self.config.GetInt('uberdog-cpu-affinity', -1)
                 if autoAffinity and affinity == -1:
                     affinity = 2
@@ -114,7 +114,7 @@ class AIBase:
             if affinity != -1:
                 TrueClock.getGlobalPtr().setCpuAffinity(1 << affinity)
             elif autoAffinity:
-                if game.name == 'uberDog':
+                if process == 'uberdog':
                     channelSet = int(minChannel / 1000000)
                     channelSet -= 240
                     affinity = channelSet + 3
@@ -168,22 +168,9 @@ class AIBase:
         self.taskMgr.add(self.__resetPrevTransform, 'resetPrevTransform', priority=-51)
         self.taskMgr.add(self.__ivalLoop, 'ivalLoop', priority=20)
         self.taskMgr.add(self.__igLoop, 'igLoop', priority=50)
-        if self.config.GetBool('garbage-collect-states', 1):
-            self.taskMgr.add(self.__garbageCollectStates, 'garbageCollectStates', priority=46)
         if self.AISleep >= 0 and (not self.AIRunningNetYield or self.AIForceSleep):
             self.taskMgr.add(self.__sleepCycleTask, 'aiSleep', priority=55)
         self.eventMgr.restart()
-
-    def __garbageCollectStates(self, state):
-        """ This task is started only when we have
-        garbage-collect-states set in the Config.prc file, in which
-        case we're responsible for taking out Panda's garbage from
-        time to time.  This is not to be confused with Python's
-        garbage collection.  """
-        
-        TransformState.garbageCollect()
-        RenderState.garbageCollect()
-        return Task.cont
 
     def getRepository(self):
         return self.air

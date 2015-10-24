@@ -6,21 +6,18 @@ from direct.fsm import ClassicFSM, State
 from direct.fsm import State
 from toontown.launcher import DownloadForceAcknowledge
 from direct.gui.DirectGui import *
-from toontown.hood import SkyUtil
 from pandac.PandaModules import *
 from toontown.toonbase import TTLocalizer
-from toontown.toonbase import DisplayOptions
 from direct.directnotify import DirectNotifyGlobal
 from direct.interval.IntervalGlobal import *
-from toontown.toontowngui import TTDialog
 import random
 MAX_AVATARS = 6
-POSITIONS = (Vec3(-0.9, 0, 0.8),
- Vec3(-0.9, 0, 0.5),
- Vec3(-0.9, 0, 0.2),
- Vec3(-0.9, 0, -0.1),
- Vec3(-0.9, 0, -0.4),
- Vec3(-0.9, 0, -0.7))
+POSITIONS = (Vec3(-0.860167, 0, 0.359333),
+ Vec3(0, 0, 0.346533),
+ Vec3(0.848, 0, 0.3293),
+ Vec3(-0.863554, 0, -0.445659),
+ Vec3(0.00799999, 0, -0.5481),
+ Vec3(0.894907, 0, -0.445659))
 COLORS = (Vec4(0.917, 0.164, 0.164, 1),
  Vec4(0.152, 0.75, 0.258, 1),
  Vec4(0.598, 0.402, 0.875, 1),
@@ -35,21 +32,13 @@ class AvatarChooser(StateData.StateData):
         StateData.StateData.__init__(self, doneEvent)
         self.choice = None
         self.avatarList = avatarList
-        self.displayOptions = None
         self.fsm = ClassicFSM.ClassicFSM('AvatarChooser', [State.State('Choose', self.enterChoose, self.exitChoose, ['CheckDownload']), State.State('CheckDownload', self.enterCheckDownload, self.exitCheckDownload, ['Choose'])], 'Choose', 'Choose')
         self.fsm.enterInitialState()
         self.parentFSM = parentFSM
         self.parentFSM.getCurrentState().addChild(self.fsm)
-        return
 
     def enter(self):
         self.notify.info('AvatarChooser.enter')
-        if not self.displayOptions:
-            self.displayOptions = DisplayOptions.DisplayOptions()
-        self.notify.info('calling self.displayOptions.restrictToEmbedded(False)')
-        if base.appRunner:
-            self.displayOptions.loadFromSettings()
-            self.displayOptions.restrictToEmbedded(False)
         if self.isLoaded == 0:
             self.load()
         base.disableMouse()
@@ -59,9 +48,8 @@ class AvatarChooser(StateData.StateData):
             self.logoutButton.show()
         self.pickAToonBG.setBin('background', 1)
         self.pickAToonBG.reparentTo(aspect2d)
-
         base.setBackgroundColor(Vec4(0.145, 0.368, 0.78, 1))
-        choice = config.GetInt('auto-avatar-choice', -1)
+        choice = base.config.GetInt('auto-avatar-choice', -1)
         for panel in self.panelList:
             panel.show()
             self.accept(panel.doneEvent, self.__handlePanelDone)
@@ -80,8 +68,6 @@ class AvatarChooser(StateData.StateData):
         self.logoutButton.hide()
         self.pickAToonBG.reparentTo(hidden)
         base.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
-        self.releaseNotesBox.hide()
-        self.gamelogo.hide()
         return None
 
     def load(self, isPaid):
@@ -89,44 +75,26 @@ class AvatarChooser(StateData.StateData):
             return None
         self.isPaid = isPaid
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
+        gui.flattenMedium()
         gui2 = loader.loadModel('phase_3/models/gui/quit_button')
+        gui2.flattenMedium()
         newGui = loader.loadModel('phase_3/models/gui/tt_m_gui_pat_mainGui')
+        newGui.flattenMedium()
         self.pickAToonBG = newGui.find('**/tt_t_gui_pat_background')
+        self.pickAToonBG.flattenStrong()
         self.pickAToonBG.reparentTo(hidden)
         self.pickAToonBG.setPos(0.0, 2.73, 0.0)
-        self.pickAToonBG.setScale(1, 1, 1)
+        self.pickAToonBG.setScale(1.5, 1, 2)
         self.title = OnscreenText(TTLocalizer.AvatarChooserPickAToon, scale=TTLocalizer.ACtitle, parent=hidden, font=ToontownGlobals.getSignFont(), fg=(1, 0.9, 0.1, 1), pos=(0.0, 0.82))
-
-        # Quit Button
+        self.title.flattenStrong()
         quitHover = gui.find('**/QuitBtn_RLVR')
-        self.quitButton = DirectButton(image=(quitHover, quitHover, quitHover), relief=None, text=TTLocalizer.AvatarChooserQuit, text_font=ToontownGlobals.getSignFont(), text_fg=(0.977, 0.816, 0.133, 1), text_pos=TTLocalizer.ACquitButtonPos, text_scale=TTLocalizer.ACquitButton, image_scale=1, image1_scale=1.05, image2_scale=1.05, scale=1.05, pos=(1.08, 0, -0.907), command=self.__handleQuit)
-        self.quitButton.reparentTo(base.a2dTopRight)
-        self.quitButton.setPos(-0.5, 0, -0.07)
-        
-        # Options Button
-        self.logoutButton = DirectButton(relief=None, image=(quitHover, quitHover, quitHover), text="Options", text_font=ToontownGlobals.getSignFont(), text_fg=(0.977, 0.816, 0.133, 1), text_scale=TTLocalizer.AClogoutButton, text_pos=(0, -0.035), image_scale=1, image1_scale=1.05, image2_scale=1.05, scale=1.05, command=self.showOptionsWarning)
-        self.logoutButton.reparentTo(base.a2dTopLeft)
-        self.logoutButton.setPos(0.5, 0, -0.07) 
+        self.quitButton = DirectButton(image=(quitHover, quitHover, quitHover), relief=None, text=TTLocalizer.AvatarChooserQuit, text_font=ToontownGlobals.getSignFont(), text_fg=(0.977, 0.816, 0.133, 1), text_pos=TTLocalizer.ACquitButtonPos, text_scale=TTLocalizer.ACquitButton, image_scale=1, image1_scale=1.05, image2_scale=1.05, scale=1.05, pos=(-0.25, 0, 0.075), command=self.__handleQuit)
+        self.quitButton.flattenMedium()
+        self.quitButton.reparentTo(base.a2dBottomRight)
+        self.logoutButton = DirectButton(relief=None, image=(quitHover, quitHover, quitHover), text=TTLocalizer.OptionsPageLogout, text_font=ToontownGlobals.getSignFont(), text_fg=(0.977, 0.816, 0.133, 1), text_scale=TTLocalizer.AClogoutButton, text_pos=(0, -0.035), pos=(0.15, 0, 0.05), image_scale=1.15, image1_scale=1.15, image2_scale=1.18, scale=0.5, command=self.__handleLogoutWithoutConfirm)
+        self.logoutButton.reparentTo(base.a2dBottomLeft)
+        self.logoutButton.flattenMedium()
         self.logoutButton.hide()
-
-        # Release Notes Box
-        self.releaseNotesBox = OnscreenImage(image = 'phase_3/maps/gui-panel-transparent.png')
-        self.releaseNotesBox.setTransparency(TransparencyAttrib.MAlpha)
-        self.releaseNotesBox.setPos(0.6, 0, 0)
-        self.releaseNotesBox.setScale(0.6)
-
-        # Release Notes Text
-        self.releaseNotesText = OnscreenText(text = 'Release Notes:\n' + TTLocalizer.releaseNotes)
-        self.releaseNotesText.reparentTo(self.releaseNotesBox)
-        
-        # Game Logo
-        self.gamelogo = OnscreenImage(image = "phase_3/maps/toontown-logo.png")
-        self.gamelogo.setTransparency(TransparencyAttrib.MAlpha)
-        self.gamelogo.setScale(0.9, 0.4, 0.4)
-        self.gamelogo.setPos(0, 0, 1.1)
-        self.gamelogo.reparentTo(self.releaseNotesBox)
-        self.gamelogo.hide()
-
         gui.removeNode()
         gui2.removeNode()
         newGui.removeNode()
@@ -144,7 +112,7 @@ class AvatarChooser(StateData.StateData):
             used_position_indexs.append(av.position)
             self.panelList.append(panel)
 
-        for panelNum in range(0, MAX_AVATARS):
+        for panelNum in xrange(0, MAX_AVATARS):
             if panelNum not in used_position_indexs:
                 panel = AvatarChoice.AvatarChoice(position=panelNum, paid=isPaid)
                 panel.setPos(POSITIONS[panelNum])
@@ -174,7 +142,7 @@ class AvatarChooser(StateData.StateData):
             return toonHead.getRandomForwardLookAtPoint()
         else:
             other_toon_idxs = []
-            for i in range(len(self.IsLookingAt)):
+            for i in xrange(len(self.IsLookingAt)):
                 if self.IsLookingAt[i] == toonidx:
                     other_toon_idxs.append(i)
 
@@ -223,7 +191,7 @@ class AvatarChooser(StateData.StateData):
         if len(self.used_panel_indexs) == 0:
             return
         self.IsLookingAt = []
-        for i in range(MAX_AVATARS):
+        for i in xrange(MAX_AVATARS):
             self.IsLookingAt.append('f')
 
         for panel in self.panelList:
@@ -246,10 +214,6 @@ class AvatarChooser(StateData.StateData):
         del self.quitButton
         self.logoutButton.destroy()
         del self.logoutButton
-        self.releaseNotesBox.destroy()
-        del self.releaseNotesBox
-        self.gamelogo.removeNode()
-        del self.gamelogo
         self.pickAToonBG.removeNode()
         del self.pickAToonBG
         del self.avatarList
@@ -318,92 +282,3 @@ class AvatarChooser(StateData.StateData):
 
     def __handleLogoutWithoutConfirm(self):
         base.cr.loginFSM.request('login')
-
-    def showOptionsWarning(self):
-        # Close Options Button
-        gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
-        guiButton = loader.loadModel('phase_3/models/gui/quit_button')
-        quitHover = gui.find('**/QuitBtn_RLVR')
-        self.closeOptionsButton = DirectButton(relief=None, image=(quitHover, quitHover, quitHover), text="< Back", text_font=ToontownGlobals.getSignFont(), text_fg=(0.977, 0.816, 0.133, 1), text_scale=TTLocalizer.AClogoutButton, text_pos=(0, -0.035), image_scale=1, image1_scale=1.05, image2_scale=1.05, scale=1.05, command=self.exitWarning)
-        self.closeOptionsButton.reparentTo(base.a2dTopLeft)
-        self.closeOptionsButton.setPos(0.5, 0, -0.07) 
-        self.logoutButton.hide()
-        self.optionsBox = OnscreenImage(image = 'phase_3/maps/gui-panel-transparent.png')
-        self.optionsBox.setTransparency(TransparencyAttrib.MAlpha)
-        self.optionsBox.setPos(0, 0, 0)
-        self.optionsBox.setScale(0.7)
-
-        # Music Label
-        self.Music_Label = DirectLabel(parent=aspect2d, relief=None, text='Music Volume', text_align=TextNode.ACenter, text_scale=0.052, pos=(0, 0, 0.5))
-        # Music Slider
-        self.Music_toggleSlider = DirectSlider(parent=aspect2d, pos=(0, 0, 0.4),
-                                               value=settings['musicVol']*100, pageSize=5, range=(0, 100), command=self.__doMusicLevel,)
-        self.Music_toggleSlider.setScale(0.4, 0.4, 0.4)
-        self.Music_toggleSlider.show()
-        
-        # SFX Slider
-        self.SoundFX_toggleSlider = DirectSlider(parent=aspect2d, pos=(0, 0.0, 0.1),
-                                               value=settings['sfxVol']*100, pageSize=5, range=(0, 100), command=self.__doSfxLevel)
-        self.SoundFX_toggleSlider.setScale(0.4, 0.4, 0.4)
-        # SFX Label
-        self.SoundFX_Label = DirectLabel(parent=aspect2d, relief=None, text='SFX Volume', text_align=TextNode.ACenter, text_scale=0.052, pos=(0, 0, 0.2))
-
-        # Toon Chat Sound Effects
-        self.ToonChatSounds_toggleButton = DirectButton(parent=aspect2d, relief=None, image=(guiButton.find('**/QuitBtn_UP'),
-         guiButton.find('**/QuitBtn_DN'),
-         guiButton.find('**/QuitBtn_RLVR'),
-         guiButton.find('**/QuitBtn_UP')), image3_color=Vec4(0.5, 0.5, 0.5, 0.5), image_scale=(0.7, 1, 1), text='', text3_fg=(0.5, 0.5, 0.5, 0.75), text_scale=0.052, text_pos=(0, -.02), pos=(0, 0, -0.2), command=self.__doToggleToonChatSounds)
-        self.ToonChatSounds_toggleButton.setScale(0.8)
-        self.ToonChatSounds_Label = DirectLabel(parent=aspect2d, relief=None, text='Toon Chat Sounds', text_align=TextNode.ACenter, text_scale=0.052, pos=(0, 0, -0.1))
-        
-    def exitWarning(self):
-        self.optionsBox.hide()
-        self.Music_Label.hide()
-        self.Music_toggleSlider.hide()
-        self.SoundFX_Label.hide()
-        self.SoundFX_toggleSlider.hide()
-        self.ToonChatSounds_Label.hide()
-        self.ToonChatSounds_toggleButton.hide()
-        self.logoutButton.show()
-        self.closeOptionsButton.hide()
-
-        # EZ copy from optionspage.py
-    def __doMusicLevel(self):
-        vol = self.Music_toggleSlider['value']
-        vol = float(vol) / 100
-        settings['musicVol'] = vol
-        base.musicManager.setVolume(vol)
-        base.musicActive = vol > 0.0
-        
-    def __doSfxLevel(self):
-        vol = self.SoundFX_toggleSlider['value']
-        vol = float(vol) / 100
-        settings['sfxVol'] = vol
-        for sfm in base.sfxManagerList:
-            sfm.setVolume(vol)
-        base.sfxActive = vol > 0.0
-        
-    def __doToggleToonChatSounds(self):
-        messenger.send('wakeup')
-        if base.toonChatSounds:
-            base.toonChatSounds = 0
-            settings['toonChatSounds'] = False
-        else:
-            base.toonChatSounds = 1
-            settings['toonChatSounds'] = True
-        self.settingsChanged = 1
-        self.__setToonChatSoundsButton()
-
-    def __setToonChatSoundsButton(self):
-        if base.toonChatSounds:
-            self.ToonChatSounds_Label['text'] = TTLocalizer.OptionsPageToonChatSoundsOnLabel
-            self.ToonChatSounds_toggleButton['text'] = TTLocalizer.OptionsPageToggleOff
-        else:
-            self.ToonChatSounds_Label['text'] = TTLocalizer.OptionsPageToonChatSoundsOffLabel
-            self.ToonChatSounds_toggleButton['text'] = TTLocalizer.OptionsPageToggleOn
-        if base.sfxActive:
-            self.ToonChatSounds_Label.setColorScale(1.0, 1.0, 1.0, 1.0)
-            self.ToonChatSounds_toggleButton['state'] = DGG.NORMAL
-        else:
-            self.ToonChatSounds_Label.setColorScale(0.5, 0.5, 0.5, 0.5)
-            self.ToonChatSounds_toggleButton['state'] = DGG.DISABLED

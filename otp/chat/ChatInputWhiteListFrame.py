@@ -1,16 +1,18 @@
-from direct.fsm import FSM
-from otp.otpbase import OTPGlobals
-import sys
 from direct.directnotify import DirectNotifyGlobal
+from direct.fsm import FSM
 from direct.gui.DirectGui import *
-from pandac.PandaModules import *
-from otp.otpbase import OTPLocalizer
 from direct.task import Task
+from pandac.PandaModules import *
+import sys
+
 from otp.chat.ChatInputTyped import ChatInputTyped
+from otp.otpbase import OTPGlobals
+from otp.otpbase import OTPLocalizer
+from toontown.chat.ChatGlobals import *
+
 
 class ChatInputWhiteListFrame(FSM.FSM, DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('ChatInputWhiteList')
-   
 
     def __init__(self, entryOptions, parent = None, **kw):
         FSM.FSM.__init__(self, 'ChatInputWhiteListFrame')
@@ -46,12 +48,12 @@ class ChatInputWhiteListFrame(FSM.FSM, DirectFrame):
         wantHistory = 0
         if __dev__:
             wantHistory = 1
-        self.wantHistory = config.GetBool('want-chat-history', wantHistory)
+        self.wantHistory = base.config.GetBool('want-chat-history', wantHistory)
         self.history = ['']
-        self.historySize = config.GetInt('chat-history-size', 10)
+        self.historySize = base.config.GetInt('chat-history-size', 10)
         self.historyIndex = 0
         self.promoteWhiteList = 0
-        self.checkBeforeSend = config.GetBool('white-list-check-before-send', 0)
+        self.checkBeforeSend = base.config.GetBool('white-list-check-before-send', 0)
         self.whiteList = None
         self.active = 0
         self.autoOff = 0
@@ -273,7 +275,6 @@ class ChatInputWhiteListFrame(FSM.FSM, DirectFrame):
         self.chatEntry.set(self.history[self.historyIndex])
         self.historyIndex -= 1
         self.historyIndex %= len(self.history)
-
 
     def applyFilter(self, keyArgs, strict = False):
         text = self.chatEntry.get(plain=True)

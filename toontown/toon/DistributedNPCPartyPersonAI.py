@@ -20,7 +20,7 @@ class DistributedNPCPartyPersonAI(DistributedNPCToonBaseAI):
 
     def avatarEnter(self):
         avId = self.air.getAvatarIdFromSender()
-        if not self.air.doId2do.has_key(avId):
+        if avId not in self.air.doId2do:
             self.notify.warning('Avatar: %s not found' % avId)
             return
         if self.isBusy():
@@ -74,18 +74,18 @@ class DistributedNPCPartyPersonAI(DistributedNPCToonBaseAI):
     def answer(self, wantsToPlan):
         avId = self.air.getAvatarIdFromSender()
         if self.busy != avId:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCPartyPersonAI.answer busy with %s' % self.busy)
+            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPartyPersonAI.answer busy with %s' % self.busy)
             self.notify.warning('somebody called setMovieDone that I was not busy with! avId: %s' % avId)
             return
         if wantsToPlan:
             av = simbase.air.doId2do.get(avId)
             if av:
                 if av.getGameAccess() != ToontownGlobals.AccessFull:
-                    self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCPartyPersonAI.free player tried to host party.')
+                    self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPartyPersonAI.free player tried to host party.')
                     flag = NPCToons.PARTY_MOVIE_ONLYPAID
                     self.d_setMovie(avId, flag)
                 else:
-                    zoneId = self.air.allocateZone(owner=self)
+                    zoneId = self.air.allocateZone()
                     hoodId = ToontownGlobals.PartyHood
                     self.d_setMovie(avId, NPCToons.PARTY_MOVIE_COMPLETE, [hoodId, zoneId])
         else:

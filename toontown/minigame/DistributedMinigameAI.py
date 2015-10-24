@@ -173,6 +173,12 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
 
     def gameOver(self):
         self.notify.debug('BASE: gameOver')
+
+        if simbase.air.wantAchievements:
+            for avId in self.avIdList:
+                av = self.air.doId2do.get(avId)
+                self.air.achievementsManager.toonPlayedMinigame(av)
+
         self.frameworkFSM.request('frameworkWaitClientsExit')
 
     def enterFrameworkOff(self):
@@ -205,7 +211,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
             return
         avId = self.air.getAvatarIdFromSender()
         self.notify.debug('BASE: setAvatarJoined: avatar id joined: ' + str(avId))
-        self.air.writeServerEvent('minigame-joined', avId=avId, minigameId=self.minigameId, trolleyZone=self.trolleyZone)
+        self.air.writeServerEvent('minigame_joined', avId, '%s|%s' % (self.minigameId, self.trolleyZone))
         self.stateDict[avId] = JOINED
         self.notify.debug('BASE: setAvatarJoined: new states: ' + str(self.stateDict))
         self.__barrier.clear(avId)
@@ -317,7 +323,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
                 score = 0
                 logEvent = True
             if logEvent:
-                self.air.writeServerEvent('suspicious', avId=avId, issue='got %s jellybeans playing minigame %s in zone %s' % (score, self.minigameId, self.getSafezoneId()))
+                self.air.writeServerEvent('suspicious', avId, 'got %s jellybeans playing minigame %s in zone %s' % (score, self.minigameId, self.getSafezoneId()))
             scoreList.append(score)
 
         self.requestDelete()
@@ -334,7 +340,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
             votesToUse = self.currentVotes
         votesArray = []
         for avId in self.avIdList:
-            if votesToUse.has_key(avId):
+            if avId in votesToUse:
                 votesArray.append(votesToUse[avId])
             else:
                 self.notify.warning('votesToUse=%s does not have avId=%d' % (votesToUse, avId))
@@ -343,7 +349,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         if self.metagameRound < TravelGameGlobals.FinalMetagameRoundIndex:
             newRound = self.metagameRound
             if not self.minigameId == ToontownGlobals.TravelGameId:
-                for index in range(len(scoreList)):
+                for index in xrange(len(scoreList)):
                     votesArray[index] += scoreList[index]
 
             self.notify.debug('votesArray = %s' % votesArray)
@@ -423,7 +429,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         return MinigameGlobals.getSafezoneId(self.trolleyZone)
 
     def logPerfectGame(self, avId):
-        self.air.writeServerEvent('perfect-minigame', avId=avId, minigameId=self.minigameId, trolleyZone=self.trolleyZone, avIdList=self.avIdList)
+        self.air.writeServerEvent('perfectMinigame', avId, '%s|%s|%s' % (self.minigameId, self.trolleyZone, self.avIdList))
 
     def logAllPerfect(self):
         for avId in self.avIdList:
@@ -432,7 +438,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
     def getStartingVotes(self):
         retval = []
         for avId in self.avIdList:
-            if self.startingVotes.has_key(avId):
+            if avId in self.startingVotes:
                 retval.append(self.startingVotes[avId])
             else:
                 self.notify.warning('how did this happen? avId=%d not in startingVotes %s' % (avId, self.startingVotes))

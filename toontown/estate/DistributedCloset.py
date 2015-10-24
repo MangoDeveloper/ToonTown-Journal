@@ -154,10 +154,8 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
             self._openDoors()
             if self.customerId == base.localAvatar.doId:
                 camera.wrtReparentTo(self)
+                camera.posQuatInterval(1, (-7.58, -6.02, 6.9), (286.3, 336.8, 0), other=self, blendType='easeOut').start()
                 camera.setPosHpr(self, -7.58, -6.02, 6.9, 286.3, 336.8, 0)
-                quat = Quat()
-                quat.setHpr((286.3, 336.7, 0))
-                LerpPosQuatInterval(camera, 1, (-7.58, -6.02, 6.9), quat, blendType='easeOut', other=self).start()
             if self.av:
                 if self.avMoveTrack:
                     self.avMoveTrack.finish()
@@ -213,9 +211,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
                     self.botList = botList
                     self.oldTopList = self.topList[0:]
                     self.oldBotList = self.botList[0:]
-                    print '-----------Starting closet interaction-----------'
                     self.printInfo()
-                    print '-------------------------------------------------'
                     if not self.isOwner:
                         self.__popupNotOwnerPanel()
                     else:
@@ -388,9 +384,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
         elif mode == ClosetGlobals.CLOSET_MOVIE_COMPLETE:
             if self.isLocalToon:
                 self._revertGender()
-                print '-----------ending trunk interaction-----------'
                 self.printInfo()
-                print '-------------------------------------------------'
                 self.resetCloset()
                 self.freeAvatar()
                 return

@@ -1,6 +1,15 @@
-from pandac.PandaModules import *
-from direct.showbase import PythonUtil
 import __builtin__
+
+
+__builtin__.process = 'ai'
+
+
+# Temporary hack patch:
+__builtin__.__dict__.update(__import__('pandac.PandaModules', fromlist=['*']).__dict__)
+from direct.extensions_native import HTTPChannel_extensions
+
+
+from direct.showbase import PythonUtil
 
 import argparse
 
@@ -11,7 +20,7 @@ parser.add_argument('--stateserver', help="The control channel of this AI's desi
 parser.add_argument('--district-name', help="What this AI Server's district will be named.")
 parser.add_argument('--astron-ip', help="The IP address of the Astron Message Director to connect to.")
 parser.add_argument('--eventlogger-ip', help="The IP address of the Astron Event Logger to log to.")
-parser.add_argument('config', nargs='*', default=['config/dev.prc'], help="PRC file(s) to load.")
+parser.add_argument('config', nargs='*', default=['config/general.prc', 'config/release/dev.prc'], help="PRC file(s) to load.")
 args = parser.parse_args()
 
 for prc in args.config:
@@ -26,19 +35,15 @@ if args.astron_ip: localconfig += 'air-connect %s\n' % args.astron_ip
 if args.eventlogger_ip: localconfig += 'eventlog-host %s\n' % args.eventlogger_ip
 loadPrcFileData('Command-line', localconfig)
 
-class game:
-    name = 'toontown'
-    process = 'server'
-__builtin__.game = game
 
 from otp.ai.AIBaseGlobal import *
 
 from toontown.ai.ToontownAIRepository import ToontownAIRepository
 simbase.air = ToontownAIRepository(config.GetInt('air-base-channel', 401000000),
-                                   config.GetInt('air-stateserver', 10000),
+                                   config.GetInt('air-stateserver', 4002),
                                    config.GetString('district-name', 'Devhaven'))
 host = config.GetString('air-connect', '127.0.0.1')
-port = 7199
+port = 7100
 if ':' in host:
     host, port = host.split(':', 1)
     port = int(port)
@@ -50,9 +55,5 @@ except SystemExit:
     raise
 except Exception:
     info = PythonUtil.describeException()
-    simbase.air.writeServerEvent('ai-exception', avId=simbase.air.getAvatarIdFromSender(), accId=simbase.air.getAccountIdFromSender(), exception=info)
-    # TEMP! (due to lack of Kibana) Dump crash to the FS.
-    with open(config.GetString('ai-crash-log-name', 'ai-crash.txt'), 'w+') as file:
-        # w+ empties log and writes fresh (meaning 1 exception at a time)
-        file.write(info + "\n")
+    simbase.air.writeServerEvent('ai-exception', simbase.air.getAvatarIdFromSender(), simbase.air.getAccountIdFromSender(), info)
     raise

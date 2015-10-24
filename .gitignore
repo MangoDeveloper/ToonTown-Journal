@@ -1,11 +1,17 @@
-#If you really need these you can extract them from tt.exe yourself
+# Python artifacts:
 *.pyc
-*.pyo
-settings.json
-logs
-/logs
-logs/
-tools/build
+
+# Eclipse IDE:
+.project
+.pydevproject
+
+# Mac directory info:
+.DS_Store
+
+# Game-specific files and directories:
 preferences.json
-panel_save.mp
+logs/
+screenshots/
 backups/
+contentpacks/
+toondata/

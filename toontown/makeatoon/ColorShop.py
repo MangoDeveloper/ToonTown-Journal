@@ -6,7 +6,7 @@ from pandac.PandaModules import *
 from MakeAToonGlobals import *
 from toontown.toonbase import TTLocalizer
 import ShuffleButton
-from random import random, choice
+import random
 from direct.directnotify import DirectNotifyGlobal
 
 class ColorShop(StateData.StateData):
@@ -15,14 +15,22 @@ class ColorShop(StateData.StateData):
     def __init__(self, doneEvent):
         StateData.StateData.__init__(self, doneEvent)
         self.toon = None
-        self.startColor = 1
+        self.colorAll = 1
         return
 
     def getGenderColorList(self, dna):
         if self.dna.getGender() == 'm':
-            return ToonDNA.defaultBoyColorList
+            colorList = ToonDNA.defaultBoyColorList
         else:
-            return ToonDNA.defaultGirlColorList
+            colorList = ToonDNA.defaultGirlColorList
+
+        if base.wantYinYang:  # Free black/white Toons event.
+            if dna.head[0] == 'c':
+                colorList = colorList + [26]
+            elif dna.head[0] == 'b':
+                colorList = [0] + colorList
+
+        return colorList
 
     def enter(self, toon, shopsVisited = []):
         base.disableMouse()
@@ -33,21 +41,18 @@ class ColorShop(StateData.StateData):
             self.headChoice = colorList.index(self.dna.headColor)
             self.armChoice = colorList.index(self.dna.armColor)
             self.legChoice = colorList.index(self.dna.legColor)
-            self.gloveChoice = colorList.index(self.dna.gloveColor)
         except:
-            self.headChoice = choice(colorList)
-            self.armChoice = choice(colorList)
-            self.legChoice = choice(colorList)
-            self.gloveChoice = choice(colorList)
+            self.headChoice = random.choice(colorList)
+            self.armChoice = self.headChoice
+            self.legChoice = self.headChoice
             self.__swapHeadColor(0)
             self.__swapArmColor(0)
             self.__swapLegColor(0)
-            self.__swapGloveColor(0)
 
         self.startColor = 0
         self.acceptOnce('last', self.__handleBackward)
         self.acceptOnce('next', self.__handleForward)
-        choicePool = [colorList, colorList, colorList]
+        choicePool = [self.getGenderColorList(self.dna), self.getGenderColorList(self.dna), self.getGenderColorList(self.dna)]
         self.shuffleButton.setChoicePool(choicePool)
         self.accept(self.shuffleFetchMsg, self.changeColor)
         self.acceptOnce('MAT-newToonCreated', self.shuffleButton.cleanHistory)
@@ -82,7 +87,7 @@ class ColorShop(StateData.StateData):
         shuffleArrowRollover = self.gui.find('**/tt_t_gui_mat_shuffleArrowUp')
         shuffleArrowDisabled = self.gui.find('**/tt_t_gui_mat_shuffleArrowDisabled')
         self.parentFrame = DirectFrame(relief=DGG.RAISED, pos=(0.98, 0, 0.416), frameColor=(1, 0, 0, 0))
-        self.parentFrame.setPos(-0.36, 0, 0)
+        self.parentFrame.setPos(-0.36, 0, -0.5)
         self.parentFrame.reparentTo(base.a2dTopRight)
         self.toonFrame = DirectFrame(parent=self.parentFrame, image=shuffleFrame, image_scale=halfButtonInvertScale, relief=None, pos=(0, 0, -0.073), hpr=(0, 0, 0), scale=1.3, frameColor=(1, 1, 1, 1), text=TTLocalizer.ColorShopToon, text_scale=TTLocalizer.CStoonFrame, text_pos=(-0.001, -0.015), text_fg=(1, 1, 1, 1))
         self.allLButton = DirectButton(parent=self.toonFrame, relief=None, image=(shuffleArrowUp,
@@ -111,15 +116,6 @@ class ColorShop(StateData.StateData):
          shuffleArrowDown,
          shuffleArrowRollover,
          shuffleArrowDisabled), image_scale=halfButtonInvertScale, image1_scale=halfButtonInvertHoverScale, image2_scale=halfButtonInvertHoverScale, pos=(0.2, 0, 0), command=self.__swapArmColor, extraArgs=[1])
-        self.gloveFrame = DirectFrame(parent=self.parentFrame, image=shuffleFrame, image_scale=halfButtonScale, relief=None, pos=(0, 0, -0.9), hpr=(0, 0, 4), scale=0.9, frameColor=(1, 1, 1, 1), text=TTLocalizer.ColorShopGlove, text_scale=0.0625, text_pos=(-0.001, -0.015), text_fg=(1, 1, 1, 1))
-        self.gloveLButton = DirectButton(parent=self.gloveFrame, relief=None, image=(shuffleArrowUp,
-         shuffleArrowDown,
-         shuffleArrowRollover,
-         shuffleArrowDisabled), image_scale=halfButtonScale, image1_scale=halfButtonHoverScale, image2_scale=halfButtonHoverScale, pos=(-0.2, 0, 0), command=self.__swapGloveColor, extraArgs=[-1])
-        self.gloveRButton = DirectButton(parent=self.gloveFrame, relief=None, image=(shuffleArrowUp,
-         shuffleArrowDown,
-         shuffleArrowRollover,
-         shuffleArrowDisabled), image_scale=halfButtonInvertScale, image1_scale=halfButtonInvertHoverScale, image2_scale=halfButtonInvertHoverScale, pos=(0.2, 0, 0), command=self.__swapGloveColor, extraArgs=[1])
         self.legsFrame = DirectFrame(parent=self.parentFrame, image=shuffleFrame, image_scale=halfButtonInvertScale, relief=None, pos=(0, 0, -0.7), hpr=(0, 0, 3), scale=0.9, frameColor=(1, 1, 1, 1), text=TTLocalizer.ColorShopLegs, text_scale=0.0625, text_pos=(-0.001, -0.015), text_fg=(1, 1, 1, 1))
         self.legLButton = DirectButton(parent=self.legsFrame, relief=None, image=(shuffleArrowUp,
          shuffleArrowDown,
@@ -142,13 +138,10 @@ class ColorShop(StateData.StateData):
         self.headFrame.destroy()
         self.bodyFrame.destroy()
         self.legsFrame.destroy()
-        self.gloveFrame.destroy()
         self.headLButton.destroy()
         self.headRButton.destroy()
         self.armLButton.destroy()
         self.armRButton.destroy()
-        self.gloveLButton.destroy()
-        self.gloveRButton.destroy()        
         self.legLButton.destroy()
         self.legRButton.destroy()
         self.allLButton.destroy()
@@ -162,8 +155,6 @@ class ColorShop(StateData.StateData):
         del self.headRButton
         del self.armLButton
         del self.armRButton
-        del self.gloveLButton
-        del self.gloveRButton        
         del self.legLButton
         del self.legRButton
         del self.allLButton
@@ -179,7 +170,6 @@ class ColorShop(StateData.StateData):
         self.__swapHeadColor(offset)
         oldArmColorIndex = colorList.index(self.toon.style.armColor)
         oldLegColorIndex = colorList.index(self.toon.style.legColor)
-        oldGloveColorIndex = colorList.index(self.toon.style.gloveColor)
         self.__swapArmColor(choice - oldArmColorIndex)
         self.__swapLegColor(choice - oldLegColorIndex)
 
@@ -201,16 +191,6 @@ class ColorShop(StateData.StateData):
         self.dna.armColor = newColor
         self.toon.swapToonColor(self.dna)
 
-       
-    def __swapGloveColor(self, offset):
-		colorList = self.getGenderColorList(self.dna)
-		length = len(colorList)		
-		self.gloveChoice = (self.gloveChoice + offset) % length
-		self.__updateScrollButtons(self.gloveChoice, length, self.gloveLButton, self.gloveRButton)
-		newColor = colorList[self.gloveChoice]
-		self.dna.gloveColor = newColor
-		self.toon.swapToonColor(self.dna)
-		
     def __swapLegColor(self, offset):
         colorList = self.getGenderColorList(self.dna)
         length = len(colorList)
@@ -245,24 +225,16 @@ class ColorShop(StateData.StateData):
         newHeadColorIndex = colorList.index(newChoice[0])
         newArmColorIndex = colorList.index(newChoice[1])
         newLegColorIndex = colorList.index(newChoice[2])
-        newGloveColorIndex = colorList.index(newChoice[0])
         oldHeadColorIndex = colorList.index(self.toon.style.headColor)
         oldArmColorIndex = colorList.index(self.toon.style.armColor)
         oldLegColorIndex = colorList.index(self.toon.style.legColor)
-        oldGloveColorIndex = colorList.index(self.toon.style.gloveColor)
         self.__swapHeadColor(newHeadColorIndex - oldHeadColorIndex)
-        # We want colors to shuffle all parts of the body sometimes, but we want some solid
-        # colors thrown in there as well. We'll increase the chances of that happening.
-        if config.GetBool('want-shuffle-colors', 1) and random() <= 0.4:
-            self.__swapArmColor(newArmColorIndex - oldArmColorIndex)
-            self.__swapLegColor(newLegColorIndex - oldLegColorIndex)
-            self.__swapGloveColor(newGloveColorIndex - oldGloveColorIndex)
-           
-        else:
+        if self.colorAll:
             self.__swapArmColor(newHeadColorIndex - oldArmColorIndex)
             self.__swapLegColor(newHeadColorIndex - oldLegColorIndex)
-            self.__swapGloveColor(newHeadColorIndex - oldGloveColorIndex)
+        else:
+            self.__swapArmColor(newArmColorIndex - oldArmColorIndex)
+            self.__swapLegColor(newLegColorIndex - oldLegColorIndex)
 
     def getCurrToonSetting(self):
-        return [self.dna.headColor, self.dna.armColor, self.dna.legColor, self.dna.gloveColor]
-
+        return [self.dna.headColor, self.dna.armColor, self.dna.legColor]

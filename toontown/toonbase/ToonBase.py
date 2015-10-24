@@ -1,55 +1,137 @@
-from otp.otpbase import OTPBase
-from otp.otpbase import OTPLauncherGlobals
-from otp.otpbase import OTPGlobals
-from direct.showbase.PythonUtil import *
-import ToontownGlobals
+import atexit
 from direct.directnotify import DirectNotifyGlobal
-import ToontownLoader
+from direct.filter.CommonFilters import CommonFilters
 from direct.gui import DirectGuiGlobals
 from direct.gui.DirectGui import *
+from direct.showbase.PythonUtil import *
 from direct.showbase.Transitions import Transitions
-from pandac.PandaModules import *
-from direct.interval.IntervalGlobal import Sequence, Func, Wait
-from otp.nametag.ChatBalloon import ChatBalloon
-from otp.nametag import NametagGlobals
-from otp.margins.MarginManager import MarginManager
-import sys
-import os
+from direct.task import *
 import math
-import tempfile
+import os
+from pandac.PandaModules import *
+import random
 import shutil
-import atexit
-from toontown.toonbase import ToontownAccess
-from toontown.toonbase import TTLocalizer
-from toontown.toonbase import ToontownBattleGlobals
-from toontown.launcher import ToontownDownloadWatcher
-from toontown.toontowngui import TTDialog
 from sys import platform
-from DisplayOptions import DisplayOptions
-import otp.ai.DiagnosticMagicWords
+import sys
+import tempfile
 import time
-from panda3d.core import TrueClock
+
+import ToontownGlobals
+import ToontownLoader
+from otp.otpbase import OTPBase
+from otp.otpbase import OTPGlobals
+from otp.otpbase import OTPLauncherGlobals
+from toontown.launcher import ToontownDownloadWatcher
+from toontown.margins import MarginGlobals
+from toontown.margins.MarginManager import MarginManager
+from toontown.nametag import NametagGlobals
+from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownAccess
+from toontown.toonbase import ToontownBattleGlobals
+from toontown.toontowngui import TTDialog
+
 
 class ToonBase(OTPBase.OTPBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToonBase')
 
     def __init__(self):
-        self.display = DisplayOptions()
         OTPBase.OTPBase.__init__(self)
-        base.enableMusic(self.display.settings.getBool('game', 'music', True))
-        base.enableSoundEffects(self.display.settings.getBool('game', 'sfx', True))
+
+        # First, build a list of all possible resolutions:
+        self.resList = []
+        displayInfo = self.pipe.getDisplayInformation()
+        for i in xrange(displayInfo.getTotalDisplayModes()):
+            width = displayInfo.getDisplayModeWidth(i)
+            height = displayInfo.getDisplayModeHeight(i)
+            if (width, height) not in self.resList:
+                self.resList.append((width, height))
+
+        # Next, separate the resolutions by their ratio:
+        self.resDict = {}
+        for res in self.resList:
+            width = float(res[0])
+            height = float(res[1])
+            ratio = round(width / height, 2)
+            self.resDict.setdefault(ratio, []).append(res)
+
+        # Get the native width, height and ratio:
+        if sys.platform == 'win32':  # Use displayInfo.
+            self.nativeWidth = displayInfo.getMaximumWindowWidth()
+            self.nativeHeight = displayInfo.getMaximumWindowHeight()
+        elif sys.platform == 'darwin':
+            self.nativeWidth = 800
+            self.nativeHeight = 600
+        else:  # Use PyGTK.
+            import gtk
+            self.nativeWidth = gtk.gdk.screen_width()
+            self.nativeHeight = gtk.gdk.screen_height()
+        self.nativeRatio = round(
+            float(self.nativeWidth) / float(self.nativeHeight), 2)
+
+        # Finally, choose the best resolution if we're either fullscreen, or
+        # don't have one defined in our preferences:
+        fullscreen = settings.get('fullscreen', False)
+        if ('res' not in settings) or fullscreen:
+            if fullscreen:
+                # If we're fullscreen, we want to fit the entire screen:
+                res = (self.nativeWidth, self.nativeHeight)
+            elif len(self.resDict[self.nativeRatio]) > 1:
+                # We have resolutions that match our native ratio and fit it!
+                # Let's use one:
+                res = sorted(self.resDict[self.nativeRatio])[0]
+            else:
+                # Okay, we don't have any resolutions that match our native
+                # ratio and fit it (besides the native resolution itself, of
+                # course). Let's just use one of the second largest ratio's
+                # resolutions:
+                ratios = sorted(self.resDict.keys(), reverse=False)
+                nativeIndex = ratios.index(self.nativeRatio)
+                res = sorted(self.resDict[ratios[nativeIndex - 1]])[0]
+
+            # Store our result:
+            settings['res'] = res
+
+            # Reload the graphics pipe:
+            properties = WindowProperties()
+
+            properties.setSize(res[0], res[1])
+            properties.setFullscreen(fullscreen)
+            properties.setParentWindow(0)
+
+            # Store the window sort for later:
+            sort = self.win.getSort()
+
+            if self.win:
+                currentProperties = WindowProperties(self.win.getProperties())
+                gsg = self.win.getGsg()
+            else:
+                currentProperties = WindowProperties.getDefault()
+                gsg = None
+            newProperties = WindowProperties(currentProperties)
+            newProperties.addProperties(properties)
+            if (gsg is None) or (currentProperties.getFullscreen() != newProperties.getFullscreen()) or (currentProperties.getParentWindow() != newProperties.getParentWindow()):
+                self.openMainWindow(props=properties, gsg=gsg, keepCamera=True)
+                self.graphicsEngine.openWindows()
+                self.disableShowbaseMouse()
+            else:
+                self.win.requestProperties(properties)
+                self.graphicsEngine.renderFrame()
+
+            self.win.setSort(sort)
+            self.graphicsEngine.renderFrame()
+            self.graphicsEngine.renderFrame()
         self.disableShowbaseMouse()
         self.addCullBins()
-        base.debugRunningMultiplier /= OTPGlobals.ToonSpeedFactor
+        self.debugRunningMultiplier /= OTPGlobals.ToonSpeedFactor
+        self.baseXpMultiplier = self.config.GetFloat('base-xp-multiplier', 1.0)
         self.toonChatSounds = self.config.GetBool('toon-chat-sounds', 1)
-        self.placeBeforeObjects = config.GetBool('place-before-objects', 1)
+        self.placeBeforeObjects = self.config.GetBool('place-before-objects', 1)
         self.endlessQuietZone = False
         self.wantDynamicShadows = 0
         self.exitErrorCode = 0
         camera.setPosHpr(0, 0, 0, 0, 0, 0)
         self.camLens.setMinFov(ToontownGlobals.DefaultCameraFov/(4./3.))
         self.camLens.setNearFar(ToontownGlobals.DefaultCameraNear, ToontownGlobals.DefaultCameraFar)
-        self.cam2d.node().setCameraMask(BitMask32.bit(1))
         self.musicManager.setVolume(0.65)
         self.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
         tpm = TextPropertiesManager.getGlobalPtr()
@@ -61,9 +143,8 @@ class ToonBase(OTPBase.OTPBase):
         tpm.setProperties('candidate_inactive', candidateInactive)
         self.transitions.IrisModelName = 'phase_3/models/misc/iris'
         self.transitions.FadeModelName = 'phase_3/models/misc/fade'
-        self.snapshotSfx = base.loadSfx('phase_4/audio/sfx/Photo_shutter.ogg')
         self.exitFunc = self.userExit
-        if __builtins__.has_key('launcher') and launcher:
+        if 'launcher' in __builtins__ and launcher:
             launcher.setPandaErrorCode(11)
         globalClock.setMaxDt(0.2)
         if self.config.GetBool('want-particles', 1) == 1:
@@ -94,6 +175,7 @@ class ToonBase(OTPBase.OTPBase):
         self.wantBingo = self.config.GetBool('want-fish-bingo', 1)
         self.wantKarts = self.config.GetBool('want-karts', 1)
         self.wantNewSpecies = self.config.GetBool('want-new-species', 0)
+        self.wantAchievements = self.config.GetBool('want-achievements', 1)
         self.inactivityTimeout = self.config.GetFloat('inactivity-timeout', ToontownGlobals.KeyboardTimeout)
         if self.inactivityTimeout:
             self.notify.debug('Enabling Panda timeout: %s' % self.inactivityTimeout)
@@ -138,7 +220,7 @@ class ToonBase(OTPBase.OTPBase):
         self.slowQuietZone = self.config.GetBool('slow-quiet-zone', 0)
         self.slowQuietZoneDelay = self.config.GetFloat('slow-quiet-zone-delay', 5)
         self.killInterestResponse = self.config.GetBool('kill-interest-response', 0)
-        self.wantWASD = self.config.GetBool('want-WASD-support', False)
+        self.forceSkipTutorial = self.config.GetBool('force-skip-tutorial', 0)
         tpMgr = TextPropertiesManager.getGlobalPtr()
         WLDisplay = TextProperties()
         WLDisplay.setSlant(0.3)
@@ -157,23 +239,10 @@ class ToonBase(OTPBase.OTPBase):
         self.aspectRatio = float(self.oldX) / self.oldY
         self.localAvatarStyle = None
 
-	# WASD option:
-        self.wantWASD = settings.get('want-WASD', False)
-        
-        self.Move_Up = 'arrow_up'
-        self.Move_Left = 'arrow_left'       
-        self.Move_Down = 'arrow_down'
-        self.Move_Right = 'arrow_right'
-        self.JUMP = 'control'
-        self.moveKeys = 'the Arrow Keys' # This is used for text ingame that reference "the arrow keys"
-        
-        if self.wantWASD:
-            self.Move_Up = 'w'
-            self.Move_Left = 'a'            
-            self.Move_Down = 's'
-            self.Move_Right = 'd'
-            self.JUMP = 'space'
-            self.moveKeys = 'WASD' # This is used for text ingame that reference "the arrow keys" to replace it with "WASD"
+        self.filters = CommonFilters(self.win, self.cam)
+
+        # Free black/white Toons:
+        self.wantYinYang = config.GetBool('want-yin-yang', False)
 
     def openMainWindow(self, *args, **kw):
         result = OTPBase.OTPBase.openMainWindow(self, *args, **kw)
@@ -182,42 +251,8 @@ class ToonBase(OTPBase.OTPBase):
 
     def windowEvent(self, win):
         OTPBase.OTPBase.windowEvent(self, win)
-        if not config.GetInt('keep-aspect-ratio', 0):
-            return
-        x = max(1, win.getXSize())
-        y = max(1, win.getYSize())
-        maxX = base.pipe.getDisplayWidth()
-        maxY = base.pipe.getDisplayHeight()
-        cwp = win.getProperties()
-        originX = 0
-        originY = 0
-        if cwp.hasOrigin():
-            originX = cwp.getXOrigin()
-            originY = cwp.getYOrigin()
-            if originX > maxX:
-                originX = originX - maxX
-            if originY > maxY:
-                oringY = originY - maxY
-        maxX -= originX
-        maxY -= originY
-        if math.fabs(x - self.oldX) > math.fabs(y - self.oldY):
-            newY = x / self.aspectRatio
-            newX = x
-            if newY > maxY:
-                newY = maxY
-                newX = self.aspectRatio * maxY
-        else:
-            newX = self.aspectRatio * y
-            newY = y
-            if newX > maxX:
-                newX = maxX
-                newY = maxX / self.aspectRatio
-        wp = WindowProperties()
-        wp.setSize(newX, newY)
-        base.win.requestProperties(wp)
-        base.cam.node().getLens().setFilmSize(newX, newY)
-        self.oldX = newX
-        self.oldY = newY
+
+        MarginGlobals.updateMarginVisibles()
 
     def setCursorAndIcon(self):
         tempdir = tempfile.mkdtemp()
@@ -225,26 +260,29 @@ class ToonBase(OTPBase.OTPBase):
         vfs = VirtualFileSystem.getGlobalPtr()
 
         searchPath = DSearchPath()
-        searchPath.appendDirectory(Filename('/phase_3/models/gui'))
+        if __debug__:
+            searchPath.appendDirectory(Filename('resources/phase_3/etc'))
+        searchPath.appendDirectory(Filename('/phase_3/etc'))
 
-        for filename in ['toonmono.cur', 'toontown.ico']:
+        for filename in ['toonmono.cur', 'icon.ico']:
             p3filename = Filename(filename)
             found = vfs.resolveFilename(p3filename, searchPath)
             if not found:
-                return
+                return # Can't do anything past this point.
 
             with open(os.path.join(tempdir, filename), 'wb') as f:
                 f.write(vfs.readFile(p3filename, False))
 
         wp = WindowProperties()
         wp.setCursorFilename(Filename.fromOsSpecific(os.path.join(tempdir, 'toonmono.cur')))
-        wp.setIconFilename(Filename.fromOsSpecific(os.path.join(tempdir, 'toontown.ico')))
+        wp.setIconFilename(Filename.fromOsSpecific(os.path.join(tempdir, 'icon.ico')))
         self.win.requestProperties(wp)
 
     def addCullBins(self):
         cbm = CullBinManager.getGlobalPtr()
         cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
         cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
+        cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 
     def disableShowbaseMouse(self):
         self.useDrive()
@@ -265,7 +303,8 @@ class ToonBase(OTPBase.OTPBase):
         if not os.path.exists(TTLocalizer.ScreenshotPath):
             os.mkdir(TTLocalizer.ScreenshotPath)
             self.notify.info('Made new directory to save screenshots.')
-        namePrefix = TTLocalizer.ScreenshotPath + 'screenshot'
+
+        namePrefix = TTLocalizer.ScreenshotPath + launcher.logPrefix + 'screenshot'
         timedif = globalClock.getRealTime() - self.lastScreenShotTime
         if self.glitchCount > 10 and self.walking:
             return
@@ -303,116 +342,88 @@ class ToonBase(OTPBase.OTPBase):
         self.screenshotStr += str
 
     def initNametagGlobals(self):
-        arrow = loader.loadModel('phase_3/models/props/arrow')
-        card = loader.loadModel('phase_3/models/props/panel')
-        speech3d = ChatBalloon(loader.loadModel('phase_3/models/props/chatbox'))
-        thought3d = ChatBalloon(loader.loadModel('phase_3/models/props/chatbox_thought_cutout'))
-        speech2d = ChatBalloon(loader.loadModel('phase_3/models/props/chatbox_noarrow'))
-        chatButtonGui = loader.loadModel('phase_3/models/gui/chat_button_gui')
-        NametagGlobals.setCamera(self.cam)
-        NametagGlobals.setArrowModel(arrow)
-        NametagGlobals.setNametagCard(card, VBase4(-0.5, 0.5, -0.5, 0.5))
-        if self.mouseWatcherNode:
-            NametagGlobals.setMouseWatcher(self.mouseWatcherNode)
-        NametagGlobals.setSpeechBalloon3d(speech3d)
-        NametagGlobals.setThoughtBalloon3d(thought3d)
-        NametagGlobals.setSpeechBalloon2d(speech2d)
-        NametagGlobals.setThoughtBalloon2d(thought3d)
-        NametagGlobals.setPageButton(PGButton.SReady, chatButtonGui.find('**/Horiz_Arrow_UP'))
-        NametagGlobals.setPageButton(PGButton.SDepressed, chatButtonGui.find('**/Horiz_Arrow_DN'))
-        NametagGlobals.setPageButton(PGButton.SRollover, chatButtonGui.find('**/Horiz_Arrow_Rllvr'))
-        NametagGlobals.setQuitButton(PGButton.SReady, chatButtonGui.find('**/CloseBtn_UP'))
-        NametagGlobals.setQuitButton(PGButton.SDepressed, chatButtonGui.find('**/CloseBtn_DN'))
-        NametagGlobals.setQuitButton(PGButton.SRollover, chatButtonGui.find('**/CloseBtn_Rllvr'))
+        NametagGlobals.setMe(base.cam)
+
+        NametagGlobals.setCardModel('phase_3/models/props/panel.bam')
+        NametagGlobals.setArrowModel('phase_3/models/props/arrow.bam')
+        NametagGlobals.setChatBalloon3dModel('phase_3/models/props/chatbox.bam')
+        NametagGlobals.setChatBalloon2dModel('phase_3/models/props/chatbox_noarrow.bam')
+        NametagGlobals.setThoughtBalloonModel('phase_3/models/props/chatbox_thought_cutout.bam')
+
+        chatButtonGui = loader.loadModel('phase_3/models/gui/chat_button_gui.bam')
+        NametagGlobals.setPageButton(
+            chatButtonGui.find('**/Horiz_Arrow_UP'), chatButtonGui.find('**/Horiz_Arrow_DN'),
+            chatButtonGui.find('**/Horiz_Arrow_Rllvr'), chatButtonGui.find('**/Horiz_Arrow_UP'))
+        NametagGlobals.setQuitButton(
+            chatButtonGui.find('**/CloseBtn_UP'), chatButtonGui.find('**/CloseBtn_DN'),
+            chatButtonGui.find('**/CloseBtn_Rllvr'), chatButtonGui.find('**/CloseBtn_UP'))
+        chatButtonGui.removeNode()
+
         rolloverSound = DirectGuiGlobals.getDefaultRolloverSound()
-        if rolloverSound:
+        if rolloverSound is not None:
             NametagGlobals.setRolloverSound(rolloverSound)
         clickSound = DirectGuiGlobals.getDefaultClickSound()
-        if clickSound:
+        if clickSound is not None:
             NametagGlobals.setClickSound(clickSound)
-        NametagGlobals.setToon(self.cam)
 
         self.marginManager = MarginManager()
-        self.margins = self.aspect2d.attachNewNode(self.marginManager, DirectGuiGlobals.MIDGROUND_SORT_INDEX + 1)
-        mm = self.marginManager
-
-        # TODO: Dynamicaly add more and reposition cells
-        padding = 0.0225
-
-        # Order: Top to bottom
+        self.margins = self.aspect2d.attachNewNode(
+            self.marginManager, DirectGuiGlobals.MIDGROUND_SORT_INDEX + 1)
         self.leftCells = [
-            mm.addGridCell(0.2 + padding, -0.45, base.a2dTopLeft), # Above boarding groups
-            mm.addGridCell(0.2 + padding, -0.9, base.a2dTopLeft),  # 1
-            mm.addGridCell(0.2 + padding, -1.35, base.a2dTopLeft)  # Below Boarding Groups
+            self.marginManager.addCell(0.1, -0.6, self.a2dTopLeft),
+            self.marginManager.addCell(0.1, -1.0, self.a2dTopLeft),
+            self.marginManager.addCell(0.1, -1.4, self.a2dTopLeft)
         ]
-
-        # Order: Left to right
         self.bottomCells = [
-            mm.addGridCell(-0.87, 0.2 + padding, base.a2dBottomCenter), # To the right of the laff meter
-            mm.addGridCell(-0.43, 0.2 + padding, base.a2dBottomCenter), # 1
-            mm.addGridCell(0.01, 0.2 + padding, base.a2dBottomCenter),  # 2
-            mm.addGridCell(0.45, 0.2 + padding, base.a2dBottomCenter),  # 3
-            mm.addGridCell(0.89, 0.2 + padding, base.a2dBottomCenter)   # To the left of the shtiker book
+            self.marginManager.addCell(0.4, 0.1, self.a2dBottomCenter),
+            self.marginManager.addCell(-0.4, 0.1, self.a2dBottomCenter),
+            self.marginManager.addCell(-1.0, 0.1, self.a2dBottomCenter),
+            self.marginManager.addCell(1.0, 0.1, self.a2dBottomCenter)
         ]
-
-        # Order: Bottom to top
         self.rightCells = [
-            mm.addGridCell(-0.2 - padding, -1.35, base.a2dTopRight), # Above the street map
-            mm.addGridCell(-0.2 - padding, -0.9, base.a2dTopRight),  # Below the friends list
-            mm.addGridCell(-0.2 - padding, -0.45, base.a2dTopRight)  # Behind the friends list
+            self.marginManager.addCell(-0.1, -0.6, self.a2dTopRight),
+            self.marginManager.addCell(-0.1, -1.0, self.a2dTopRight),
+            self.marginManager.addCell(-0.1, -1.4, self.a2dTopRight)
         ]
 
-    def hideFriendMargins(self):
-        middleCell = self.rightCells[1]
-        topCell = self.rightCells[2]
-
-        self.setCellsAvailable([middleCell, topCell], False)
-
-    def showFriendMargins(self):
-        middleCell = self.rightCells[1]
-        topCell = self.rightCells[2]
-
-        self.setCellsAvailable([middleCell, topCell], True)
-
-    def setCellsAvailable(self, cell_list, available):
-        for cell in cell_list:
-            self.marginManager.setCellAvailable(cell, available)
+    def setCellsActive(self, cells, active):
+        for cell in cells:
+            cell.setActive(active)
+        self.marginManager.reorganize()
 
     def cleanupDownloadWatcher(self):
         self.downloadWatcher.cleanup()
         self.downloadWatcher = None
-        return
 
     def startShow(self, cr, launcherServer = None):
         self.cr = cr
-        if self.display.antialias:
-            render.setAntialias(AntialiasAttrib.MAuto)
         base.graphicsEngine.renderFrame()
         self.downloadWatcher = ToontownDownloadWatcher.ToontownDownloadWatcher(TTLocalizer.LauncherPhaseNames)
         if launcher.isDownloadComplete():
             self.cleanupDownloadWatcher()
         else:
             self.acceptOnce('launcherAllPhasesComplete', self.cleanupDownloadWatcher)
-        gameServer = config.GetString('game-server', '')
-        if gameServer:
-            self.notify.info('Using game-server from Configrc: %s ' % gameServer)
-        elif launcherServer:
-            gameServer = launcherServer
-            self.notify.info('Using gameServer from launcher: %s ' % gameServer)
-        else:
-            gameServer = 'localhost'
-        serverPort = config.GetInt('server-port', 7198)
+        gameServer = os.environ.get('TTI_GAMESERVER', 'localhost')
+        # Get the base port.
+        serverPort = base.config.GetInt('server-port', 7199)
+
+        # Get the number of client-agents.
+        clientagents = base.config.GetInt('client-agents', 1) - 1
+
+        # Get a new port.
+        serverPort += (random.randint(0, clientagents) * 100)
+
         serverList = []
         for name in gameServer.split(';'):
             url = URLSpec(name, 1)
-            if config.GetBool('server-force-ssl', False):
+            if base.config.GetBool('server-force-ssl', False):
                 url.setScheme('s')
             if not url.hasPort():
                 url.setPort(serverPort)
             serverList.append(url)
 
         if len(serverList) == 1:
-            failover = config.GetString('server-failover', '')
+            failover = base.config.GetString('server-failover', '')
             serverURL = serverList[0]
             for arg in failover.split():
                 try:
@@ -429,39 +440,29 @@ class ToonBase(OTPBase.OTPBase):
         self.ttAccess = ToontownAccess.ToontownAccess()
         self.ttAccess.initModuleInfo()
 
-        if config.GetBool('want-speedhack-fix', False):
-            # Start checking for speedhacks.
-            self.lastSpeedhackCheck = time.time()
-            self.trueClock = TrueClock.getGlobalPtr()
-            self.lastTrueClockTime = self.trueClock.getLongTime()
-            taskMgr.add(self.__speedhackCheckTick, 'speedhack-tick')
+        # Start detecting speed hacks:
+        self.lastSpeedHackCheck = time.time()
+        self.lastTrueClockTime = TrueClock.getGlobalPtr().getLongTime()
+        taskMgr.add(self.__speedHackCheckTick, 'speedHackCheck-tick')
 
-    def __speedhackCheckTick(self, task):
-        # Compare the time elapsed for time.time() and TrueClock. If the TrueClock is more
-        # than 1 second ahead, assume that it's running faster than normal.
-        # If the system time is dragged backwards between 2 iterations, this might cause
-        # problems (as the TrueClock would then be ahead).
-        elapsed = time.time() - self.lastSpeedhackCheck
-        tc_elapsed = self.trueClock.getLongTime() - self.lastTrueClockTime
-        if tc_elapsed > elapsed + 1:
-            # They responded too fast. This indicates that the TrueClock is running faster
-            # than normal, and possibly means they sped the process up.
-            self.__killSpeedHacker()
+    def __speedHackCheckTick(self, task):
+        elapsed = time.time() - self.lastSpeedHackCheck
+        tcElapsed = TrueClock.getGlobalPtr().getLongTime() - self.lastTrueClockTime
+
+        if tcElapsed > (elapsed + 0.05):
+            # The TrueClock is running faster than it should. This means the
+            # player may have sped up the process. Disconnect them:
+            self.cr.stopReaderPollTask()
+            self.cr.lostConnection()
             return task.done
-        # Clean! Lets wait until the next iteration...
-        self.lastSpeedhackCheck = time.time()
-        self.lastTrueClockTime = self.trueClock.getLongTime()
-        return task.cont
 
-    def __killSpeedHacker(self):
-        self.cr.bootedIndex = 128
-        self.cr.bootedText = 'SERVER CONNECTION FAILURE. CLIENT HAS EXCEEDED RATE-LIMIT.'
-        self.cr.stopReaderPollTask()
-        self.cr.lostConnection()
+        self.lastSpeedHackCheck = time.time()
+        self.lastTrueClockTime = TrueClock.getGlobalPtr().getLongTime()
+
+        return task.cont
 
     def removeGlitchMessage(self):
         self.ignore('InputState-forward')
-        print 'ignoring InputState-forward'
 
     def exitShow(self, errorCode = None):
         self.notify.info('Exiting Toontown: errorCode = %s' % errorCode)
@@ -520,11 +521,14 @@ class ToonBase(OTPBase.OTPBase):
         sys.exit()
 
     def getShardPopLimits(self):
-        return (config.GetInt('shard-low-pop', ToontownGlobals.LOW_POP), config.GetInt('shard-mid-pop', ToontownGlobals.MID_POP), config.GetInt('shard-high-pop', ToontownGlobals.HIGH_POP))
+        return (
+            config.GetInt('shard-low-pop', ToontownGlobals.LOW_POP),
+            config.GetInt('shard-mid-pop', ToontownGlobals.MID_POP),
+            config.GetInt('shard-high-pop', ToontownGlobals.HIGH_POP)
+        )
 
     def playMusic(self, music, looping = 0, interrupt = 1, volume = None, time = 0.0):
         OTPBase.OTPBase.playMusic(self, music, looping, interrupt, volume, time)
-
 
     # OS X Specific Actions
     def exitOSX(self):
@@ -541,6 +545,7 @@ class ToonBase(OTPBase.OTPBase):
             self.userExit()
 
     def hideGame(self):
+        # Hacky, I know, but it works
         hideCommand = """osascript -e 'tell application "System Events"
                                             set frontProcess to first process whose frontmost is true
                                             set visible of frontProcess to false

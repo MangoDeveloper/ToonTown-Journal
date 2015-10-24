@@ -72,18 +72,18 @@ def pickSuitAttack(attacks, suitLevel):
             break
         index = index + 1
 
-    configAttackName = config.GetString('attack-type', 'random')
+    configAttackName = simbase.config.GetString('attack-type', 'random')
     if configAttackName == 'random':
         return attackNum
     elif configAttackName == 'sequence':
-        for i in range(len(attacks)):
-            if not debugAttackSequence.has_key(attacks[i]):
+        for i in xrange(len(attacks)):
+            if  attacks[i] not in debugAttackSequence:
                 debugAttackSequence[attacks[i]] = 1
                 return i
 
         return attackNum
     else:
-        for i in range(len(attacks)):
+        for i in xrange(len(attacks)):
             if attacks[i][0] == configAttackName:
                 return i
 
@@ -109,40 +109,6 @@ def getSuitAttack(suitName, suitLevel, attackNum = -1):
     adict['group'] = SuitAttacks[name][1]
     return adict
 
-SuitSizes = {
-    'f': 4.0,
-    'p': 3.35,
-    'ym': 4.125,
-    'mm': 2.5,
-    'ds': 4.5,
-    'hh': 6.5,
-    'cr': 6.75,
-    'tbc': 7.0,
-    'bf': 4.0,
-    'b': 4.375,
-    'dt': 4.25,
-    'ac': 4.35,
-    'bs': 4.5,
-    'sd': 5.65,
-    'le': 7.125,
-    'bw': 7.0,
-    'sc': 3.6,
-    'pp': 3.55,
-    'tw': 4.5,
-    'bc': 4.4,
-    'nc': 5.25,
-    'mb': 5.3,
-    'ls': 6.5,
-    'rb': 7.0,
-    'cc': 3.5,
-    'tm': 3.75,
-    'nd': 4.35,
-    'gh': 4.75,
-    'ms': 4.75,
-    'tf': 5.25,
-    'm': 5.75,
-    'mh': 7.0,
-}
 
 SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky,
        'singularname': TTLocalizer.SuitFlunkyS,
@@ -364,22 +330,6 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky,
                       1,
                       1,
                       1),
-                     (50,
-                      50,
-                      50,
-                      50,
-                      50),
-                     (25,
-                      20,
-                      15,
-                      10,
-                      5)),
-                    ('ReOrg',
-                     (3,
-                      6,
-                      9,
-                      12,
-                      15),
                      (50,
                       50,
                       50,
@@ -638,22 +588,7 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky,
                 45,
                 50,
                 55),
-        'attacks': (('PowerTrip',
-                     (12,
-                      14,
-                      16,
-                      18,
-                      20),
-                     (55,
-                      65,
-                      75,
-                      85,
-                      95),
-                     (50,
-                      50,
-                      50,
-                      50,
-                      50)),('FountainPen',
+        'attacks': (('FountainPen',
                      (5,
                       6,
                       8,
@@ -757,22 +692,7 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky,
                 45,
                 50,
                 55),
-        'attacks': (('PowerTrip',
-                     (14,
-                      16,
-                      18,
-                      20,
-                      22),
-                     (55,
-                      65,
-                      75,
-                      85,
-                      95),
-                     (50,
-                      50,
-                      50,
-                      50,
-                      50)),('Canned',
+        'attacks': (('Canned',
                      (6,
                       7,
                       8,
@@ -860,22 +780,22 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky,
                  45,
                  50,
                  55),
-         'attacks': (('PowerTrip',
-                     (16,
-                      18,
-                      20,
-                      22,
-                      24),
-                     (55,
-                      65,
-                      75,
-                      85,
-                      95),
-                     (50,
-                      50,
-                      50,
-                      50,
-                      50)),
+         'attacks': (('CigarSmoke',
+                      (10,
+                       12,
+                       15,
+                       18,
+                       20),
+                      (55,
+                       65,
+                       75,
+                       85,
+                       95),
+                      (20,
+                       20,
+                       20,
+                       20,
+                       20)),
                      ('FloodTheMarket',
                       (14,
                        16,
@@ -1140,22 +1060,6 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky,
                       30,
                       30,
                       30)),
-                    ('ReOrg',
-                     (3,
-                      6,
-                      9,
-                      12,
-                      15),
-                     (50,
-                      50,
-                      50,
-                      50,
-                      50),
-                     (25,
-                      20,
-                      15,
-                      10,
-                      5)),
                     ('Rolodex',
                      (5,
                       6,
@@ -2963,7 +2867,7 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky,
                       50,
                       50,
                       50,
-                      50)), ('FingerWag',
+                      50)), ('ThrowBook',
                      (13,
                       15,
                       17,
@@ -2990,6 +2894,7 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'Calculate': ('phone', ATK_TGT_SINGLE),
  'Canned': ('throw-paper', ATK_TGT_SINGLE),
  'Chomp': ('throw-paper', ATK_TGT_SINGLE),
+ 'CigarSmoke': ('cigar-smoke', ATK_TGT_SINGLE),
  'ClipOnTie': ('throw-paper', ATK_TGT_SINGLE),
  'Crunch': ('throw-object', ATK_TGT_SINGLE),
  'Demotion': ('magic1', ATK_TGT_SINGLE),
@@ -3056,6 +2961,7 @@ BUZZ_WORD = SuitAttacks.keys().index('BuzzWord')
 CALCULATE = SuitAttacks.keys().index('Calculate')
 CANNED = SuitAttacks.keys().index('Canned')
 CHOMP = SuitAttacks.keys().index('Chomp')
+CIGAR_SMOKE = SuitAttacks.keys().index('CigarSmoke')
 CLIPON_TIE = SuitAttacks.keys().index('ClipOnTie')
 CRUNCH = SuitAttacks.keys().index('Crunch')
 DEMOTION = SuitAttacks.keys().index('Demotion')
@@ -3116,7 +3022,7 @@ WITHDRAWAL = SuitAttacks.keys().index('Withdrawal')
 WRITE_OFF = SuitAttacks.keys().index('WriteOff')
 
 def getFaceoffTaunt(suitName, doId):
-    if SuitFaceoffTaunts.has_key(suitName):
+    if suitName in SuitFaceoffTaunts:
         taunts = SuitFaceoffTaunts[suitName]
     else:
         taunts = TTLocalizer.SuitFaceoffDefaultTaunts
@@ -3131,7 +3037,7 @@ def getAttackTauntIndexFromIndex(suit, attackIndex):
 
 
 def getAttackTauntIndex(attackName):
-    if SuitAttackTaunts.has_key(attackName):
+    if attackName in SuitAttackTaunts:
         taunts = SuitAttackTaunts[attackName]
         return random.randint(0, len(taunts) - 1)
     else:
@@ -3139,7 +3045,7 @@ def getAttackTauntIndex(attackName):
 
 
 def getAttackTaunt(attackName, index = None):
-    if SuitAttackTaunts.has_key(attackName):
+    if attackName in SuitAttackTaunts:
         taunts = SuitAttackTaunts[attackName]
     else:
         taunts = TTLocalizer.SuitAttackDefaultTaunts

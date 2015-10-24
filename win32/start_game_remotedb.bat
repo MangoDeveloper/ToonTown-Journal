@@ -7,17 +7,15 @@ set /P PPYTHON_PATH=<PPYTHON_PATH
 rem Get the user input:
 set /P ttiUsername="Username: "
 set /P ttiPassword="Password: "
-
-rem Export the environment variables:
-set TTI_PLAYCOOKIE=%ttiUsername%:%ttiPassword%
-set TTI_GAMESERVER=toontownfellowship.com
+set /P TTI_GAMESERVER="Gameserver (DEFAULT: 167.114.28.238): " || ^
+set TTI_GAMESERVER=167.114.28.238
 
 echo ===============================
-echo Starting Toontown Custom…
+echo Starting Toontown Infinite...
 echo ppython: %PPYTHON_PATH%
 echo Username: %ttiUsername%
 echo Gameserver: %TTI_GAMESERVER%
 echo ===============================
 
-%PPYTHON_PATH% -m toontown.toonbase.ClientStart
+%PPYTHON_PATH% -m toontown.toonbase.ClientStartRemoteDB
 pause

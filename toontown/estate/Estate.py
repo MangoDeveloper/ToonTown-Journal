@@ -133,7 +133,7 @@ class Estate(Place.Place):
         #if hasattr(base.cr, 'aprilToonsMgr'):
             #if self.isEventActive(AprilToonsGlobals.EventEstateGravity):
                 #base.localAvatar.startAprilToonsControls()
-        if config.GetBool('want-april-toons'):
+        if base.config.GetBool('want-april-toons'):
             base.localAvatar.startAprilToonsControls()
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
@@ -141,7 +141,8 @@ class Estate(Place.Place):
 
     def exit(self):
         base.localAvatar.stopChat()
-        base.localAvatar.stopAprilToonsControls()
+        if base.config.GetBool('want-april-toons'):
+            base.localAvatar.stopAprilToonsControls()
         self._telemLimiter.destroy()
         del self._telemLimiter
         if hasattr(self, 'fsm'):
@@ -345,7 +346,7 @@ class Estate(Place.Place):
         self.notify.debug('continuing in __submergeToon')
         if hasattr(self, 'loader') and self.loader:
             base.playSfx(self.loader.submergeSound)
-        if config.GetBool('disable-flying-glitch') == 0:
+        if base.config.GetBool('disable-flying-glitch') == 0:
             self.fsm.request('walk')
         self.walkStateData.fsm.request('swimming', [self.loader.swimSound])
         pos = base.localAvatar.getPos(render)
@@ -363,7 +364,7 @@ class Estate(Place.Place):
         #if hasattr(base.cr, 'aprilToonsMgr'):
             #if self.isEventActive(AprilToonsGlobals.EventEstateGravity):
                 #base.localAvatar.startAprilToonsControls()
-        if config.GetBool('want-april-toons'):
+        if base.config.GetBool('want-april-toons'):
             base.localAvatar.startAprilToonsControls()
 
     def __setUnderwaterFog(self):

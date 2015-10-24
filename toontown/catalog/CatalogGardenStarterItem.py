@@ -30,13 +30,10 @@ class CatalogGardenStarterItem(CatalogItem.CatalogItem):
         return TTLocalizer.GardenStarterTypeName
 
     def recordPurchase(self, avatar, optional):
-        print 'rental-- record purchase'
         if avatar:
-            print 'starter garden-- has avater'
-            estate = simbase.air.estateManager.toon2estate.get(avatar)
+            estate = simbase.air.estateManager._lookupEstate(avatar.doId)
             if estate:
-                print 'starter garden-- has estate'
-                estate.placeStarterGarden(avatar)
+                estate.placeStarterGarden(avatar.doId)
             else:
                 print 'starter garden-- something not there'
         return ToontownGlobals.P_ItemAvailable
@@ -72,9 +69,6 @@ class CatalogGardenStarterItem(CatalogItem.CatalogItem):
 
     def encodeDatagram(self, dg, store):
         CatalogItem.CatalogItem.encodeDatagram(self, dg, store)
-
-    def getDeliveryTime(self):
-        return 1
 
     def isRental(self):
         return 0

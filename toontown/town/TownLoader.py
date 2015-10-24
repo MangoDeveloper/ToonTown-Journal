@@ -5,7 +5,6 @@ from toontown.distributed.ToontownMsgTypes import *
 from toontown.toonbase.ToontownGlobals import *
 from direct.gui.DirectGui import cleanupDialog
 from direct.directnotify import DirectNotifyGlobal
-from direct.interval.IntervalGlobal import *
 from toontown.hood import Place
 from direct.showbase import DirectObject
 from direct.fsm import StateData
@@ -14,18 +13,26 @@ from direct.fsm import State
 from direct.task import Task
 import TownBattle
 from toontown.toon import Toon
-from toontown.toon import NPCToons
-from otp.nametag.NametagConstants import *
 from toontown.toon.Toon import teleportDebug
 from toontown.battle import BattleParticles
 from direct.fsm import StateData
 from toontown.building import ToonInterior
 from toontown.hood import QuietZoneState
 from toontown.hood import ZoneUtil
-from random import randint
+from direct.interval.IntervalGlobal import *
+from toontown.dna.DNAParser import DNABulkLoader
 
 class TownLoader(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('TownLoader')
+
+    zone2music = {
+        ToontownCentral : 'phase_9/audio/bgm/encntr_suit_ttc.ogg',
+        DonaldsDock : 'phase_9/audio/bgm/encntr_suit_dd.ogg',
+        DaisyGardens : 'phase_9/audio/bgm/encntr_suit_dg.ogg',
+        MinniesMelodyland : 'phase_9/audio/bgm/encntr_suit_mml.ogg',
+        TheBrrrgh : 'phase_9/audio/bgm/encntr_suit_tb.ogg',
+        DonaldsDreamland : 'phase_9/audio/bgm/encntr_suit_ddl.ogg'
+    }
 
     def __init__(self, hood, parentFSMState, doneEvent):
         StateData.StateData.__init__(self, doneEvent)
@@ -56,43 +63,9 @@ class TownLoader(StateData.StateData):
         self.canonicalBranchZone = ZoneUtil.getCanonicalBranchZone(zoneId)
         self.music = base.loadMusic(self.musicFile)
         self.activityMusic = base.loadMusic(self.activityMusicFile)
-        self.battleMusic = base.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
+        self.battleMusic = base.loadMusic(self.zone2music.get(ZoneUtil.getHoodId(zoneId), 'phase_9/audio/bgm/encntr_suit_ttc.ogg'))#'phase_3.5/audio/bgm/encntr_general_bg.ogg'))
         self.townBattle = TownBattle.TownBattle(self.townBattleDoneEvent)
         self.townBattle.load()
-
-        if config.GetBool('want-april-toons', 0):
-            self.npc = NPCToons.createLocalNPC(91915)
-            self.npc.reparentTo(base.localAvatar)
-            self.npc.setZ(30)
-            self.npc.hide()
-            self.piano = loader.loadModel('phase_5/models/props/piano-mod')
-            self.piano.setZ(250)
-            self.piano.setHpr(0, 90, 0)
-            self.piano.reparentTo(base.localAvatar)
-            self.piano.setScale(0)
-            self.pianoSfx = base.loadSfx('phase_5/audio/sfx/AA_drop_piano.ogg')
-            self.dropSfx = base.loadSfx('phase_5/audio/sfx/cogbldg_drop.ogg')
-            self.pianoDropSound = Sequence(
-                Func(base.playSfx, self.dropSfx),
-                Wait(6.7),
-                Func(base.playSfx, self.pianoSfx),
-                Func(base.localAvatar.b_setAnimState, 'Squish'),
-                Wait(2.5),
-                Func(self.pianoSfx.stop)
-            )
-            self.pianoDropSequence = Sequence(
-                Wait(randint(10, 60)),
-                Func(self.pianoDropSound.start),
-                Parallel(self.piano.scaleInterval(1, (3, 3, 3)), self.piano.posInterval(7, (0, 0, 0))),
-                self.piano.posInterval(0.1, (0, 0, 0.5)),
-                self.piano.posInterval(0.1, (0, 0, 0)),
-                Wait(0.4),
-                Parallel(Func(self.npc.addActive), Func(self.npc.setChatAbsolute, 'Whoops! My bad!', CFSpeech|CFTimeout)),
-                self.piano.scaleInterval(1, (0, 0, 0)),
-                Wait(5),
-                Func(self.npc.removeActive)
-            )
-            self.pianoDropSequence.loop()
 
     def unload(self):
         self.unloadBattleAnims()
@@ -105,10 +78,11 @@ class TownLoader(StateData.StateData):
         del self.streetClass
         self.landmarkBlocks.removeNode()
         del self.landmarkBlocks
+        self.hood.dnaStore.resetSuitPoints()
+        self.hood.dnaStore.resetBattleCells()
         del self.hood
         del self.nodeDict
         del self.zoneDict
-        del self.nodeToZone
         del self.fadeInDict
         del self.fadeOutDict
         del self.nodeList
@@ -125,15 +99,6 @@ class TownLoader(StateData.StateData):
         cleanupDialog('globalDialog')
         ModelPool.garbageCollect()
         TexturePool.garbageCollect()
-        if config.GetBool('want-april-toons', 0):
-            self.pianoDropSequence.finish()
-            self.pianoDropSound.finish()
-            del self.pianoDropSequence
-            del self.pianoDropSound
-            self.piano.removeNode()
-            del self.pianoSfx
-            del self.dropSfx
-            del self.npc
 
     def enter(self, requestStatus):
         teleportDebug(requestStatus, 'TownLoader.enter(%s)' % requestStatus)
@@ -229,62 +194,61 @@ class TownLoader(StateData.StateData):
 
     def createHood(self, dnaFile, loadStorage = 1):
         if loadStorage:
-            loader.loadDNA('phase_5/dna/storage_town.xml').store(self.hood.dnaStore)
-            self.notify.debug('done loading %s' % 'phase_5/dna/storage_town.xml')
-            loader.loadDNA(self.townStorageDNAFile).store(self.hood.dnaStore)
-            self.notify.debug('done loading %s' % self.townStorageDNAFile)
-        sceneTree = loader.loadDNA(dnaFile)
-        node = sceneTree.generate(self.hood.dnaStore)
-        base.cr.playGame.dnaData = sceneTree.generateData()
+            files = ('phase_5/dna/storage_town.pdna', self.townStorageDNAFile)
+            dnaBulk = DNABulkLoader(self.hood.dnaStore, files)
+            dnaBulk.loadDNAFiles()
+        node = loader.loadDNAFile(self.hood.dnaStore, dnaFile)
         self.notify.debug('done loading %s' % dnaFile)
         if node.getNumParents() == 1:
             self.geom = NodePath(node.getParent(0))
             self.geom.reparentTo(hidden)
         else:
             self.geom = hidden.attachNewNode(node)
-        self.makeDictionaries(sceneTree)
+        self.makeDictionaries(self.hood.dnaStore)
         self.reparentLandmarkBlockNodes()
         self.renameFloorPolys(self.nodeList)
         self.createAnimatedProps(self.nodeList)
         self.holidayPropTransforms = {}
         npl = self.geom.findAllMatches('**/=DNARoot=holiday_prop')
-        for i in range(npl.getNumPaths()):
+        for i in xrange(npl.getNumPaths()):
             np = npl.getPath(i)
             np.setTag('transformIndex', `i`)
             self.holidayPropTransforms[i] = np.getNetTransform()
-
-        self.notify.info('skipping self.geom.flattenMedium')
         gsg = base.win.getGsg()
         if gsg:
             self.geom.prepareScene(gsg)
+        self.geom.flattenLight()
         self.geom.setName('town_top_level')
 
     def reparentLandmarkBlockNodes(self):
         bucket = self.landmarkBlocks = hidden.attachNewNode('landmarkBlocks')
         npc = self.geom.findAllMatches('**/sb*:*_landmark_*_DNARoot')
-        for i in range(npc.getNumPaths()):
+        for i in xrange(npc.getNumPaths()):
             nodePath = npc.getPath(i)
             nodePath.wrtReparentTo(bucket)
 
         npc = self.geom.findAllMatches('**/sb*:*animated_building*_DNARoot')
-        for i in range(npc.getNumPaths()):
+        for i in xrange(npc.getNumPaths()):
             nodePath = npc.getPath(i)
             nodePath.wrtReparentTo(bucket)
 
-    def makeDictionaries(self, sceneTree):
+    def makeDictionaries(self, dnaStore):
         self.nodeDict = {}
         self.zoneDict = {}
-        self.nodeToZone = {}
+        self.zoneVisDict = {}
         self.nodeList = []
         self.fadeInDict = {}
         self.fadeOutDict = {}
         a1 = Vec4(1, 1, 1, 1)
         a0 = Vec4(1, 1, 1, 0)
-        for visgroup in base.cr.playGame.dnaData.visgroups:
-            groupName = base.cr.hoodMgr.extractGroupName(visgroup.name)
+        numVisGroups = dnaStore.getNumDNAVisGroupsAI()
+        for i in xrange(numVisGroups):
+            groupFullName = dnaStore.getDNAVisGroupName(i)
+            visGroup = dnaStore.getDNAVisGroupAI(i)
+            groupName = base.cr.hoodMgr.extractGroupName(groupFullName)
             zoneId = int(groupName)
             zoneId = ZoneUtil.getTrueZoneId(zoneId, self.zoneId)
-            groupNode = self.geom.find('**/' + visgroup.name)
+            groupNode = self.geom.find('**/' + groupFullName)
             if groupNode.isEmpty():
                 self.notify.error('Could not find visgroup')
             else:
@@ -293,30 +257,42 @@ class TownLoader(StateData.StateData):
                 else:
                     groupName = '%s' % zoneId
                 groupNode.setName(groupName)
+            groupNode.flattenMedium()
             self.nodeDict[zoneId] = []
             self.nodeList.append(groupNode)
             self.zoneDict[zoneId] = groupNode
-            self.nodeToZone[groupNode] = zoneId
+            visibles = []
+            for i in xrange(visGroup.getNumVisibles()):
+                visibles.append(int(visGroup.visibles[i]))
+            visibles.append(ZoneUtil.getBranchZone(zoneId))
+            self.zoneVisDict[zoneId] = visibles
             fadeDuration = 0.5
             self.fadeOutDict[groupNode] = Sequence(Func(groupNode.setTransparency, 1), LerpColorScaleInterval(groupNode, fadeDuration, a0, startColorScale=a1), Func(groupNode.clearColorScale), Func(groupNode.clearTransparency), Func(groupNode.stash), name='fadeZone-' + str(zoneId), autoPause=1)
             self.fadeInDict[groupNode] = Sequence(Func(groupNode.unstash), Func(groupNode.setTransparency, 1), LerpColorScaleInterval(groupNode, fadeDuration, a1, startColorScale=a0), Func(groupNode.clearColorScale), Func(groupNode.clearTransparency), name='fadeZone-' + str(zoneId), autoPause=1)
 
-        for visgroup in base.cr.playGame.dnaData.visgroups:
-            zoneId = int(base.cr.hoodMgr.extractGroupName(visgroup.name))
+        for i in xrange(numVisGroups):
+            groupFullName = dnaStore.getDNAVisGroupName(i)
+            zoneId = int(base.cr.hoodMgr.extractGroupName(groupFullName))
             zoneId = ZoneUtil.getTrueZoneId(zoneId, self.zoneId)
-            for visName in visgroup.vis:
+            for j in xrange(dnaStore.getNumVisiblesInDNAVisGroup(i)):
+                visName = dnaStore.getVisibleName(i, j)
                 groupName = base.cr.hoodMgr.extractGroupName(visName)
                 nextZoneId = int(groupName)
                 nextZoneId = ZoneUtil.getTrueZoneId(nextZoneId, self.zoneId)
                 visNode = self.zoneDict[nextZoneId]
                 self.nodeDict[zoneId].append(visNode)
 
+        self.hood.dnaStore.resetPlaceNodes()
+        self.hood.dnaStore.resetDNAGroups()
+        self.hood.dnaStore.resetDNAVisGroups()
+        self.hood.dnaStore.resetDNAVisGroupsAI()
+
     def renameFloorPolys(self, nodeList):
         for i in nodeList:
             collNodePaths = i.findAllMatches('**/+CollisionNode')
             numCollNodePaths = collNodePaths.getNumPaths()
             visGroupName = i.node().getName()
-            for j in range(numCollNodePaths):
+            for j in xrange(numCollNodePaths):
                 collNodePath = collNodePaths.getPath(j)
                 bitMask = collNodePath.node().getIntoCollideMask()
                 if bitMask.getBit(1):
@@ -328,7 +304,7 @@ class TownLoader(StateData.StateData):
         for i in nodeList:
             animPropNodes = i.findAllMatches('**/animated_prop_*')
             numAnimPropNodes = animPropNodes.getNumPaths()
-            for j in range(numAnimPropNodes):
+            for j in xrange(numAnimPropNodes):
                 animPropNode = animPropNodes.getPath(j)
                 if animPropNode.getName().startswith('animated_prop_generic'):
                     className = 'GenericAnimatedProp'
@@ -347,7 +323,7 @@ class TownLoader(StateData.StateData):
 
             interactivePropNodes = i.findAllMatches('**/interactive_prop_*')
             numInteractivePropNodes = interactivePropNodes.getNumPaths()
-            for j in range(numInteractivePropNodes):
+            for j in xrange(numInteractivePropNodes):
                 interactivePropNode = interactivePropNodes.getPath(j)
                 className = 'InteractiveAnimatedProp'
                 if 'hydrant' in interactivePropNode.getName():
@@ -377,7 +353,7 @@ class TownLoader(StateData.StateData):
                     animatedBuildingNodes.removePath(np)
 
             numAnimatedBuildingNodes = animatedBuildingNodes.getNumPaths()
-            for j in range(numAnimatedBuildingNodes):
+            for j in xrange(numAnimatedBuildingNodes):
                 animatedBuildingNode = animatedBuildingNodes.getPath(j)
                 className = 'GenericAnimatedBuilding'
                 symbols = {}

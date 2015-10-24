@@ -237,21 +237,21 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
     def hasGag(self, slot, requestedGag, index):
         avId = self.air.getAvatarIdFromSender()
         if not avId in self.avatars:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to get gag in a race they\'re not in!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to get gag in a race they\'re not in!')
             return
         if self.raceType == RaceGlobals.Practice:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to gain gag in a practice race!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to gain gag in a practice race!')
             return
         places = sorted(self.avatarProgress, key=self.avatarProgress.get)
         avPlace = places.index(avId)
         gag = self.gags[slot]
         if not gag[0]:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to pick up a gag that doesn\'t exist!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to pick up a gag that doesn\'t exist!')
             return
         gagIndex = gag[1]
         realGag = RaceGlobals.GagFreq[avPlace][gagIndex]
         if realGag != requestedGag:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to get the wrong gag!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to get the wrong gag!')
             return
         self.gags[slot] = [0, 0]
         self.avatarGags[avId] = requestedGag
@@ -264,10 +264,10 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
     def racerLeft(self, avId):
         realAvId = self.air.getAvatarIdFromSender()
         if realAvId != avId:
-            self.air.writeServerEvent('suspicious', avId=realAvId, issue='Toon tried to make another quit race!')
+            self.air.writeServerEvent('suspicious', realAvId, 'Toon tried to make another quit race!')
             return
         if not avId in self.avatars:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to leave race they\'re not in!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to leave race they\'re not in!')
             return
         self.avatars.remove(avId)
         if set(self.finishedAvatars) == set(self.avatars) or len(self.avatars) == 0:
@@ -276,10 +276,10 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
     def heresMyT(self, avId, laps, currentLapT, timestamp):
         realAvId = self.air.getAvatarIdFromSender()
         if not avId == realAvId:
-            self.air.writeServerEvent('suspicious', avId=realAvId, issue='Toon tried to send a message as another toon!')
+            self.air.writeServerEvent('suspicious', realAvId, 'Toon tried to send a message as another toon!')
             return
         if not avId in self.avatars:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon not in race tried to send update to race!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon not in race tried to send update to race!')
             return
         if laps == self.lapCount:
             self.avatarFinished(avId)
@@ -287,11 +287,11 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
 
     def avatarFinished(self, avId):
         if not avId in self.avatars:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to finish in a race they\'re not in!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to finish in a race they\'re not in!')
             return
 
         if avId in self.finishedAvatars:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to finish in a race twice!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to finish in a race twice!')
             return
         self.finishedAvatars.append(avId)
 
@@ -316,7 +316,7 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
         av.b_setTickets(av.getTickets() + winnings)
         if av.getTickets() > RaceGlobals.MaxTickets:
             av.b_setTickets(RaceGlobals.MaxTickets)
-        self.sendUpdate('setPlace', [avId, totalTime, place, entryFee, qualify, (winnings-entryFee), bonus, trophies, [], 0])
+        self.sendUpdate('setPlace', [avId, totalTime, place, entryFee, qualify, max((winnings-entryFee), 0), bonus, trophies, [], 0])
 
     def calculateTrophies(self, avId, won, qualify, time):
         av = self.air.doId2do[avId]
@@ -380,7 +380,7 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
     def requestThrow(self, x, y, z):
         avId = self.air.getAvatarIdFromSender()
         if not avId in self.avatars:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to throw a gag in a race they\'re not in!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to throw a gag in a race they\'re not in!')
         if self.avatarGags[avId] == RaceGlobals.BANANA:
             gag = DistributedGagAI(self.air)
             gag.setRace(self.doId)
@@ -411,7 +411,7 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
                 target = places[avPlace + 1]
             self.sendUpdate('shootPiejectile', [avId, target, 0])
         else:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon use race gag while not having one!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon use race gag while not having one!')
         self.avatarGags[avId] = 0
 
     def unsquish(self, avId):
@@ -432,11 +432,13 @@ class DistributedRaceAI(DistributedObjectAI, FSM):
             self.requestDelete()
 
     def requestKart(self):
+        pass
         avId = self.air.getAvatarIdFromSender()
+        accId = self.air.getAccountIdFromSender()
         if not avId in self.avatars:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='Toon tried to request kart in race they\'re not in!')
+            self.air.writeServerEvent('suspicious', avId, 'Toon tried to request kart in race they\'re not in!')
             return
         for aK in self.avatarKarts:
             if aK[0] == avId:
-                self.air.doId2do[aK[1]].request('Controlled', avId)
+                self.air.doId2do[aK[1]].request('Controlled', avId, accId)
                 self.air.doId2do[aK[1]].sendUpdate('setInput', [0])

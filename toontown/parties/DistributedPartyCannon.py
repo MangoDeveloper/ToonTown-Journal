@@ -37,7 +37,6 @@ INITIAL_VELOCITY = 80.0
 WHISTLE_SPEED = INITIAL_VELOCITY * 0.35
 
 class DistributedPartyCannon(DistributedObject, Cannon):
-    deferFor = 2
     notify = directNotify.newCategory('DistributedPartyCannon')
     LOCAL_CANNON_MOVE_TASK = 'localCannonMoveTask'
 
@@ -277,7 +276,7 @@ class DistributedPartyCannon(DistributedObject, Cannon):
                     place.fsm.request('walk')
             av.setPlayRate(1.0, 'run')
             if av.nametag and self.toonHead:
-                av.nametag.removeNametag(self.toonHead.tag)
+                av.nametag.remove(self.toonHead.tag)
             if av.getParent().getName() == 'toonOriginChange':
                 av.wrtReparentTo(render)
                 self.__setToonUpright(av)

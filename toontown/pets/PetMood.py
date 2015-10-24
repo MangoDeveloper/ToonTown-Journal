@@ -1,6 +1,6 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
-from direct.showbase.PythonUtil import lerp, average, clamp
+from direct.showbase.PythonUtil import lerp, average, clampScalar
 from toontown.toonbase import TTLocalizer
 import random, time, weakref
 
@@ -180,7 +180,7 @@ class PetMood:
 
         def doDrift(curValue, timeToMedian, dt = float(dt)):
             newValue = curValue + dt / (timeToMedian * 7200)
-            return clamp(newValue, 0.0, 1.0)
+            return clampScalar(newValue, 0.0, 1.0)
 
         self.boredom = doDrift(curMood.boredom, self.tBoredom)
         self.loneliness = doDrift(curMood.loneliness, self.tLoneliness)

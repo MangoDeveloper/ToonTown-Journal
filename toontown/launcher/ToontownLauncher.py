@@ -6,10 +6,8 @@ import types
 ltime = 1 and time.localtime()
 logSuffix = '%02d%02d%02d_%02d%02d%02d' % (ltime[0] - 2000,  ltime[1], ltime[2],
                                            ltime[3], ltime[4], ltime[5])
-if not os.path.exists('logs/'):
-    os.mkdir('logs/')
 
-logfile = os.path.join('logs', 'toontown-' + logSuffix + '.log')
+logfile = 'toontownD-' + logSuffix + '.log'
 
 class LogAndOutput:
     def __init__(self, orig, log):
@@ -67,7 +65,7 @@ class ToontownLauncher(LauncherBase):
             sys.exit()
 
         self.toontownBlueKey = 'TOONTOWN_BLUE'
-        self.toontownPlayTokenKey = 'TOONTOWN_PLAYTOKEN'
+        self.toontownPlayTokenKey = 'TTI_PLAYCOOKIE'
         self.launcherMessageKey = 'LAUNCHER_MESSAGE'
         self.game1DoneKey = 'GAME1_DONE'
         self.game2DoneKey = 'GAME2_DONE'
@@ -81,20 +79,23 @@ class ToontownLauncher(LauncherBase):
         self.parseWebAcctParams()
         self.mainLoop()
 
-    def getValue(self, key, default = None):
-        return os.environ.get(key, default)
+    def getValue(self, key, default=None):
+        try:
+            return self.getRegistry(key, default)
+        except:
+            return self.getRegistry(key)
 
     def setValue(self, key, value):
-        os.environ[key] = str(value)
+        self.setRegistry(key, value)
 
     def getVerifyFiles(self):
-        return config.GetInt('launcher-verify', 0)
+        return 1
 
     def getTestServerFlag(self):
-        return self.getValue('IS_TEST_SERVER', 0)
+        return self.testServerFlag
 
     def getGameServer(self):
-        return self.getValue('TTO_GAMESERVER')
+        return self.gameServer
 
     def getLogFileName(self):
         return 'toontown'
@@ -107,7 +108,7 @@ class ToontownLauncher(LauncherBase):
         l = s.split('&')
         length = len(l)
         dict = {}
-        for index in range(0, len(l)):
+        for index in xrange(0, len(l)):
             args = l[index].split('=')
             if len(args) == 3:
                 [name, value] = args[-2:]
@@ -117,14 +118,14 @@ class ToontownLauncher(LauncherBase):
                 dict[name] = int(value)
 
         self.secretNeedsParentPasswordKey = 1
-        if dict.has_key('secretsNeedsParentPassword'):
+        if 'secretsNeedsParentPassword' in dict:
             self.secretNeedsParentPasswordKey = dict['secretsNeedsParentPassword']
         else:
             self.notify.warning('no secretNeedsParentPassword token in webAcctParams')
         self.notify.info('secretNeedsParentPassword = %d' % self.secretNeedsParentPasswordKey)
 
         self.chatEligibleKey = 0
-        if dict.has_key('chatEligible'):
+        if 'chatEligible' in dict:
             self.chatEligibleKey = dict['chatEligible']
         else:
             self.notify.warning('no chatEligible token in webAcctParams')
@@ -138,7 +139,11 @@ class ToontownLauncher(LauncherBase):
         return blue
 
     def getPlayToken(self):
-        return self.getValue('TTO_PLAYTOKEN')
+        playToken = self.getValue(self.toontownPlayTokenKey)
+        self.setValue(self.toontownPlayTokenKey, '')
+        if playToken == 'NO PLAYTOKEN':
+            playToken = None
+        return playToken
 
     def setRegistry(self, name, value):
         if not self.WIN32:
@@ -206,7 +211,7 @@ class ToontownLauncher(LauncherBase):
         return self.getRegistry(self.tutorialCompleteKey, 0)
 
     def getGame2Done(self):
-        return True
+        return self.getRegistry(self.game2DoneKey, 0)
 
     def setPandaErrorCode(self, code):
         self.pandaErrorCode = code
@@ -235,18 +240,16 @@ class ToontownLauncher(LauncherBase):
             return
         LauncherBase.MakeNTFSFilesGlobalWriteable(self, pathToSet)
 
-    def isDownloadComplete(self):
-        return 1
-
-    def isTestServer(self):
-        return 0
-
-    def getPhaseComplete(self, phase):
-        return 1
-
     def startGame(self):
+        try:
+            os.remove('Phase3.py')
+        except: pass
+
+        import Phase3
+
         self.newTaskManager()
+
         from direct.showbase.EventManagerGlobal import eventMgr
         eventMgr.restart()
-        from toontown.toonbase import ToontownStart
 
+        from toontown.toonbase import ToontownStart

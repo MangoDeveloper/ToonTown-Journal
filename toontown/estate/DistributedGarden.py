@@ -31,7 +31,7 @@ class DistributedGarden(DistributedObject.DistributedObject):
         self.radius = 0
         self.gridCells = 20
         self.propTable = [None] * self.gridCells
-        for i in range(len(self.propTable)):
+        for i in xrange(len(self.propTable)):
             self.propTable[i] = [None] * self.gridCells
 
         self.dx = 1.0 / self.gridCells
@@ -68,11 +68,11 @@ class DistributedGarden(DistributedObject.DistributedObject):
          y,
          z)
         if prop == HouseGlobals.PROP_ICECUBE:
-            model = loader.loadModel('phase_8/models/props/icecube')
+            model = loader.loadModel('phase_8/models/props/icecube.bam')
         elif prop == HouseGlobals.PROP_FLOWER:
-            model = loader.loadModel('phase_8/models/props/flower_treasure')
+            model = loader.loadModel('phase_8/models/props/flower_treasure.bam')
         elif prop == HouseGlobals.PROP_SNOWFLAKE:
-            model = loader.loadModel('phase_8/models/props/snowflake_treasure')
+            model = loader.loadModel('phase_8/models/props/snowflake_treasure.bam')
         model.reparentTo(hidden)
         model.setPos(x, y, z)
         model.setScale(0.2)
@@ -90,11 +90,11 @@ class DistributedGarden(DistributedObject.DistributedObject):
     def loadProp(self, prop, i, j):
         pos = self.getPropPos(i, j)
         if prop == HouseGlobals.PROP_ICECUBE:
-            model = loader.loadModel('phase_8/models/props/icecube')
+            model = loader.loadModel('phase_8/models/props/icecube.bam')
         elif prop == HouseGlobals.PROP_FLOWER:
-            model = loader.loadModel('phase_8/models/props/flower_treasure')
+            model = loader.loadModel('phase_8/models/props/flower_treasure.bam')
         elif prop == HouseGlobals.PROP_SNOWFLAKE:
-            model = loader.loadModel('phase_8/models/props/snowflake_treasure')
+            model = loader.loadModel('phase_8/models/props/snowflake_treasure.bam')
         else:
             self.notify.error('cant find prop: %s' % prop)
         model.reparentTo(hidden)

@@ -53,13 +53,13 @@ ChatManagerWhisperTo = 'Whisper to:'
 ChatManagerWhisperToName = 'Whisper To:\n%s'
 ChatManagerCancel = lCancel
 ChatManagerWhisperOffline = '%s is offline.'
-OpenChatWarning = 'To become True Friends with somebody, click on them, and select "True Friends" from the detail panel.\n\nSpeedChat Plus can also be enabled, which allow users to chat by typing words found in the Disney SpeedChat Plus dictionary.\n\nTo activate these features or to learn more, exit Toontown and then click on Membership and select Manage Account.  Log in to edit your "Community Settings."\n\nIf you are under 18, you need a Parent Account to manage these settings.'
+OpenChatWarning = 'To become True Friends with somebody, click on them, and select "True Friends" from the detail panel.\n\nSpeedChat Plus can also be enabled, which allow users to chat by typing words found in the SpeedChat Plus dictionary.\n\nTo activate these features or to learn more, exit Toontown and then click on Membership and select Manage Account.  Log in to edit your "Community Settings."\n\nIf you are under 18, you need a Parent Account to manage these settings.'
 OpenChatWarningOK = lOK
 UnpaidChatWarning = 'Once you have subscribed, you can use this button to chat with your friends using the keyboard.  Until then, you should chat with other Toons using SpeedChat.'
 UnpaidChatWarningPay = 'Subscribe'
 UnpaidChatWarningContinue = 'Continue Free Trial'
 PaidNoParentPasswordWarning = 'Use this button to chat with your friends by using the keyboard, enable it through your Account Manager on the Toontown Web site. Until then, you can chat by using SpeedChat.'
-UnpaidNoParentPasswordWarning = 'This is for SpeedChat Plus, which allows users to chat by typing words found in the Disney SpeedChat Plus dictionary. To activate this feature, exit Toontown and click on Membership. Select Manage Account and log in to edit your "Community Settings." If you are under 18, you need a Parent Account to manage these settings.'
+UnpaidNoParentPasswordWarning = 'This is for SpeedChat Plus, which allows users to chat by typing words found in the SpeedChat Plus dictionary. To activate this feature, exit Toontown and click on Membership. Select Manage Account and log in to edit your "Community Settings." If you are under 18, you need a Parent Account to manage these settings.'
 PaidNoParentPasswordWarningSet = 'Update Chat Settings'
 PaidNoParentPasswordWarningContinue = 'Continue Playing Game'
 PaidParentPasswordUKWarning = 'Once you have Enabled Chat, you can enable this button to chat with your friends using the keyboard. Until then, you should chat with other Toons using SpeedChat.'
@@ -74,7 +74,7 @@ NoSecretChatWarningWrongPassword = "That's not the correct Parent Account.  Plea
 NoSecretChatAtAllTitle = 'Open Chat With True Friends'
 NoSecretChatAtAll = 'Open Chat with True Friends allows real-life friends to chat openly with each other by means of a True Friend Code that must be shared outside of the game.\n\nTo activate these features or to learn more, exit Toontown and then click on Membership and select Manage Account. Log in to edit your "Community Settings." If you are under 18, you need a Parent Account to manage these settings.'
 NoSecretChatAtAllAndNoWhitelistTitle = 'Chat button'
-NoSecretChatAtAllAndNoWhitelist = 'You can use the blue Chat button to communicate with other Toons by using Speechat Plus or Open Chat with True Friends.\n\nSpeedchat Plus is a form of type chat that allows users to communicate by using the Disney SpeedChat Plus dictionary.\n\nOpen Chat with True Friends allows real-life friends to chat openly with each other by means of a True Friend Code that must be shared outside of the game.\n\nTo activate these features or to learn more, exit Toontown and then click on Membership and select Manage Account.  Log in to edit your "Community Settings." If you are under 18, you need a Parent Account to manage these settings.'
+NoSecretChatAtAllAndNoWhitelist = 'You can use the blue Chat button to communicate with other Toons by using Speechat Plus or Open Chat with True Friends.\n\nSpeedchat Plus is a form of type chat that allows users to communicate by using the SpeedChat Plus dictionary.\n\nOpen Chat with True Friends allows real-life friends to chat openly with each other by means of a True Friend Code that must be shared outside of the game.\n\nTo activate these features or to learn more, exit Toontown and then click on Membership and select Manage Account.  Log in to edit your "Community Settings." If you are under 18, you need a Parent Account to manage these settings.'
 NoSecretChatAtAllOK = lOK
 ChangeSecretFriendsOptions = 'Change True Friends Options'
 ChangeSecretFriendsOptionsWarning = '\nPlease enter the Parent Account Password to change your True Friends options.'
@@ -131,11 +131,11 @@ PrivacyPolicyText_Intro = [' ']
 PrivacyPolicyClose = lClose
 SecretFriendsInfoPanelOk = lOK
 SecretFriendsInfoPanelClose = lClose
-SecretFriendsInfoPanelText = ['\nThe Open Chat with True Friends Feature\n\nThe Open Chat with True Friends feature enables a member to chat directly with another member within Disney\'s Toontown Online (the "Service") once the members establish a True Friends connection.  When your child attempts to use the Open Chat with True Friends feature, we will require that you indicate your consent to your child\'s use of this feature by entering your Parent Account Password.  Here is a detailed description of the process of creating an Open Chat with True Friends connection between members whom we will call "Sally" and "Mike."\n1. Sally\'s parent and Mike\'s parent each enable the Open Chat with True Friends feature by entering their respective Parent Account Passwords either (a) in the Account Options areas within the Service, or (b) when prompted within the game by a Parental Controls pop-up.\n2. Sally requests a True Friend Code (described below) from within the Service.\n',
+SecretFriendsInfoPanelText = ['\nThe Open Chat with True Friends Feature\n\nThe Open Chat with True Friends feature enables a member to chat directly with another member within Toontown Infinite (the "Service") once the members establish a True Friends connection.  When your child attempts to use the Open Chat with True Friends feature, we will require that you indicate your consent to your child\'s use of this feature by entering your Parent Account Password.  Here is a detailed description of the process of creating an Open Chat with True Friends connection between members whom we will call "Sally" and "Mike."\n1. Sally\'s parent and Mike\'s parent each enable the Open Chat with True Friends feature by entering their respective Parent Account Passwords either (a) in the Account Options areas within the Service, or (b) when prompted within the game by a Parental Controls pop-up.\n2. Sally requests a True Friend Code (described below) from within the Service.\n',
  "\n3. Sally's True Friend Code is communicated to Mike outside of the Service. (Sally's True Friend Code may be communicated to Mike either directly by Sally, or indirectly through Sally's disclosure of the True Friend Code to another person.)\n4. Mike submits Sally's True Friend Code to the Service within 48 hours of the time that Sally requested the True Friend Code from the Service.\n5. The Service then notifies Mike that Sally has become Mike's True Friend.  The Service similarly notifies Sally that Mike has become Sally's True Friend.\n6. Sally and Mike can now open chat directly with each other until either one chooses to terminate the other as a True Friend, or until the Open Chat with True Friends feature is disabled for either Sally or Mike by their respective parent.  The True Friends connection can thus be disabled anytime by either: (a) a member removing the True Friend from his or her friends list (as described in the Service); or, (b) the parent of that member disabling the Open Chat with ",
  "\nTrue Friends feature by going to the Account Options area within the Service and following the steps set forth there.\n\nA True Friend Code is a computer-generated random code assigned to a particular member. The True Friend Code must be used to activate a True Friend connection within 48 hours of the time that the member requests the True Friend Code; otherwise, the True Friend Code expires and cannot be used.  Moreover, a single True Friend Code can only be used to establish one True Friend connection.  To make additional True Friend connections, a member must request an additional True Friend Code for each additional True Friend.\n\nTrue Friendships do not transfer.  For example, if Sally becomes a True Friend of Mike, and Mike becomes a True Friend of Jessica, Sally does not automatically become Jessica's True Friend.  In order for Sally and Jessica to\n",
- '\nbecome True Friends, one of them must request a new True Friend Code from the Service and communicate it to the other.\n\nTrue Friends communicate with one another in a free-form interactive open chat.  The content of this chat is directly entered by the participating member and is processed through the Service, which is operated by the Walt Disney Internet Group ("WDIG"), 500 S. Buena Vista St., Burbank, CA 91521-7691.  While we advise members not to exchange personal information such as first and last names, e-mail addresses, postal addresses, or phone numbers while using Open Chat with True Friends, we cannot guarantee that such exchanges of personal information will not happen. Although the True Friends chat is automatically filtered for most bad words, Open Chat with True Friends may be moderated, and Disney reserves the right to moderate any part of the Service that Disney,\n',
- "\nin its sole and absolute discretion, deems necessary. However, because Open Chat with True Friends will not always be moderated, if the Parent Account allows a child to use his or her account with the Open Chat with True Friends feature enabled, we strongly encourage parents to supervise their child or children while they play in the Service. By enabling the Open Chat with True Friends feature, the Parent Account acknowledges that there are some risks inherent in the Open Chat with True Friends feature and that the Parent Account has been informed of, and agrees to accept, any such risks, whether foreseeable or otherwise. \n\nWDIG does not use the content of True Friends chat for any purpose other than communicating that content to the member's true friend, and does not disclose that content to any third party except: (1) if required by law, for example, to comply with a court order or subpoena; (2) to enforce the Terms of Use\n",
+ '\nbecome True Friends, one of them must request a new True Friend Code from the Service and communicate it to the other.\n\nTrue Friends communicate with one another in a free-form interactive open chat.  The content of this chat is directly entered by the participating member and is processed through the Service, which is monitored by the Toontown Infinite team.  While we advise members not to exchange personal information such as first and last names, e-mail addresses, postal addresses, or phone numbers while using Open Chat with True Friends, we cannot guarantee that such exchanges of personal information will not happen. Although the True Friends chat is automatically filtered for most bad words, Open Chat with True Friends may be moderated, and we reserve the right to moderate any part of the Service that we,\n',
+ "\nin our sole and absolute discretion, deems necessary. However, because Open Chat with True Friends will not always be moderated, if the Parent Account allows a child to use his or her account with the Open Chat with True Friends feature enabled, we strongly encourage parents to supervise their child or children while they play in the Service. By enabling the Open Chat with True Friends feature, the Parent Account acknowledges that there are some risks inherent in the Open Chat with True Friends feature and that the Parent Account has been informed of, and agrees to accept, any such risks, whether foreseeable or otherwise. \n\nWDIG does not use the content of True Friends chat for any purpose other than communicating that content to the member's true friend, and does not disclose that content to any third party except: (1) if required by law, for example, to comply with a court order or subpoena; (2) to enforce the Terms of Use\n",
  "\napplicable to the Service (which may be accessed on the home page of the Service); or, (3) to protect the safety and security of Members of the Service and the Service itself. In accordance with the Children's Online Privacy Protection Act, we are prohibited from conditioning, and do not condition, a child's participation in any activity (including Open Chat with True Friends) on the child's disclosing more personal information than is reasonably necessary to participate in such activity.\n\nIn addition, as noted above, we recognize the right of a parent to refuse to permit us to continue to allow a child to use the True Friends feature. By enabling the Open Chat with True Friends feature, you acknowledge that there are some risks inherent in the ability of members to open chat with one another through the Open Chat with True Friends feature, and that you have been informed of, and agree to accept, any such risks, whether foreseeable or otherwise.\n"]
 LeaveToPay = 'Click Purchase to exit the game and buy a Membership at toontown.com'
 LeaveToPayYes = 'Purchase'
@@ -182,13 +182,15 @@ CRLostConnection = 'Your internet connection to the servers has been unexpectedl
 CRBootedReasons = {1: 'An unexpected problem has occurred.  Your connection has been lost, but you should be able to connect again and go right back into the game.',
  100: 'You have been disconnected because someone else just logged in using your account on another computer.',
  120: 'You have been disconnected because of a problem with your authorization to use keyboard chat.',
- 122: 'There has been an unexpected problem logging you in.  Please contact customer support.',
+ 122: 'Couldn\'t decode the token. Please relaunch the game from the official launcher.',
+ 124: 'Your installed files are out of date.  Please launch the game from the official launcher so that it can install updates.  If you continue to get this error, contact support.',
  125: 'Your installed files appear to be invalid.  Please use the Play button on the official website to run.',
  126: 'You are not authorized to use administrator privileges.',
  127: 'A problem has occurred with your Toon.  Please contact Member Services via phone or email and reference Error Code 127.  Thank you.',
  151: 'You have been logged out by an administrator working on the servers.',
  152: "There has been a reported violation of our Terms of Use connected to '%(name)s'. For more details, please review the message sent to the e-mail address associated with '%(name)s'.",
  153: 'The district you were playing on has been reset.  Everyone who was playing on that district has been disconnected.  However, you should be able to connect again and go right back into the game.',
+ 154: 'Toontown Infinite is now temporarily closed for maintenance. Everyone who was playing has been disconnected from the game.\n\nFor more information, please visit the Toontown Infinite website.',
  288: 'Sorry, you have used up all of your available minutes this month.',
  349: 'Sorry, you have used up all of your available minutes this month.'}
 CRBootedReasonUnknownCode = 'An unexpected problem has occurred (error code %s).  Your connection has been lost, but you should be able to connect again and go right back into the game.'
@@ -201,8 +203,8 @@ CRServerConstantsProxyNoPort = 'Unable to contact %s.\n\nYou are communicating t
 CRServerConstantsProxyNoCONNECT = 'Unable to contact %s.\n\nYou are communicating to the internet via a proxy, but your proxy does not support the CONNECT method.\n\nYou must enable this capability, or disable your proxy, in order to play.  If your proxy has been provided by your ISP, you must contact your ISP to request them to enable this capability.'
 CRServerConstantsTryAgain = 'Unable to contact %s.\n\nThe account server might be temporarily down, or there might be some problem with your internet connection.\n\nTry again?'
 CRServerDateTryAgain = 'Could not get server date from %s. Try again?'
-CRMaintenanceCountdownMessage = 'Attention Toons! Toontown United will be going down for maintenance in %d minutes.'
-CRMaintenanceMessage = 'Attention Toons! Toontown United  is now going down for maintenance.'
+CRMaintenanceCountdownMessage = 'Attention Toons! Toontown Infinite will be going down for maintenance in %d minutes.'
+CRMaintenanceMessage = 'Attention Toons! Toontown Infinite is now going down for maintenance.'
 AfkForceAcknowledgeMessage = 'Your toon got sleepy and went to bed.'
 PeriodTimerWarning = 'Your available time is almost over!'
 PeriodForceAcknowledgeMessage = 'Sorry, you have used up all of your available time. Please exit to purchase more.'
@@ -229,24 +231,39 @@ DialogLength2 = 12
 DialogLength3 = 20
 GlobalSpeedChatName = 'SpeedChat'
 SCMenuPromotion = 'PROMOTIONAL'
-SCMenuElection = 'ELECTION'
 SCMenuEmotions = 'EMOTIONS'
 SCMenuCustom = 'MY PHRASES'
 SCMenuResistance = 'UNITE!'
 SCMenuPets = 'PETS'
 SCMenuPetTricks = 'TRICKS'
 SCMenuCog = 'COG SPEAK'
+SCMenuTesting = 'TESTING'
+SCMenuBugs = 'BUGS'
 SCMenuHello = 'HELLO'
 SCMenuBye = 'GOODBYE'
+SCMenuConvo = 'CHIT CHAT'
+SCMenuEmoticons = 'EMOTICONS'
+SCMenuResponse="REPLIES"
+SCMenuGood = 'GOOD'
+SCMenuBad = 'BAD'
 SCMenuHappy = 'HAPPY'
 SCMenuSad = 'SAD'
 SCMenuFriendly = 'FRIENDLY'
 SCMenuSorry = 'SORRY'
+SCMenuBusy = "I'M BUSY..."
 SCMenuStinky = 'STINKY'
 SCMenuPlaces = 'PLACES'
 SCMenuToontasks = 'TOONTASKS'
 SCMenuBattle = 'BATTLE'
-SCMenuGagShop = 'GAG SHOP'
+SCMenuBattleUse = 'YOU SHOULD USE...'
+SCMenuBattleToonUp = 'TOON-UP'
+SCMenuBattleTrap = 'TRAP'
+SCMenuBattleLure = 'LURE'
+SCMenuBattleSound = 'SOUND'
+SCMenuBattleThrow = 'THROW'
+SCMenuBattleSquirt = 'SQUIRT'
+SCMenuBattleDrop = 'DROP'
+SCMenuGagShop = 'TROLLEY'
 SCMenuFactory = 'FACTORY'
 SCMenuKartRacing = 'RACING'
 SCMenuFactoryMeet = 'MEET'
@@ -261,12 +278,12 @@ SCMenuPlacesPlayground = 'PLAYGROUND'
 SCMenuPlacesEstate = 'ESTATE'
 SCMenuPlacesCogs = 'COGS'
 SCMenuPlacesWait = 'WAIT'
-SCMenuFriendlyYou = 'You...'
-SCMenuFriendlyILike = 'I like...'
-SCMenuPlacesLetsGo = "Let's go..."
+SCMenuFriendlyYou = 'YOU...'
+SCMenuFriendlyILike = 'I LIKE YOUR...'
+SCMenuPlacesLetsGo = "LET'S GO..."
 SCMenuToontasksMyTasks = 'MY TASKS'
-SCMenuToontasksYouShouldChoose = 'I think you should choose...'
-SCMenuToontasksINeedMore = 'I need more...'
+SCMenuToontasksYouShouldChoose = 'I THINK YOU SHOULD...'
+SCMenuToontasksINeedMore = 'I NEED MORE...'
 SCMenuBattleGags = 'GAGS'
 SCMenuBattleTaunts = 'TAUNTS'
 SCMenuBattleStrategy = 'STRATEGY'
@@ -284,6 +301,7 @@ SCMenuWinter = 'WINTER'
 SCMenuSellbotInvasion = 'SELLBOT INVASION'
 SCMenuFieldOffice = 'FIELD OFFICES'
 SCMenuIdesOfMarch = 'GREEN'
+ScMenuBugs = 'Bugs'
 FriendSecretNeedsPasswordWarningTitle = 'Parental Controls'
 FriendSecretNeedsParentLoginWarning = 'To get or enter a True Friend Code, log in with the Parent Account.  You can disable this prompt by changing your True Friend options.'
 FriendSecretNeedsPasswordWarning = 'To get or enter a True Friend Code, you must enter the Parent Account Password.  You can disable this prompt by changing your True Friends options.'
@@ -291,7 +309,7 @@ FriendSecretNeedsPasswordWarningOK = lOK
 FriendSecretNeedsPasswordWarningCancel = lCancel
 FriendSecretNeedsPasswordWarningWrongUsername = "That's not the correct username.  Please enter the username of the parental account.  This is not the same username used to play the game."
 FriendSecretNeedsPasswordWarningWrongPassword = "That's not the correct password.  Please enter the password of the parental account.  This is not the same password used to play the game."
-FriendSecretIntro = "If you are playing Toontown United with someone you know in the real world, you can become True Friends.  You can chat using the keyboard with your True Friends.  Other Toons won't understand what you're saying.\n\nYou do this by getting a True Friend Code.  Tell the True Friend Code to your friend, but not to anyone else.  When your friend types in your True Friend Code on his or her screen, you'll be True Friends in Toontown!"
+FriendSecretIntro = "If you are playing Toontown Infinite with someone you know in the real world, you can become True Friends.  You can chat using the keyboard with your True Friends.  Other Toons won't understand what you're saying.\n\nYou do this by getting a True Friend Code.  Tell the True Friend Code to your friend, but not to anyone else.  When your friend types in your True Friend Code on his or her screen, you'll be True Friends in Toontown!"
 FriendSecretGetSecret = 'Get a True Friend Code'
 FriendSecretEnterSecret = 'If you have a True Friend Code from someone you know, type it here.'
 FriendSecretOK = lOK
@@ -301,6 +319,7 @@ FriendSecretGettingSecret = 'Getting True Friend Code. . .'
 FriendSecretGotSecret = "Here is your new True Friend Code.  Be sure to write it down!\n\nYou may give this True Friend Code to one person only.  Once someone types in your True Friend Code, it will not work for anyone else.  If you want to give a True Friend Code to more than one person, get another True Friend Code.\n\nThe True Friend Code will only work for the next two days.  Your friend will have to type it in before it goes away, or it won't work.\n\nYour True Friend Code is:"
 FriendSecretTooMany = "Sorry, you can't have any more True Friend Codes today.  You've already had more than your fair share!\n\nTry again tomorrow."
 FriendSecretTryingSecret = 'Trying True Friend Code. . .'
+FriendSecretNotImplemented = 'True Friends has not been implemented yet!'
 FriendSecretEnteredSecretSuccess = 'You are now True Friends with %s!'
 FriendSecretTimeOut = 'Sorry, secrets are not working right now.'
 FriendSecretEnteredSecretUnknown = "That's not anyone's True Friend Code.  Are you sure you spelled it correctly?\n\nIf you did type it correctly, it may have expired.  Ask your friend to get a new True Friend Code for you (or get a new one yourself and give it to your friend)."
@@ -314,7 +333,7 @@ FriendSecretDetermineSecret = 'What type of True Friend would you like to make?'
 FriendSecretDetermineSecretAvatar = 'Avatar'
 FriendSecretDetermineSecretAvatarRollover = 'A friend only in this game'
 FriendSecretDetermineSecretAccount = 'Account'
-FriendSecretDetermineSecretAccountRollover = 'A friend across the Disney.com network'
+FriendSecretDetermineSecretAccountRollover = 'A friend across the Toontown Infinite network'
 GuildMemberTitle = 'Member Options'
 GuildMemberPromote = 'Make Officer'
 GuildMemberPromoteInvite = 'Make Veteran'
@@ -406,7 +425,7 @@ FriendInviterIgnored = '%s is ignoring you.'
 FriendInviterAsking = 'Asking %s to be your friend.'
 FriendInviterFriendSaidYes = 'You are now friends with %s!'
 FriendInviterPlayerFriendSaidYes = "You are now friends with %s's player, %s!"
-FriendInviterFriendSaidNo = '%s said no, thank you.'
+FriendInviterFriendSaidNo = '%s has declined your friend request.'
 FriendInviterFriendSaidNoNewFriends = "%s isn't looking for new friends right now."
 FriendInviterOtherTooMany = '%s has too many friends already!'
 FriendInviterMaybe = '%s was unable to answer.'
@@ -449,7 +468,8 @@ EmoteList = ['Wave',
  'Cry',
  'Delighted',
  'Furious',
- 'Laugh']
+ 'Laugh',
+ 'Taunt']
 EmoteWhispers = ['%s waves.',
  '%s is happy.',
  '%s is sad.',
@@ -474,7 +494,8 @@ EmoteWhispers = ['%s waves.',
  '%s is crying.',
  '%s is delighted.',
  '%s is furious.',
- '%s is laughing.']
+ '%s is laughing.',
+ '%s taunts you.']
 EmoteFuncDict = {'Wave': 0,
  'Happy': 1,
  'Sad': 2,
@@ -500,14 +521,7 @@ EmoteFuncDict = {'Wave': 0,
  'Delighted': 22,
  'Furious': 23,
  'Laugh': 24,
- 'Sing Note G1': 25,
- 'Sing Note A': 26,
- 'Sing Note B': 27,
- 'Sing Note C': 28,
- 'Sing Note D': 29,
- 'Sing Note E': 30,
- 'Sing Note F': 31,
- 'Sing Note G2': 32}
+ 'Taunt': 25}
 SuitBrushOffs = {'f': ["I'm late for a meeting."],
  'p': ['Push off.'],
  'ym': ['Yes Man says NO.'],
@@ -515,7 +529,9 @@ SuitBrushOffs = {'f': ["I'm late for a meeting."],
         "I believe you're in the wrong office.",
         'Have your people call my people.',
         "You're in no position to meet with me.",
-        'Talk to my assistant.']}
+        'Talk to my assistant.',
+        "I'll pretend I don't see you Toon.",
+        "There's a restraining order coming your way"]}
 SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
        "I'm going to make you a sore loser.",
        "I'm going to leave you high and dry.",
@@ -527,7 +543,8 @@ SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
        "When I'm through you'll need to lie down.",
        'This will only hurt for a second.',
        "I'm going to make you dizzy.",
-       "Good timing, I'm a pint low."],
+       "Good timing, I'm a pint low.",
+       "You'll B the opposite of A happy toon when I'm finished with you."],
  'm': ["You don't know who you're mingling with.",
        'Ever mingle with the likes of me?',
        'Good, it takes two to mingle.',
@@ -643,7 +660,8 @@ SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
         'Whoa, back up there toon.',
         'Let me get your back.',
         "You're going to have a stabbing headache soon.",
-        'I have perfect puncture.'],
+        'I have perfect puncture.',
+        "Don't worry toon, you can always trust me."],
  'bw': ["Don't brush me aside.",
         'You make my hair curl.',
         'I can make this permanent if you want.',
@@ -663,7 +681,8 @@ SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
         'This is so much fun it should be illegal.',
         "Legally, you're too small to fight me.",
         'There is no limit to my talons.',
-        "I call this a citizen's arrest."],
+        "I call this a citizen's arrest.",
+        "I've got the court under my wing."],
  'sd': ["You'll never know when I'll stop.",
         'Let me take you for a spin.',
         'The doctor will see you now.',
@@ -720,7 +739,8 @@ SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
         'Are you sure you want to do this?',
         "We're going to do this my way.",
         "I'm going to be breathing down your neck.",
-        'I can be very intimidating.'],
+        'I can be very intimidating.',
+        "I've been searching for my growth spurt."],
  'ds': ["You're going down!",
         'Your options are shrinking.',
         'Expect diminishing returns.',
@@ -775,7 +795,8 @@ SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
         "I'm a very hands-on kinda guy.",
         'Would you like some hand-me-downs?',
         'Let me show you some of my handiwork.',
-        'I think the handwriting is on the wall.'],
+        'I think the handwriting is on the wall.',
+        "I'll gladly handle your gags for you"],
  'sc': ['I will make short work of you.',
         "You're about to have money trouble.",
         "You're about to be overcharged.",
@@ -786,7 +807,8 @@ SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
         "I think you've come up short.",
         'I have a short temper for Toons.',
         "I'll be with you shortly.",
-        "You're about to be shorted."],
+        "You're about to be shorted.",
+        "Well, aren't you a little short on your changes?"],
  'pp': ['This is going to sting a little.',
         "I'm going to give you a pinch for luck.",
         "You don't want to press your luck with me.",
@@ -839,7 +861,8 @@ SuitFaceoffTaunts = {'b': ['Do you have a donation for me?',
         'Which face would you like to defeat you?',
         "I'm 'two' much for you.",
         "You don't know who you're facing.",
-        'Are you ready to face your doom?'],
+        'Are you ready to face your doom?',
+        "My eyes are on you."],
  'dt': ["I'm gonna give you double the trouble.",
         'See if you can stop my double cross.',
         'I serve a mean double-\x04DECKER.',
@@ -872,7 +895,7 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  103: 'Hey!',
  104: 'Howdy!',
  105: 'Hi everybody!',
- 106: 'Welcome to Toontown United!',
+ 106: 'Welcome to Toontown Infinite!',
  107: "What's up?",
  108: 'How are you doing?',
  109: 'Hello?',
@@ -913,7 +936,6 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  408: 'Yikes!',
  409: 'Huh?',
  410: 'I need more Laff points.',
- 411: 'You need more Laff points.',
  500: 'Thanks!',
  501: 'No problem.',
  502: "You're welcome!",
@@ -921,7 +943,7 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  504: 'No thank you.',
  505: 'Good teamwork!',
  506: 'That was fun!',
- 507: 'Want to be my friend?',
+ 507: 'Please be my friend!',
  508: "Let's work together!",
  509: 'You guys are great!',
  510: 'Are you new here?',
@@ -930,7 +952,6 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  513: 'Would you like some help?',
  514: 'Can you help me?',
  515: 'Have you been here before?',
- 516: 'What do you want to do?',
  600: 'You look nice.',
  601: 'You are awesome!',
  602: 'You rock!',
@@ -960,7 +981,6 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  816: "I can't get on the elevator now.",
  817: "Sorry, I'm busy golfing!",
  818: 'Sorry, my Friends List is full.',
- 819: 'Sorry I crashed.',
  900: 'Hey!',
  901: 'Please go away!',
  902: 'Stop that!',
@@ -1057,10 +1077,6 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  1414: 'I need a Toon-Up.',
  1415: 'You should pass.',
  1416: 'We can do this!',
- 1417: 'You need more gags.',
- 1418: 'Kill left.',
- 1419: 'Kill right.',
- 1420: 'You first.',
  1500: "Let's use toon-up!",
  1501: "Let's use trap!",
  1502: "Let's use lure!",
@@ -1075,8 +1091,6 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  1524: 'Are you still here?',
  1525: "I'm SO scared!",
  1526: "That's going to leave a mark!",
- 1548: 'You should choose the same gag.',
- 1549: "Go for the same cog.",
  1550: "I'm going to use trap.",
  1551: "I'm going to use lure.",
  1552: "I'm going to use drop.",
@@ -1094,7 +1108,6 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  1604: 'One more?',
  1605: 'Play again?',
  1606: "Let's play again.",
- 
  1700: "Let's split up.",
  1701: "Let's stay together.",
  1702: "Let's battle the Cogs.",
@@ -1184,6 +1197,13 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  2007: 'Red',
  2008: 'Pink',
  2009: 'Brown',
+ 2010: 'Ocean Blue',
+ 2011: 'Peach',
+ 2012: 'Lavender',
+ 2013: 'Dark Red',
+ 2014: 'Dark Blue',
+ 2015: 'Light Green',
+ 2016: 'Light Red',
  2100: 'Please operate the crane.',
  2101: 'May I operate the crane?',
  2102: 'I need practice operating the crane.',
@@ -1402,7 +1422,7 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  10000: 'The choice is yours!',
  10001: 'Who are you voting for?',
  10002: "I'm pickin' Chicken!",
- 10003: 'Vote now! Vote Cow!',
+ 10003: 'Trick or Treat!',
  10004: 'Go bananas! Vote Monkey!',
  10005: 'Be a honey! Vote Bear!',
  10006: 'Think big! Vote Pig!',
@@ -1919,7 +1939,18 @@ SpeedChatStaticTextToontown = {100: 'Hi!',
  30450: "It's easy to be green!",
  30451: 'Visit Green Bean Jeans and you can be green too!',
  30452: "It's on Oak Street in Daisy Gardens.",
- 30453: "Today is Ollie's Birthday double exp and jellybeans are here."}
+ 30500: "Welcome to Toontown Infinite!",
+ 30501: "The Possibilities are Infinite.",
+ 30502: "Are you livestreaming?",
+ 30503: "I'm livestreaming right now!",
+ 30504: "I can't wait until the next Toontown Infinite update!",
+ 30505: "Did you know the TTI team works overtime to make the experience the best it can be?",
+ 30506: "I can't stand that bug!",
+ 30507: "Have you found any bugs yet?",
+ 30508: "I hope that bug gets fixed soon.",
+ 30509: "What types of bugs have you ran into so far?",
+ 30510: "Those bugs can get more obnoxious than the Cogs sometimes.",
+ 30511: "You can report bugs by clicking the Report a Bug button on the Toontown Infinite launcher."}
 SpeedChatStaticTextPirates = {50001: 'Aye',
  50002: 'Nay',
  50003: 'Yes',

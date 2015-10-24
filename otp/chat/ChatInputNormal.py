@@ -1,12 +1,14 @@
-from direct.showbase import DirectObject
-from otp.otpbase import OTPGlobals
-import sys
 from direct.gui.DirectGui import *
+from direct.showbase import DirectObject
 from pandac.PandaModules import *
+import sys
+
+from otp.otpbase import OTPGlobals
 from otp.otpbase import OTPLocalizer
+from toontown.chat.ChatGlobals import *
+
 
 class ChatInputNormal(DirectObject.DirectObject):
-
     def __init__(self, chatMgr):
         self.chatMgr = chatMgr
         self.normalPos = Vec3(-1.083, 0, 0.804)
@@ -17,9 +19,9 @@ class ChatInputNormal(DirectObject.DirectObject):
         wantHistory = 0
         if __dev__:
             wantHistory = 1
-        self.wantHistory = config.GetBool('want-chat-history', wantHistory)
+        self.wantHistory = base.config.GetBool('want-chat-history', wantHistory)
         self.history = ['']
-        self.historySize = config.GetInt('chat-history-size', 10)
+        self.historySize = base.config.GetInt('chat-history-size', 10)
         self.historyIndex = 0
         return
 

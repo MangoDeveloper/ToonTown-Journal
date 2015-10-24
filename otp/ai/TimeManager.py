@@ -1,18 +1,20 @@
-from pandac.PandaModules import *
-from direct.showbase.DirectObject import *
-from direct.distributed.ClockDelta import *
-from direct.task import Task
-from direct.distributed import DistributedObject
-from direct.directnotify import DirectNotifyGlobal
-from otp.otpbase import OTPGlobals
-from otp.nametag.NametagConstants import *
-from direct.showbase import PythonUtil
-from direct.showbase import GarbageReport
 import base64
-import time
+from direct.directnotify import DirectNotifyGlobal
+from direct.distributed import DistributedObject
+from direct.distributed.ClockDelta import *
+from direct.showbase import GarbageReport
+from direct.showbase import PythonUtil
+from direct.showbase.DirectObject import *
+from direct.task import Task
 import os
-import sys
+from pandac.PandaModules import *
 import re
+import sys
+import time
+
+from otp.otpbase import OTPGlobals
+from toontown.chat.ChatGlobals import *
+
 
 class TimeManager(DistributedObject.DistributedObject):
     notify = DirectNotifyGlobal.directNotify.newCategory('TimeManager')
@@ -20,14 +22,14 @@ class TimeManager(DistributedObject.DistributedObject):
 
     def __init__(self, cr):
         DistributedObject.DistributedObject.__init__(self, cr)
-        self.updateFreq = config.GetFloat('time-manager-freq', 1800)
-        self.minWait = config.GetFloat('time-manager-min-wait', 10)
-        self.maxUncertainty = config.GetFloat('time-manager-max-uncertainty', 0.25)
-        self.maxAttempts = config.GetInt('time-manager-max-attempts', 5)
-        self.extraSkew = config.GetInt('time-manager-extra-skew', 0)
+        self.updateFreq = base.config.GetFloat('time-manager-freq', 1800)
+        self.minWait = base.config.GetFloat('time-manager-min-wait', 10)
+        self.maxUncertainty = base.config.GetFloat('time-manager-max-uncertainty', 1)
+        self.maxAttempts = base.config.GetInt('time-manager-max-attempts', 5)
+        self.extraSkew = base.config.GetInt('time-manager-extra-skew', 0)
         if self.extraSkew != 0:
             self.notify.info('Simulating clock skew of %0.3f s' % self.extraSkew)
-        self.reportFrameRateInterval = config.GetDouble('report-frame-rate-interval', 300.0)
+        self.reportFrameRateInterval = base.config.GetDouble('report-frame-rate-interval', 300.0)
         self.talkResult = 0
         self.thisContext = -1
         self.nextContext = 0
@@ -45,7 +47,7 @@ class TimeManager(DistributedObject.DistributedObject):
         DistributedObject.DistributedObject.generate(self)
         self.accept(OTPGlobals.SynchronizeHotkey, self.handleHotkey)
         self.accept('clock_error', self.handleClockError)
-        if __dev__ and config.GetBool('enable-garbage-hotkey', 0):
+        if __dev__ and base.config.GetBool('enable-garbage-hotkey', 0):
             self.accept(OTPGlobals.DetectGarbageHotkey, self.handleDetectGarbageHotkey)
         if self.updateFreq > 0:
             self.startTask()
@@ -210,7 +212,7 @@ class TimeManager(DistributedObject.DistributedObject):
         if frameRateInterval == 0:
             return
         if not base.frameRateMeter:
-            maxFrameRateInterval = config.GetDouble('max-frame-rate-interval', 30.0)
+            maxFrameRateInterval = base.config.GetDouble('max-frame-rate-interval', 30.0)
             globalClock.setAverageFrameRateInterval(min(frameRateInterval, maxFrameRateInterval))
         taskMgr.remove('frameRateMonitor')
         taskMgr.doMethodLater(frameRateInterval, self.frameRateMonitor, 'frameRateMonitor')
@@ -348,4 +350,3 @@ class TimeManager(DistributedObject.DistributedObject):
 
     def checkAvOnDistrict(self, av, context):
         self.sendUpdate('checkAvOnDistrict', [context, av.doId])
-

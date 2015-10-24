@@ -1,34 +1,45 @@
 from bisect import bisect_left
-
+import string
+import sys
+import os
 
 class WhiteList:
-    def __init__(self, words):
-        self.words = words
+
+    def __init__(self, wordlist):
+        self.words = []
+        for line in wordlist:
+            self.words.append(line.strip('\n\r').lower())
+
+        self.words.sort()
         self.numWords = len(self.words)
 
     def cleanText(self, text):
         text = text.strip('.,?!')
-        return text.lower()
+        text = text.lower()
+        return text
 
     def isWord(self, text):
-        try:    
-           return self.cleanText(text) in self.words
+        try:
+            text = self.cleanText(text)
+            i = bisect_left(self.words, text)
+            if i == self.numWords:
+                return False
+            return self.words[i] == text
         except UnicodeDecodeError:
-            return False  # To make sure people use english keyboard keys
-            
+            return False  # Lets not open ourselves up to obscure keyboards...
+      
+
     def isPrefix(self, text):
         text = self.cleanText(text)
         i = bisect_left(self.words, text)
-
         if i == self.numWords:
             return False
-
         return self.words[i].startswith(text)
 
     def prefixCount(self, text):
         text = self.cleanText(text)
-        i, j = bisect_left(self.words, text)
-
+        i = bisect_left(self.words, text)
+        j = i
         while j < self.numWords and self.words[j].startswith(text):
             j += 1
 
@@ -36,8 +47,8 @@ class WhiteList:
 
     def prefixList(self, text):
         text = self.cleanText(text)
-        i, j = bisect_left(self.words, text)
-
+        i = bisect_left(self.words, text)
+        j = i
         while j < self.numWords and self.words[j].startswith(text):
             j += 1
 

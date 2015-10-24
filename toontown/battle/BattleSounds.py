@@ -11,7 +11,7 @@ class BattleSounds:
         self.isValid = 0
         if self.mgr != None and self.mgr.isValid():
             self.isValid = 1
-            limit = config.GetInt('battle-sound-cache-size', 15)
+            limit = base.config.GetInt('battle-sound-cache-size', 15)
             self.mgr.setCacheLimit(limit)
             base.addSfxManager(self.mgr)
             self.setupSearchPath()
@@ -19,6 +19,10 @@ class BattleSounds:
 
     def setupSearchPath(self):
         self.sfxSearchPath = DSearchPath()
+        self.sfxSearchPath.appendDirectory(Filename('../resources/phase_3/audio/sfx'))
+        self.sfxSearchPath.appendDirectory(Filename('../resources/phase_3.5/audio/sfx'))
+        self.sfxSearchPath.appendDirectory(Filename('../resources/phase_4/audio/sfx'))
+        self.sfxSearchPath.appendDirectory(Filename('../resources/phase_5/audio/sfx'))
         self.sfxSearchPath.appendDirectory(Filename('/phase_3/audio/sfx'))
         self.sfxSearchPath.appendDirectory(Filename('/phase_3.5/audio/sfx'))
         self.sfxSearchPath.appendDirectory(Filename('/phase_4/audio/sfx'))

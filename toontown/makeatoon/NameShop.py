@@ -395,7 +395,7 @@ class NameShop(StateData.StateData):
         self.nameMessages = OnscreenText.OnscreenText(TTLocalizer.NameMessages, parent=aspect2d, style=OnscreenText.ScreenPrompt, scale=0.06, pos=(-0.0163333, -0.05))
         self.nameMessages.wrtReparentTo(self.typeNamePanel, sort=2)
         self.typeANameGUIElements.append(self.nameMessages)
-        self.nameEntry = DirectEntry(parent=aspect2d, relief=None, scale=TTLocalizer.NSnameEntry, entryFont=getToonFont(), width=MAX_NAME_WIDTH, numLines=2, focus=0, cursorKeys=1, pos=(0.0, 0.0, 0.39), text_align=TextNode.ACenter, command=self.__typedAName, autoCapitalize=0)
+        self.nameEntry = DirectEntry(parent=aspect2d, relief=None, scale=TTLocalizer.NSnameEntry, entryFont=getToonFont(), width=MAX_NAME_WIDTH, numLines=2, focus=0, cursorKeys=1, pos=(0.0, 0.0, 0.39), text_align=TextNode.ACenter, command=self.__typedAName, autoCapitalize=1)
         self.nameEntry.wrtReparentTo(self.typeNamePanel, sort=2)
         self.typeANameGUIElements.append(self.nameEntry)
         self.submitButton = DirectButton(parent=aspect2d, relief=None, image=(self.squareUp,
@@ -460,7 +460,7 @@ class NameShop(StateData.StateData):
         self.approvalDialog.buttonList[0].setPos(0, 0, -.3)
         self.approvalDialog.buttonList[1].setPos(0, 0, -.43)
         self.approvalDialog['image_scale'] = (0.8, 1, 0.77)
-        for x in range(0, 2):
+        for x in xrange(0, 2):
             self.approvalDialog.buttonList[x]['text_pos'] = (0, -.01)
             self.approvalDialog.buttonList[x]['text_scale'] = (0.04, 0.05999)
             self.approvalDialog.buttonList[x].setScale(1.2, 1, 1)
@@ -963,7 +963,6 @@ class NameShop(StateData.StateData):
         else:
             self.checkNameTyped()
         self.notify.debug('Ending Make A Toon: %s' % self.toon.style)
-        base.cr.centralLogger.writeClientEvent('MAT - endingMakeAToon: %s' % self.toon.style)
 
     def handleCreateAvatarResponse(self, avId):
         self.notify.debug('handleCreateAvatarResponse')
@@ -1008,11 +1007,14 @@ class NameShop(StateData.StateData):
         self.notify.debug('ParentPos = %.2f %.2f %.2f' % (parentPos[0], parentPos[1], parentPos[2]))
 
     def storeSkipTutorialRequest(self):
-        base.cr.skipTutorialRequest = self.requestingSkipTutorial
+        if base.forceSkipTutorial:
+            base.cr.skipTutorialRequest = True
+        else:
+            base.cr.skipTutorialRequest = self.requestingSkipTutorial
 
     def __isFirstTime(self):
         if not self.makeAToon.nameList or self.makeAToon.warp:
-            self.promptTutorial()
+            self.__createAvatar()
         else:
             self.promptTutorial()
 
@@ -1023,12 +1025,12 @@ class NameShop(StateData.StateData):
     def __openTutorialDialog(self, choice = 0):
         if choice == 1:
             self.notify.debug('enterTutorial')
-            if config.GetBool('want-qa-regression', 0):
+            if base.config.GetBool('want-qa-regression', 0):
                 self.notify.info('QA-REGRESSION: ENTERTUTORIAL: Enter Tutorial')
             self.__createAvatar()
         else:
             self.notify.debug('skipTutorial')
-            if config.GetBool('want-qa-regression', 0):
+            if base.config.GetBool('want-qa-regression', 0):
                 self.notify.info('QA-REGRESSION: SKIPTUTORIAL: Skip Tutorial')
             self.__handleSkipTutorial()
         self.promptTutorialDialog.destroy()

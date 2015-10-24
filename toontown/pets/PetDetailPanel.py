@@ -13,11 +13,11 @@ FUDGE_FACTOR = 0.01
 class PetDetailPanel(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('PetDetailPanel')
 
-    def __init__(self, pet, closeCallback, parent = base.a2dTopRight, **kw):
+    def __init__(self, pet, closeCallback, parent = aspect2d, **kw):
         buttons = loader.loadModel('phase_3/models/gui/dialog_box_buttons_gui')
         gui = loader.loadModel('phase_3.5/models/gui/avatar_panel_gui')
         detailPanel = gui.find('**/PetBattlePannel2')
-        optiondefs = (('pos', (-0.79, 0.0, -0.47), None),
+        optiondefs = (('pos', (-4.52, 0.0, 3.05), None),
          ('scale', 3.58, None),
          ('relief', None, None),
          ('image', detailPanel, None),

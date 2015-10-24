@@ -68,7 +68,7 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
         self.request('Join')
         self.normalExit = 1
         count = self.modelCount
-        loader.beginBulkLoad('minigame', TTLocalizer.HeadingToMinigameTitle % self.getTitle(), count, 1, TTLocalizer.TIP_GOLF)
+        loader.beginBulkLoad('minigame', TTLocalizer.HeadingToMinigameTitle % self.getTitle(), count, 1, TTLocalizer.TIP_GOLF, self.zoneId)
         self.load()
         globalClock.syncFrameTime()
         self.onstage()
@@ -142,7 +142,8 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
                     av = base.cr.doId2do.get(avId)
                     if av:
                         tPanels = ToonHeadFrame.ToonHeadFrame(av, GolfGlobals.PlayerColors[color], headPanel)
-                        tPanels.setPos(-1.17, 0, toonPanelsStart + whichToon * tpDiff)
+                        tPanels.reparentTo(aspect2d)
+                        tPanels.setPos(base.a2dTopLeft.getPos()[0] + 0.1875, 0, toonPanelsStart + whichToon * tpDiff)
                         tPanels.setScale(0.3, 1, 0.7)
                         tPanels.head.setPos(0, 10, 0.18)
                         tPanels.head.setScale(0.47, 0.2, 0.2)
@@ -156,13 +157,14 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
                 else:
                     color += 1
 
+            base.setCellsActive(base.leftCells, 0)
+
         else:
             self.toonPanels = None
         for avId in self.exitedAvIdList:
             if avId not in self.exitedToonsWithPanels:
                 self.exitMessageForToon(avId)
 
-        return
 
     def setPlayHole(self):
         self.notify.debug('GOLF COURSE: received setPlayHole')
@@ -198,6 +200,8 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
                 self.request('Cleanup')
             else:
                 self.notify.warning('GOLF COURSE: Attempting to clean up twice')
+
+            base.setCellsActive(base.leftCells, 1)
 
     def onstage(self):
         self.notify.debug('GOLF COURSE: onstage')

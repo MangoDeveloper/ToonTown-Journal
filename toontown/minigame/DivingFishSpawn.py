@@ -27,22 +27,22 @@ class DivingFishSpawn(DirectObject):
     def createFish(self, fishcode):
         loadBase = 'phase_4/models/char/'
         if fishcode is 0:
-            fish = Actor.Actor('phase_4/models/char/clownFish-zero', {'anim': loadBase + 'clownFish-swim'})
+            fish = Actor.Actor('phase_4/models/char/clownFish-zero.bam', {'anim': loadBase + 'clownFish-swim.bam'})
             fish.name = 'clown'
         elif fishcode is 1:
-            fish = Actor.Actor('phase_4/models/char/PBJfish-zero', {'anim': 'phase_4/models/char/PBJfish-swim'})
+            fish = Actor.Actor('phase_4/models/char/PBJfish-zero.bam', {'anim': 'phase_4/models/char/PBJfish-swim.bam'})
             fish.name = 'pbj'
         elif fishcode is 2:
-            fish = Actor.Actor('phase_4/models/char/BearAcuda-zero', {'anim': 'phase_4/models/char/BearAcuda-swim'})
+            fish = Actor.Actor('phase_4/models/char/BearAcuda-zero.bam', {'anim': 'phase_4/models/char/BearAcuda-swim.bam'})
             fish.name = 'bear'
         elif fishcode is 3:
-            fish = Actor.Actor(loadBase + 'balloonFish-zero', {'anim': loadBase + 'balloonFish-swim'})
+            fish = Actor.Actor(loadBase + 'balloonFish-zero.bam', {'anim': loadBase + 'balloonFish-swim.bam'})
             fish.name = 'balloon'
         elif fishcode is 4:
-            fish = Actor.Actor(loadBase + 'nurseShark-zero', {'anim': loadBase + 'nurseShark-swim'})
+            fish = Actor.Actor(loadBase + 'nurseShark-zero.bam', {'anim': loadBase + 'nurseShark-swim.bam'})
             fish.name = 'nurse'
         elif fishcode is 5:
-            fish = Actor.Actor(loadBase + 'pianoTuna-zero', {'anim': loadBase + 'pianoTuna-swim'})
+            fish = Actor.Actor(loadBase + 'pianoTuna-zero.bam', {'anim': loadBase + 'pianoTuna-swim.bam'})
             fish.name = 'piano'
         else:
             return

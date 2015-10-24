@@ -20,7 +20,7 @@ class ServerEventBuffer:
         return
 
     def writeEvent(self, msg):
-        self.air.writeServerEvent(self.name, avId=self.avId, msg=msg)
+        self.air.writeServerEvent(self.name, self.avId, msg)
 
     def considerFlush(self):
         if self.lastFlushTime is None:

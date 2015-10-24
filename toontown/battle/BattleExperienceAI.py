@@ -10,12 +10,11 @@ def getSkillGained(toonSkillPtsGained, toonId, track):
         exp = expList[track]
     return int(exp + 0.5)
 
-
 def getBattleExperience(numToons, activeToons, toonExp, toonSkillPtsGained, toonOrigQuests, toonItems, toonOrigMerits, toonMerits, toonParts, suitsKilled, helpfulToonsList = None):
     if helpfulToonsList == None:
         BattleExperienceAINotify.warning('=============\nERROR ERROR helpfulToons=None in assignRewards , tell Red')
     p = []
-    for k in range(numToons):
+    for k in xrange(numToons):
         toon = None
         if k < len(activeToons):
             toonId = activeToons[k]
@@ -55,7 +54,7 @@ def getBattleExperience(numToons, activeToons, toonExp, toonSkillPtsGained, toon
             p.append(toonId)
             origExp = toonExp[toonId]
             earnedExp = []
-            for i in range(len(ToontownBattleGlobals.Tracks)):
+            for i in xrange(len(ToontownBattleGlobals.Tracks)):
                 earnedExp.append(getSkillGained(toonSkillPtsGained, toonId, i))
 
             p.append(origExp)
@@ -80,7 +79,7 @@ def getBattleExperience(numToons, activeToons, toonExp, toonSkillPtsGained, toon
 
     deathList = []
     toonIndices = {}
-    for i in range(len(activeToons)):
+    for i in xrange(len(activeToons)):
         toonIndices[activeToons[i]] = i
 
     for deathRecord in suitsKilled:
@@ -135,14 +134,14 @@ def getToonUberStatus(toons, numToons):
         if toon == None:
             fieldList.append(-1)
         else:
-            for trackIndex in range(ToontownBattleGlobals.MAX_TRACK_INDEX + 1):
+            for trackIndex in xrange(ToontownBattleGlobals.MAX_TRACK_INDEX + 1):
                 toonList.append(toon.inventory.numItem(trackIndex, uberIndex))
 
             fieldList.append(ToontownBattleGlobals.encodeUber(toonList))
 
     lenDif = numToons - len(toons)
     if lenDif > 0:
-        for index in range(lenDif):
+        for index in xrange(lenDif):
             fieldList.append(-1)
 
     return fieldList
@@ -158,7 +157,7 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
             activeToonList.append(toon)
 
     for toon in activeToonList:
-        for i in range(len(ToontownBattleGlobals.Tracks)):
+        for i in xrange(len(ToontownBattleGlobals.Tracks)):
             uberIndex = ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL + 1
             exp = getSkillGained(toonSkillPtsGained, toon.doId, i)
             needed = ToontownBattleGlobals.Levels[i][ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL + 1] + ToontownBattleGlobals.UberSkill
@@ -178,18 +177,19 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
                     newGagList = toon.experience.getNewGagIndexList(i, exp)
                     toon.experience.addExp(i, amount=exp)
                     toon.inventory.addItemWithList(i, newGagList)
+
         toon.b_setExperience(toon.experience.makeNetString())
         toon.d_setInventory(toon.inventory.makeNetString())
         toon.b_setAnimState('victory', 1)
 
         if simbase.air.config.GetBool('battle-passing-no-credit', True):
+            # Check if the toon was a helpful toon
             if helpfulToons and toon.doId in helpfulToons:
+
+                # Notify the AI that the toon killed cogs
                 simbase.air.questManager.toonKilledCogs(toon, suitsKilled, zoneId, activeToonList)
                 simbase.air.cogPageManager.toonKilledCogs(toon, suitsKilled, zoneId)
+
+            # Looks like the toon wasnt too helpful...
             else:
                 BattleExperienceAINotify.debug('toon=%d unhelpful not getting killed cog quest credit' % toon.doId)
-        else:
-            simbase.air.questManager.toonKilledCogs(toon, suitsKilled, zoneId, activeToonList)
-            simbase.air.cogPageManager.toonKilledCogs(toon, suitsKilled, zoneId)
-
-    return

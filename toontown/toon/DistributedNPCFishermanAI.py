@@ -1,3 +1,4 @@
+from otp.ai.AIBaseGlobal import *
 from pandac.PandaModules import *
 from DistributedNPCToonBaseAI import *
 from toontown.fishing import FishGlobals
@@ -19,7 +20,7 @@ class DistributedNPCFishermanAI(DistributedNPCToonBaseAI):
 
     def avatarEnter(self):
         avId = self.air.getAvatarIdFromSender()
-        if not self.air.doId2do.has_key(avId):
+        if avId not in self.air.doId2do:
             self.notify.warning('Avatar: %s not found' % avId)
             return
         if self.isBusy():
@@ -65,7 +66,7 @@ class DistributedNPCFishermanAI(DistributedNPCToonBaseAI):
     def completeSale(self, sell):
         avId = self.air.getAvatarIdFromSender()
         if self.busy != avId:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCFishermanAI.completeSale busy with %s' % self.busy)
+            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCFishermanAI.completeSale busy with %s' % self.busy)
             self.notify.warning('somebody called setMovieDone that I was not busy with! avId: %s' % avId)
             return
         if sell:

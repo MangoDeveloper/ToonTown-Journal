@@ -621,7 +621,7 @@ class DistributedMazeGame(DistributedMinigame):
         self.scorePanels = []
         self.goalBar.destroy()
         del self.goalBar
-        base.setCellsAvailable(base.rightCells, 1)
+        base.setCellsActive(base.rightCells, 1)
         for suit in self.suits:
             suit.offstage()
 
@@ -700,7 +700,7 @@ class DistributedMazeGame(DistributedMinigame):
 
         self.goalBar.show()
         self.goalBar['value'] = 0.0
-        base.setCellsAvailable(base.rightCells, 0)
+        base.setCellsActive(base.rightCells, 0)
         self.__spawnUpdateSuitsTask()
         orthoDrive = OrthoDrive(self.TOON_SPEED, maxFrameMove=self.MAX_FRAME_MOVE, customCollisionCallback=self.__doMazeCollisions, priority=1)
         self.orthoWalk = OrthoWalk(orthoDrive, broadcast=not self.isSinglePlayer())
@@ -1093,6 +1093,10 @@ class DistributedMazeGame(DistributedMinigame):
 
         self.showScoreTrack = Parallel(lerpTrack, Sequence(Wait(MazeGameGlobals.SHOWSCORES_DURATION), Func(self.gameOver)))
         self.showScoreTrack.start()
+
+        #For the Alpha Blueprint ARG
+        if base.config.GetBool('want-blueprint4-ARG', False):
+            MinigameGlobals.generateDebugARGPhrase()
 
     def exitShowScores(self):
         self.showScoreTrack.pause()

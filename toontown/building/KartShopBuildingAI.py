@@ -1,16 +1,17 @@
-from direct.directnotify import DirectNotifyGlobal
+from direct.directnotify.DirectNotifyGlobal import *
 from pandac.PandaModules import *
-from toontown.building import FADoorCodes, DoorTypes
+from toontown.building import DoorTypes
 from toontown.building.DistributedDoorAI import DistributedDoorAI
 from toontown.building.DistributedKartShopInteriorAI import DistributedKartShopInteriorAI
-from toontown.hood import ZoneUtil
 from toontown.toon import NPCToons
-from toontown.toonbase import ToontownGlobals
+
+
 if __debug__:
     import pdb
 
+
 class KartShopBuildingAI:
-    notify = DirectNotifyGlobal.directNotify.newCategory('KartShopBuildingAI')
+    notify = directNotify.newCategory('KartShopBuildingAI')
 
     def __init__(self, air, exteriorZone, interiorZone, blockNumber):
         self.air = air
@@ -21,7 +22,6 @@ class KartShopBuildingAI:
     def cleanup(self):
         for npc in self.npcs:
             npc.requestDelete()
-
         del self.npcs
         self.outsideDoor0.requestDelete()
         self.outsideDoor1.requestDelete()
@@ -35,13 +35,20 @@ class KartShopBuildingAI:
         del self.kartShopInterior
 
     def setup(self, blockNumber):
-        self.kartShopInterior = DistributedKartShopInteriorAI(blockNumber, self.air, self.interiorZone)
-        self.npcs = NPCToons.createNpcsInZone(self.air, self.interiorZone)
+        self.kartShopInterior = DistributedKartShopInteriorAI(
+            blockNumber, self.air, self.interiorZone)
         self.kartShopInterior.generateWithRequired(self.interiorZone)
-        self.outsideDoor0 = DistributedDoorAI(self.air, blockNumber, DoorTypes.EXT_KS, doorIndex=1)
-        self.outsideDoor1 = DistributedDoorAI(self.air, blockNumber, DoorTypes.EXT_KS, doorIndex=2)
-        self.insideDoor0 = DistributedDoorAI(self.air, blockNumber, DoorTypes.INT_KS, doorIndex=1)
-        self.insideDoor1 = DistributedDoorAI(self.air, blockNumber, DoorTypes.INT_KS, doorIndex=2)
+
+        self.npcs = NPCToons.createNpcsInZone(self.air, self.interiorZone)
+
+        self.outsideDoor0 = DistributedDoorAI(
+            self.air, blockNumber, DoorTypes.EXT_KS, doorIndex=1)
+        self.outsideDoor1 = DistributedDoorAI(
+            self.air, blockNumber, DoorTypes.EXT_KS, doorIndex=2)
+        self.insideDoor0 = DistributedDoorAI(
+            self.air, blockNumber, DoorTypes.INT_KS, doorIndex=1)
+        self.insideDoor1 = DistributedDoorAI(
+            self.air, blockNumber, DoorTypes.INT_KS, doorIndex=2)
         self.outsideDoor0.setOtherDoor(self.insideDoor0)
         self.outsideDoor1.setOtherDoor(self.insideDoor1)
         self.insideDoor0.setOtherDoor(self.outsideDoor0)

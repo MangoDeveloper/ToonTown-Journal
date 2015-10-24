@@ -1,74 +1,79 @@
-import random
-import math
-import time
-import re
-import zlib
-from direct.interval.IntervalGlobal import *
-from otp.ai.MagicWordGlobal import *
-from direct.distributed.ClockDelta import *
-from direct.showbase.PythonUtil import *
-from direct.gui.DirectGui import *
-from direct.task import Task
-from direct.showbase import PythonUtil
 from direct.directnotify import DirectNotifyGlobal
+from direct.distributed.ClockDelta import *
 from direct.gui import DirectGuiGlobals
+from direct.gui.DirectGui import *
+from direct.interval.IntervalGlobal import *
+from direct.showbase import PythonUtil
+from direct.showbase.PythonUtil import *
+from direct.task import Task
+import math
 from pandac.PandaModules import *
-from otp.avatar import LocalAvatar
-from otp.login import LeaveToPayDialog
-from otp.avatar import PositionExaminer
-from otp.otpbase import OTPGlobals
+import random
+import re
+import time
+import zlib
+
+import DistributedToon
+import LaffMeter
+import Toon
 from otp.avatar import DistributedPlayer
-from otp.nametag.NametagConstants import *
-from otp.margins.WhisperPopup import *
-from toontown.shtiker import ShtikerBook
-from toontown.shtiker import InventoryPage
-from toontown.shtiker import MapPage
-from toontown.shtiker import OptionsPage
-from toontown.shtiker import ShardPage
-from toontown.shtiker import QuestPage
-from toontown.shtiker import TrackPage
-from toontown.shtiker import KartPage
+from otp.avatar import LocalAvatar
+from otp.avatar import PositionExaminer
+from otp.login import LeaveToPayDialog
+from otp.otpbase import OTPGlobals
+from toontown.achievements import AchievementGui
+from toontown.battle import Fanfare
+from toontown.battle.BattleSounds import *
+from toontown.catalog import CatalogNotifyDialog
+from toontown.chat import TTTalkAssistant
+from toontown.chat import ToontownChatManager
+from toontown.chat.ChatGlobals import *
+from toontown.chat.WhisperPopup import *
+from toontown.estate import GardenGlobals
+from toontown.nametag.NametagGlobals import *
+from toontown.parties import PartyGlobals
+from toontown.quest import QuestMap
+from toontown.quest import QuestParser
+from toontown.quest import Quests
+from toontown.shtiker import AchievementsPage
+from toontown.shtiker import DisguisePage
+from toontown.shtiker import EventsPage
+from toontown.shtiker import FishPage
 from toontown.shtiker import GardenPage
 from toontown.shtiker import GolfPage
-from toontown.shtiker import SuitPage
-from toontown.shtiker import DisguisePage
-from toontown.shtiker import PhotoAlbumPage
-from toontown.shtiker import FishPage
+from toontown.shtiker import InventoryPage
+from toontown.shtiker import KartPage
+from toontown.shtiker import MapPage
 from toontown.shtiker import NPCFriendPage
-from toontown.shtiker import EventsPage
+from toontown.shtiker import OptionsPage
+from toontown.shtiker import QuestPage
+from toontown.shtiker import ShardPage
+from toontown.shtiker import ShtikerBook
+from toontown.shtiker import SuitPage
 from toontown.shtiker import TIPPage
-from toontown.quest import Quests
-from toontown.quest import QuestParser
-from toontown.toonbase.ToontownGlobals import *
-from toontown.toonbase import ToontownGlobals
-from toontown.toonbase import TTLocalizer
-from toontown.catalog import CatalogNotifyDialog
-from toontown.chat import ToontownChatManager
-from toontown.chat import TTTalkAssistant
-from toontown.estate import GardenGlobals
-from toontown.battle.BattleSounds import *
-from toontown.battle import Fanfare
-from toontown.parties import PartyGlobals
+from toontown.shtiker import TrackPage
 from toontown.toon import ElevatorNotifier
 from toontown.toon import ToonDNA
-import DistributedToon
-import Toon
-import LaffMeter
-from toontown.quest import QuestMap
 from toontown.toon.DistributedNPCToonBase import DistributedNPCToonBase
-WantNewsPage = config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
+from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
+from toontown.toonbase.ToontownGlobals import *
 from toontown.toontowngui import NewsPageButtonManager
+from toontown.friends.FriendHandle import FriendHandle
+
+
+WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
 if WantNewsPage:
     from toontown.shtiker import NewsPage
-AdjustmentForNewsButton = -0.255
-ClaraBaseXPos = 0.08 if WantNewsPage else 0.12
+AdjustmentForNewsButton = -0.275
+ClaraBaseXPos = 0.12
 if (__debug__):
     import pdb
 
 class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     neverDisable = 1
-    piePowerSpeed = config.GetDouble('pie-power-speed', 0.2)
-    piePowerExponent = config.GetDouble('pie-power-exponent', 0.75)
+    piePowerSpeed = base.config.GetDouble('pie-power-speed', 0.2)
+    piePowerExponent = base.config.GetDouble('pie-power-exponent', 0.75)
 
     def __init__(self, cr):
         try:
@@ -85,17 +90,16 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.soundWalk = base.loadSfx('phase_3.5/audio/sfx/AV_footstep_walkloop.ogg')
             self.soundWhisper = base.loadSfx('phase_3.5/audio/sfx/GUI_whisper_3.ogg')
             self.soundPhoneRing = base.loadSfx('phase_3.5/audio/sfx/telephone_ring.ogg')
-            self.soundSystemMessage = base.loadSfx('phase_4/audio/sfx/clock03.ogg')
+            self.soundSystemMessage = base.loadSfx('phase_3/audio/sfx/clock03.ogg')
             self.positionExaminer = PositionExaminer.PositionExaminer()
             friendsGui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
             friendsButtonNormal = friendsGui.find('**/FriendsBox_Closed')
             friendsButtonPressed = friendsGui.find('**/FriendsBox_Rollover')
             friendsButtonRollover = friendsGui.find('**/FriendsBox_Rollover')
-            newScale = oldScale = 0.68 if WantNewsPage else 0.8
+            newScale = oldScale = 0.8
             if WantNewsPage:
-                self.bFriendsList = DirectButton(image=(friendsButtonNormal, friendsButtonPressed, friendsButtonRollover), relief=None, pos=(-0.139, 0, -0.127), parent=base.a2dTopRight, scale=newScale, text=('', TTLocalizer.FriendsListLabel, TTLocalizer.FriendsListLabel), text_scale=0.09, text_fg=Vec4(1, 1, 1, 1), text_shadow=Vec4(0, 0, 0, 1), text_pos=(0, -0.18), text_font=ToontownGlobals.getInterfaceFont(), command=self.sendFriendsListEvent)
-            else:
-                self.bFriendsList = DirectButton(image=(friendsButtonNormal, friendsButtonPressed, friendsButtonRollover), relief=None, pos=(-0.141, 0, -0.125), parent=base.a2dTopRight, scale=newScale, text=('', TTLocalizer.FriendsListLabel, TTLocalizer.FriendsListLabel), text_scale=0.09, text_fg=Vec4(1, 1, 1, 1), text_shadow=Vec4(0, 0, 0, 1), text_pos=(0, -0.18), text_font=ToontownGlobals.getInterfaceFont(), command=self.sendFriendsListEvent)
+                newScale = oldScale * ToontownGlobals.NewsPageScaleAdjust
+            self.bFriendsList = DirectButton(image=(friendsButtonNormal, friendsButtonPressed, friendsButtonRollover), relief=None, pos=(-0.141, 0, -0.125), parent=base.a2dTopRight, scale=newScale, text=('', TTLocalizer.FriendsListLabel, TTLocalizer.FriendsListLabel), text_scale=0.09, text_fg=Vec4(1, 1, 1, 1), text_shadow=Vec4(0, 0, 0, 1), text_pos=(0, -0.18), text_font=ToontownGlobals.getInterfaceFont(), command=self.sendFriendsListEvent)
             self.bFriendsList.hide()
             self.friendsListButtonActive = 0
             self.friendsListButtonObscured = 0
@@ -126,9 +130,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.tossPieStart = None
             self.__presentingPie = 0
             self.__pieSequence = 0
-            self.wantBattles = config.GetBool('want-battles', 1)
-            self.seeGhosts = config.GetBool('see-ghosts', 0)
-            wantNameTagAvIds = config.GetBool('want-nametag-avids', 0)
+            self.wantBattles = base.config.GetBool('want-battles', 1)
+            wantNameTagAvIds = base.config.GetBool('want-nametag-avids', 0)
             if wantNameTagAvIds:
                 messenger.send('nameTagShowAvId', [])
                 base.idTags = 1
@@ -139,7 +142,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.ticker = 0
             self.glitchOkay = 1
             self.tempGreySpacing = 0
-            self.wantStatePrint = config.GetBool('want-statePrint', 0)
+            self.wantStatePrint = base.config.GetBool('want-statePrint', 0)
             self.__gardeningGui = None
             self.__gardeningGuiFake = None
             self.__shovelButton = None
@@ -250,15 +253,19 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.startLookAround()
         if base.wantNametags:
             self.nametag.manage(base.marginManager)
-        DistributedToon.DistributedToon.announceGenerate(self)
-        self.acceptingNewFriends = base.display.settings.getBool(str(self.getDoId()), 'accepting-new-friends', default=config.GetBool('accepting-new-friends-default', True))
-        self.acceptingNonFriendWhispers = base.display.settings.getBool(str(self.getDoId()), 'accepting-non-friend-whispers', default=config.GetBool('accepting-non-friend-whispers-default', True))
-        from otp.friends import FriendInfo
-        if self.adminAccess >= 300:
-            self.seeGhosts = 1
 
-        if config.GetBool('want-keep-alive', True):
-            taskMgr.doMethodLater(config.GetInt('keep-alive-delay', 30), self.keepAliveCheck, self.uniqueName('KeepAliveTimeout'), extraArgs=[])
+        DistributedToon.DistributedToon.announceGenerate(self)
+
+        acceptingNewFriends = settings.get('acceptingNewFriends', {})
+        acceptingNonFriendWhispers = settings.get('acceptingNonFriendWhispers', {})
+        if str(self.doId) not in acceptingNewFriends:
+            acceptingNewFriends[str(self.doId)] = True
+            settings['acceptingNewFriends'] = acceptingNewFriends
+        if str(self.doId) not in acceptingNonFriendWhispers:
+            acceptingNonFriendWhispers[str(self.doId)] = True
+            settings['acceptingNonFriendWhispers'] = acceptingNonFriendWhispers
+        self.acceptingNewFriends = acceptingNewFriends[str(self.doId)]
+        self.acceptingNonFriendWhispers = acceptingNonFriendWhispers[str(self.doId)]
 
     def disable(self):
         self.laffMeter.destroy()
@@ -289,7 +296,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.nametag.unmanage(base.marginManager)
         self.ignoreAll()
         DistributedToon.DistributedToon.disable(self)
-        taskMgr.remove(self.uniqueName('KeepAliveTimeout'))
         return
 
     def disableBodyCollisions(self):
@@ -334,8 +340,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
                 self.__catalogNotifyDialog.cleanup()
             del self.__catalogNotifyDialog
 
-            taskMgr.remove('KeepAliveTimeout')
-
         return
 
     def initInterface(self):
@@ -365,14 +369,15 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.suitPage = SuitPage.SuitPage()
         self.suitPage.load()
         self.book.addPage(self.suitPage, pageName=TTLocalizer.SuitPageTitle)
-        if base.config.GetBool('want-photo-album', 0):
-            self.photoAlbumPage = PhotoAlbumPage.PhotoAlbumPage()
-            self.photoAlbumPage.load()
-            self.book.addPage(self.photoAlbumPage, pageName=TTLocalizer.PhotoPageTitle)
         self.fishPage = FishPage.FishPage()
         self.fishPage.setAvatar(self)
         self.fishPage.load()
         self.book.addPage(self.fishPage, pageName=TTLocalizer.FishPageTitle)
+        if base.wantAchievements:
+            self.achievementsPage = AchievementsPage.AchievementsPage()
+            self.achievementsPage.setAvatar(self)
+            self.achievementsPage.load()
+            self.book.addPage(self.achievementsPage, pageName=TTLocalizer.AchievementsPageTitle)
         if base.wantKarts:
             self.addKartPage()
         if self.disguisePageFlag:
@@ -382,9 +387,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if self.gardenStarted:
             self.loadGardenPages()
         self.addGolfPage()
-        #self.photoPage = PhotoAlbumPage.PhotoAlbumPage()
-        #self.photoPage.load()
-        #self.book.addPage(self.photoPage, pageName=TTLocalizer.PhotoPageTitle)
         self.addEventsPage()
         if WantNewsPage:
             self.addNewsPage()
@@ -394,16 +396,16 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.laffMeter.setScale(0.075)
         self.laffMeter.reparentTo(base.a2dBottomLeft)
         if self.style.getAnimal() == 'monkey':
-            self.laffMeter.setPos(0.155, 0.0, 0.128)
+            self.laffMeter.setPos(0.153, 0.0, 0.13)
         else:
-            self.laffMeter.setPos(0.135, 0.0, 0.128)
+            self.laffMeter.setPos(0.133, 0.0, 0.13)
         self.laffMeter.stop()
         self.questMap = QuestMap.QuestMap(self)
         self.questMap.stop()
         if not base.cr.isPaid():
             guiButton = loader.loadModel('phase_3/models/gui/quit_button')
             self.purchaseButton = DirectButton(parent=aspect2d, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=0.9, text=TTLocalizer.OptionsPagePurchase, text_scale=0.05, text_pos=(0, -0.01), textMayChange=0, pos=(0.885, 0, -0.94), sortOrder=100, command=self.__handlePurchase)
-            base.setCellsAvailable([base.bottomCells[4]], 0)
+            base.setCellsActive([base.bottomCells[4]], 0)
         self.accept('time-insert', self.__beginTossPie)
         self.accept('time-insert-up', self.__endTossPie)
         self.accept('time-delete', self.__beginTossPie)
@@ -416,6 +418,9 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.accept('InputState-turnLeft', self.__toonMoved)
         self.accept('InputState-turnRight', self.__toonMoved)
         self.accept('InputState-slide', self.__toonMoved)
+
+        self.achievementGui = AchievementGui.AchievementGui()
+
         QuestParser.init()
         return
 
@@ -497,11 +502,11 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.notify.debug('Setting GM State: %s in LocalToon' % state)
         DistributedToon.DistributedToon.setAsGM(self, state)
         if self.gmState:
-            if config.GetString('gm-nametag-string', '') != '':
-                self.gmNameTagString = config.GetString('gm-nametag-string')
-            if config.GetString('gm-nametag-color', '') != '':
-                self.gmNameTagColor = config.GetString('gm-nametag-color')
-            if config.GetInt('gm-nametag-enabled', 0):
+            if base.config.GetString('gm-nametag-string', '') != '':
+                self.gmNameTagString = base.config.GetString('gm-nametag-string')
+            if base.config.GetString('gm-nametag-color', '') != '':
+                self.gmNameTagColor = base.config.GetString('gm-nametag-color')
+            if base.config.GetInt('gm-nametag-enabled', 0):
                 self.gmNameTagEnabled = 1
             self.d_updateGMNameTag()
 
@@ -514,7 +519,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         sender = self
         sfx = self.soundWhisper
         chatString = avatarName + ': ' + chatString
-        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WhisperPopup.WTNormal)
+        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WTNormal)
         whisper.setClickable(avatarName, fromId)
         whisper.manage(base.marginManager)
         base.playSfx(sfx)
@@ -535,7 +540,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         else:
             chatString, scrubbed = self.scrubTalk(rawString, mods)
         chatString = senderName + ': ' + chatString
-        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WhisperPopup.WTNormal)
+        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WTNormal)
         if playerInfo != None:
             whisper.setClickable(senderName, fromId, 1)
         whisper.manage(base.marginManager)
@@ -656,8 +661,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if self.tossPieStart != None:
             return
         if not self.allowPies:
-            return
-        if self.hp < 1:
             return
         if self.numPies == 0:
             messenger.send('outOfPies')
@@ -921,11 +924,11 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             sfx = self.soundPhoneRing
         elif fromId != 0:
             sender = base.cr.identifyAvatar(fromId)
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
+        if whisperType == WTNormal or whisperType == WTQuickTalker:
             if sender == None:
                 return
             chatString = sender.getName() + ': ' + chatString
-        elif whisperType == WhisperPopup.WTSystem:
+        elif whisperType == WTSystem:
             sfx = self.soundSystemMessage
         whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
         if sender != None:
@@ -942,11 +945,11 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             sfx = self.soundPhoneRing
         elif fromId != 0:
             sender = base.cr.identifyAvatar(fromId)
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
+        if whisperType == WTNormal or whisperType == WTQuickTalker:
             if sender == None:
                 return
             chatString = sender.getName() + ': ' + chatString
-        elif whisperType == WhisperPopup.WTSystem:
+        elif whisperType == WTSystem:
             sfx = self.soundSystemMessage
         whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
         whisper.setClickable('', fromId)
@@ -1012,10 +1015,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if show:
             claraXPos += AdjustmentForNewsButton
             notifyXPos += AdjustmentForNewsButton
-        if WantNewsPage:
-            newPos = (claraXPos, 1.0, -0.55)
-        else:
-            newPos = (claraXPos, 1.0, -0.63)
+        newPos = (claraXPos - 0.1, 1.0, 0.45)
         self.__clarabelleButton.setPos(newPos)
         if self.__catalogNotifyDialog == None or self.__catalogNotifyDialog.frame == None:
             return
@@ -1035,11 +1035,12 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         white = VBase4(1.0, 1.0, 1.0, 1.0)
         icon.setColor(white)
         claraXPos = ClaraBaseXPos
-        newScale = oldScale = 0.42 if WantNewsPage else 0.5
+        newScale = oldScale = 0.5
+        newPos = (claraXPos, 1.0, -0.63)
         if WantNewsPage:
-            newPos = (claraXPos, 1.0, -0.55)
-        else:
-            newPos = (claraXPos, 1.0, -0.63)
+            claraXPos += AdjustmentForNewsButton
+            newScale = oldScale * ToontownGlobals.NewsPageScaleAdjust
+            newPos = (claraXPos - 0.1, 1.0, -0.63)
         self.__clarabelleButton = DirectButton(relief=None, image=circle, text='', text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1), text_scale=0.1, text_pos=(-1.06, 1.06), text_font=ToontownGlobals.getInterfaceFont(), pos=newPos, scale=newScale, command=self.__handleClarabelleButton)
         self.__clarabelleButton.reparentTo(base.a2dTopRight, DGG.BACKGROUND_SORT_INDEX - 1)
         button = self.__clarabelleButton.stateNodePath[0]
@@ -1056,7 +1057,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.__clarabelleButton['text'] = ['', TTLocalizer.CatalogNewCatalogButton, TTLocalizer.CatalogNewCatalogButton]
         if not self.mailboxNotify and not self.awardNotify and self.catalogNotify == ToontownGlobals.OldItems and (self.simpleMailNotify != ToontownGlobals.NoItems or self.inviteMailNotify != ToontownGlobals.NoItems):
             self.__clarabelleButton['text'] = ['', TTLocalizer.MailNewMailButton, TTLocalizer.MailNewMailButton]
-        if self.newsButtonMgr.isNewIssueButtonShown() and WantNewsPage:
+        if self.newsButtonMgr.isNewIssueButtonShown():
             self.clarabelleNewsPageCollision(True)
         self.__clarabelleButton.show()
         self.__clarabelleFlash.resume()
@@ -1075,14 +1076,14 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if self.__catalogNotifyDialog:
             self.__catalogNotifyDialog.cleanup()
             self.__catalogNotifyDialog = None
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: VISITESTATE: Visit estate')
         place.goHomeNow(self.lastHood)
         return
 
     def __startMoveFurniture(self):
         self.oldPos = self.getPos()
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: ESTATE:  Furniture Placement')
         if self.cr.furnitureManager != None:
             self.cr.furnitureManager.d_suggestDirector(self.doId)
@@ -1370,12 +1371,12 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def showGardeningGui(self):
         self.loadGardeningGui()
         self.__gardeningGui.show()
-        base.setCellsAvailable([base.leftCells[2]], 0)
+        base.setCellsActive([base.leftCells[2]], 0)
 
     def hideGardeningGui(self):
         if self.__gardeningGui:
             self.__gardeningGui.hide()
-            base.setCellsAvailable([base.leftCells[2]], 1)
+            base.setCellsActive([base.leftCells[2]], 1)
 
     def showShovelButton(self, add = 0):
         if add:
@@ -1893,11 +1894,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def setSleepAutoReply(self, fromId):
         av = base.cr.identifyAvatar(fromId)
-        if isinstance(av, DistributedToon.DistributedToon):
-            base.localAvatar.setSystemMessage(0, TTLocalizer.sleep_auto_reply % av.getName(), WhisperPopup.WTToontownBoardingGroup)
-        elif av is not None:
+        if isinstance(av, (DistributedToon.DistributedToon, FriendHandle)):
+            base.localAvatar.setSystemMessage(0, TTLocalizer.SleepAutoReply % av.getName(), WTToontownBoardingGroup)
+        elif av:
             self.notify.warning('setSleepAutoReply from non-toon %s' % fromId)
-        return
 
     def setLastTimeReadNews(self, newTime):
         self.lastTimeReadNews = newTime
@@ -1906,7 +1906,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         return self.lastTimeReadNews
 
     def cheatCogdoMazeGame(self, kindOfCheat = 0):
-        if config.GetBool('allow-cogdo-maze-suit-hit-cheat'):
+        if base.config.GetBool('allow-cogdo-maze-suit-hit-cheat'):
             maze = base.cr.doFind('DistCogdoMazeGame')
             if maze:
                 if kindOfCheat == 0:
@@ -1932,15 +1932,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
                         result = True
         return result
 
-    def isBookOpen(self):
-        result = False
-        if base.cr and base.cr.playGame and base.cr.playGame.getPlace() and hasattr(base.cr.playGame.getPlace(), 'fsm') and base.cr.playGame.getPlace().fsm:
-            fsm = base.cr.playGame.getPlace().fsm
-            curState = fsm.getCurrentState().getName()
-            if curState == 'stickerBook':
-                result = True
-        return result
-
     def doTeleportResponse(self, fromAvatar, toAvatar, avId, available, shardId, hoodId, zoneId, sendToId):
         self.d_teleportResponse(avId, available, shardId, hoodId, zoneId, sendToId)
 
@@ -1952,31 +1943,19 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if self.questMap:
             self.questMap.stop()
 
-    # KeepAlive stuff
-    def keepAliveCheck(self):
-        self.notify.debug("Checking to make sure the avatar is still alive")
-        self.sendUpdate('keepAlive', [])
-        taskMgr.remove(self.uniqueName('KeepAliveTimeout'))
-        taskMgr.doMethodLater(config.GetInt('keep-alive-delay', 30), self.keepAliveCheck, self.uniqueName('KeepAliveTimeout'), extraArgs=[])
+    def getPetId(self):
+        return False
 
-@magicWord(category=CATEGORY_MODERATION)
-def MCHeadOn():
- from toontown.toon import LaughingManGlobals
- from toontown.toon import Toon
- invoker = spellbook.getInvoker()
- invoker.setNameVisible(False)
- invoker.swapToonHead(laughingMan=True)
+    def hasPet(self):
+        return False
 
-@magicWord(category=CATEGORY_MODERATION)
-def MCHeadOff():
- from toontown.toon import LaughingManGlobals
- from toontown.toon import Toon
- invoker = spellbook.getInvoker()
- invoker.setNameVisible(True)
- invoker.swapToonHead(laughingMan=False)
+    def setAchievements(self, achievements):
+        if base.wantAchievements:
+            if self.canEarnAchievements:
+                for achievementId in achievements:
+                    if not achievementId in self.achievements:
+                        self.achievementGui.earnAchievement(achievementId)
+            else:
+                self.canEarnAchievements = True
 
-@magicWord(category=CATEGORY_MODERATION)
-def VPStun():
-   vp = base.cr.doFindAll("Senior")
-   vp[0].d_hitBossInsides()
-
+        DistributedToon.DistributedToon.setAchievements(self, achievements)

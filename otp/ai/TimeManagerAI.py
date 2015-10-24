@@ -14,11 +14,11 @@ class TimeManagerAI(DistributedObjectAI):
 
     def setDisconnectReason(self, reason):
         avId = self.air.getAvatarIdFromSender()
-        self.air.writeServerEvent('disconnect-reason', avId=avId, reason=reason)
+        self.air.writeServerEvent('disconnect-reason', avId, reason)
 
     def setExceptionInfo(self, exception):
         avId = self.air.getAvatarIdFromSender()
-        self.air.writeServerEvent('client-exception', avId=avId, exception=exception)
+        self.air.writeServerEvent('client-exception', avId, exception)
 
     def setSignature(self, todo0, todo1, todo2):
         pass

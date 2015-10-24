@@ -6,7 +6,7 @@ from pandac.PandaModules import *
 from direct.fsm import FSM
 from direct.distributed import DistributedSmoothNode
 from direct.interval.IntervalGlobal import *
-from direct.showbase.PythonUtil import clamp
+from direct.showbase.PythonUtil import clampScalar
 from otp.otpbase import OTPGlobals
 from otp.avatar import ShadowCaster
 from toontown.racing import Kart
@@ -20,7 +20,7 @@ from toontown.battle.BattleProps import *
 import random
 from direct.showbase.PythonUtil import randFloat
 from direct.task.Task import Task
-from otp.nametag import NametagGlobals
+from toontown.nametag import NametagGlobals
 import math
 iceTurnFactor = 0.25
 iceAccelFactor = 0.4
@@ -83,7 +83,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
         DistributedSmoothNode.DistributedSmoothNode.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedVehicle')
         Kart.Kart.__init__(self)
-        if config.GetBool('want-racer', 0) == 1:
+        if base.config.GetBool('want-racer', 0) == 1:
             DistributedVehicle.proRacer = 1
             DistributedVehicle.accelerationMult = 35
             DistributedVehicle.accelerationBase = 30
@@ -139,7 +139,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
         return
 
     def __loadTextures(self):
-        self.pieSplatter = loader.loadModel('phase_6/models/karting/pie_splat_1')
+        self.pieSplatter = loader.loadModel('phase_6/models/karting/pie_splat_1.bam')
 
     def announceGenerate(self):
         DistributedSmoothNode.DistributedSmoothNode.announceGenerate(self)
@@ -498,7 +498,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
                 self.toon.sendCurrentPosition()
             self.doHeadScale(self.toon, 1.75)
             self.toon.setShear(0, 0, 0)
-        NametagGlobals.setOnscreenChatForced(1)
+        NametagGlobals.setForceOnscreenChat(True)
         if self.localVehicle:
             camera.reparentTo(self.cameraNode)
             camera.setPosHpr(0, -33, 16, 0, -10, 0)
@@ -538,7 +538,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
             self.toon.reparentTo(render)
             self.toon.loop('neutral')
             self.toon.startSmooth()
-        NametagGlobals.setOnscreenChatForced(0)
+        NametagGlobals.setForceOnscreenChat(False)
         base.camLens.setMinFov(ToontownGlobals.DefaultCameraFov/(4./3.))
         return
 
@@ -734,14 +734,14 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
         self.curSpeed = self.smoother.getSmoothForwardVelocity()
         rotSpeed = -1 * self.smoother.getSmoothRotationalVelocity()
         self.leanAmount = self.curSpeed * rotSpeed / 500.0
-        self.leanAmount = clamp(self.leanAmount, -10, 10)
+        self.leanAmount = clampScalar(self.leanAmount, -10, 10)
         self.__animate()
         return Task.cont
 
     def __animate(self):
         speed = self.curSpeed
         self.spinWheels(speed / 10)
-        enginePitch = clamp(speed / 120.0, 0.5, 15)
+        enginePitch = clampScalar(speed / 120.0, 0.5, 15)
         self.kartLoopSfx.setPlayRate(enginePitch)
         if not self.localVehicle:
             dist = (self.getPos() - localAvatar.getPos()).length()
@@ -873,7 +873,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
         pitch = -self.getP() + 5
         accelBase = self.accelerationBase
         pitch += accelBase
-        pitch = clamp(pitch, accelBase - 5, accelBase + 5)
+        pitch = clampScalar(pitch, accelBase - 5, accelBase + 5)
         self.accelerationMult = pitch * 2
         if self.groundType == 'ice':
             self.accelerationMult *= iceAccelFactor
@@ -923,7 +923,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
             curSpeed = curVelocity.length()
             speedFactor = min(curSpeed, 150) / 162.0
             self.leanAmount = (self.leanAmount + leanIncrement) * speedFactor
-            self.leanAmount = clamp(self.leanAmount, -10, 10)
+            self.leanAmount = clampScalar(self.leanAmount, -10, 10)
 
         self.cWallTrav.traverse(render)
         self.curSpeed = curSpeed
@@ -991,8 +991,8 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
 
     def enableControls(self):
         self.canRace = True
-        self.accept(base.JUMP, self.__controlPressed)
-        self.accept(base.JUMP + '-up', self.__controlReleased)
+        self.accept('control', self.__controlPressed)
+        self.accept('control-up', self.__controlReleased)
         self.accept('InputState-forward', self.__upArrow)
         self.accept('InputState-reverse', self.__downArrow)
         self.accept('InputState-turnLeft', self.__leftArrow)
@@ -1001,7 +1001,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
     def disableControls(self):
         self.arrowVert = 0
         self.arrowHorz = 0
-        self.ignore(base.JUMP)
+        self.ignore('control')
         self.ignore('control-up')
         self.ignore('tab')
         self.ignore('InputState-forward')
@@ -1047,7 +1047,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
         right = (rf + rr) / 2
         left = (lf + lr) / 2
         rollVal = right - left
-        rollVal = clamp(rollVal, -1, 1)
+        rollVal = clampScalar(rollVal, -1, 1)
         curRoll = self.getR()
         newRoll = curRoll + rollVal * 2.0
         self.setR(newRoll)
@@ -1057,7 +1057,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
         rear = (rr + lr) / 2
         center = (front + rear) / 2
         pitchVal = front - rear
-        pitchVal = clamp(pitchVal, -1, 1)
+        pitchVal = clampScalar(pitchVal, -1, 1)
         curPitch = self.getP()
         newPitch = curPitch - pitchVal * 2.0
         self.setP((newPitch + curPitch) / 2.0)

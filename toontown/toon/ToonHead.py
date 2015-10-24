@@ -6,12 +6,9 @@ import random
 from pandac.PandaModules import *
 from direct.interval.IntervalGlobal import *
 from direct.fsm.ClassicFSM import ClassicFSM
-#from toontown.toon import LaughingManGlobals
 from direct.fsm.State import State
-from otp.ai.MagicWordGlobal import *
-
 from direct.directnotify import DirectNotifyGlobal
-if not config.GetBool('want-new-anims', 1):
+if not base.config.GetBool('want-new-anims', 1):
     HeadDict = {'dls': '/models/char/dogMM_Shorts-head-',
      'dss': '/models/char/dogMM_Skirt-head-',
      'dsl': '/models/char/dogSS_Shorts-head-',
@@ -50,17 +47,27 @@ DogMuzzleDict = {'dls': '/models/char/dogMM_Shorts-headMuzzles-',
  'dss': '/models/char/dogMM_Skirt-headMuzzles-',
  'dsl': '/models/char/dogSS_Shorts-headMuzzles-',
  'dll': '/models/char/dogLL_Shorts-headMuzzles-'}
+
 PreloadHeads = {}
 
-def loadModels():
+def preloadToonHeads():
     global PreloadHeads
     if not PreloadHeads:
+        print 'Preloading Toon heads...'
         for key in HeadDict.keys():
             fileRoot = HeadDict[key]
+
             PreloadHeads['phase_3' + fileRoot + '1000'] = loader.loadModel('phase_3' + fileRoot + '1000')
+            PreloadHeads['phase_3' + fileRoot + '1000'].flattenMedium()
+
             PreloadHeads['phase_3' + fileRoot + '500'] = loader.loadModel('phase_3' + fileRoot + '500')
+            PreloadHeads['phase_3' + fileRoot + '500'].flattenMedium()
+
             PreloadHeads['phase_3' + fileRoot + '250'] = loader.loadModel('phase_3' + fileRoot + '250')
-loadModels()
+            PreloadHeads['phase_3' + fileRoot + '250'].flattenMedium()
+
+preloadToonHeads()
+
 class ToonHead(Actor.Actor):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToonHead')
     EyesOpen = loader.loadTexture('phase_3/maps/eyes.jpg', 'phase_3/maps/eyes_a.rgb')
@@ -187,10 +194,6 @@ class ToonHead(Actor.Actor):
             self.getGeomNode().setDepthTest(1)
         if dna.getAnimal() == 'dog':
             self.loop('neutral')
-        #if dna.laughingMan:
-            #LaughingManGlobals.addHeadEffect(self.getGeomNode(), book=forGui)
-         #   invoker = spellbook.getInvoker()
-
 
     def fitAndCenterHead(self, maxDim, forGui = 0):
         p1 = Point3()
@@ -397,7 +400,8 @@ class ToonHead(Actor.Actor):
                     self.__copy = copy
         else:
             for lod in lods:
-                self.loadModel('phase_3' + filePrefix + lod, 'head', lod, copy)
+                filepath = 'phase_3' + filePrefix + lod
+                self.loadModel(PreloadHeads[filepath], 'head', lod, True)
                 if not forGui:
                     pLoaded = self.loadPumpkin(headStyle[1], lod, copy)
                     self.loadSnowMan(headStyle[1], lod, copy)
@@ -586,7 +590,7 @@ class ToonHead(Actor.Actor):
         if self.hasLOD():
             for lodName in self.getLODNames():
                 self.drawInFront('eyes*', 'head-front*', mode, lodName=lodName)
-                if config.GetBool('want-new-anims', 1):
+                if base.config.GetBool('want-new-anims', 1):
                     if not self.find('**/joint_pupil*').isEmpty():
                         self.drawInFront('joint_pupil*', 'eyes*', -1, lodName=lodName)
                     else:
@@ -601,7 +605,7 @@ class ToonHead(Actor.Actor):
                 self.__lod500Eyes = None
             else:
                 self.__lod500Eyes.setColorOff()
-                if config.GetBool('want-new-anims', 1):
+                if base.config.GetBool('want-new-anims', 1):
                     if not self.find('**/joint_pupilL*').isEmpty():
                         self.__lod500lPupil = self.__lod500Eyes.find('**/joint_pupilL*')
                         self.__lod500rPupil = self.__lod500Eyes.find('**/joint_pupilR*')
@@ -615,7 +619,7 @@ class ToonHead(Actor.Actor):
                 self.__lod250Eyes = None
             else:
                 self.__lod250Eyes.setColorOff()
-                if config.GetBool('want-new-anims', 1):
+                if base.config.GetBool('want-new-anims', 1):
                     if not self.find('**/joint_pupilL*').isEmpty():
                         self.__lod250lPupil = self.__lod250Eyes.find('**/joint_pupilL*')
                         self.__lod250rPupil = self.__lod250Eyes.find('**/joint_pupilR*')
@@ -627,7 +631,7 @@ class ToonHead(Actor.Actor):
                     self.__lod250rPupil = self.__lod250Eyes.find('**/joint_pupilR*')
         else:
             self.drawInFront('eyes*', 'head-front*', mode)
-            if config.GetBool('want-new-anims', 1):
+            if base.config.GetBool('want-new-anims', 1):
                 if not self.find('joint_pupil*').isEmpty():
                     self.drawInFront('joint_pupil*', 'eyes*', -1)
                 else:
@@ -639,7 +643,7 @@ class ToonHead(Actor.Actor):
             self.__eyes.setColorOff()
             self.__lpupil = None
             self.__rpupil = None
-            if config.GetBool('want-new-anims', 1):
+            if base.config.GetBool('want-new-anims', 1):
                 if not self.find('**/joint_pupilL*').isEmpty():
                     if self.getLOD(1000):
                         lp = self.getLOD(1000).find('**/joint_pupilL*')
@@ -781,16 +785,8 @@ class ToonHead(Actor.Actor):
             else:
                 openString = 'open-short'
                 closedString = 'closed-short'
-            eyeOpen = model.find('**/' + openString)
-            eyeClosed = model.find('**/' + closedString)
-            if style.getAnimal() == 'dog':
-                # Fix eyelash positioning on dog toons
-                eyeOpen.setPos(0, -0.025, 0.025)
-                eyeClosed.setPos(0, -0.025, 0.025)
-            self.__eyelashOpen = eyeOpen.copyTo(head)
-            self.__eyelashClosed = eyeClosed.copyTo(head)
-            eyeOpen.removeNode()
-            eyeClosed.removeNode()
+            self.__eyelashOpen = model.find('**/' + openString).copyTo(head)
+            self.__eyelashClosed = model.find('**/' + closedString).copyTo(head)
             model.removeNode()
         return
 
@@ -800,7 +796,7 @@ class ToonHead(Actor.Actor):
         else:
             searchRoot = self.find('**/' + str(lodName))
         otherParts = searchRoot.findAllMatches('**/*short*')
-        for partNum in range(0, otherParts.getNumPaths()):
+        for partNum in xrange(0, otherParts.getNumPaths()):
             if copy:
                 otherParts.getPath(partNum).removeNode()
             else:
@@ -845,7 +841,7 @@ class ToonHead(Actor.Actor):
             self.find('**/head-front-short').hide()
         if animalType != 'rabbit':
             muzzleParts = searchRoot.findAllMatches('**/muzzle-long*')
-            for partNum in range(0, muzzleParts.getNumPaths()):
+            for partNum in xrange(0, muzzleParts.getNumPaths()):
                 if copy:
                     muzzleParts.getPath(partNum).removeNode()
                 else:
@@ -853,7 +849,7 @@ class ToonHead(Actor.Actor):
 
         else:
             muzzleParts = searchRoot.findAllMatches('**/muzzle-short*')
-            for partNum in range(0, muzzleParts.getNumPaths()):
+            for partNum in xrange(0, muzzleParts.getNumPaths()):
                 if copy:
                     muzzleParts.getPath(partNum).removeNode()
                 else:
@@ -898,7 +894,7 @@ class ToonHead(Actor.Actor):
             searchRoot.find('**/head-front-long').hide()
         if animalType != 'rabbit':
             muzzleParts = searchRoot.findAllMatches('**/muzzle-short*')
-            for partNum in range(0, muzzleParts.getNumPaths()):
+            for partNum in xrange(0, muzzleParts.getNumPaths()):
                 if copy:
                     muzzleParts.getPath(partNum).removeNode()
                 else:
@@ -906,7 +902,7 @@ class ToonHead(Actor.Actor):
 
         else:
             muzzleParts = searchRoot.findAllMatches('**/muzzle-long*')
-            for partNum in range(0, muzzleParts.getNumPaths()):
+            for partNum in xrange(0, muzzleParts.getNumPaths()):
                 if copy:
                     muzzleParts.getPath(partNum).removeNode()
                 else:
@@ -920,7 +916,7 @@ class ToonHead(Actor.Actor):
         else:
             searchRoot = self.find('**/' + str(lodName))
         otherParts = searchRoot.findAllMatches('**/*long*')
-        for partNum in range(0, otherParts.getNumPaths()):
+        for partNum in xrange(0, otherParts.getNumPaths()):
             if copy:
                 otherParts.getPath(partNum).removeNode()
             else:
@@ -1197,7 +1193,7 @@ class ToonHead(Actor.Actor):
                     if lodName == '1000' or lodName == '500':
                         filePrefix = DogMuzzleDict[style.head]
                         muzzles = loader.loadModel('phase_3' + filePrefix + lodName)
-                        if config.GetBool('want-new-anims', 1):
+                        if base.config.GetBool('want-new-anims', 1):
                             if not self.find('**/' + lodName + '/**/__Actor_head/def_head').isEmpty():
                                 muzzles.reparentTo(self.find('**/' + lodName + '/**/__Actor_head/def_head'))
                             else:
@@ -1223,7 +1219,7 @@ class ToonHead(Actor.Actor):
                 muzzle = self.find('**/muzzle*')
                 filePrefix = DogMuzzleDict[style.head]
                 muzzles = loader.loadModel('phase_3' + filePrefix + '1000')
-                if config.GetBool('want-new-anims', 1):
+                if base.config.GetBool('want-new-anims', 1):
                     if not self.find('**/def_head').isEmpty():
                         muzzles.reparentTo(self.find('**/def_head'))
                     else:
@@ -1263,82 +1259,82 @@ class ToonHead(Actor.Actor):
     def showNormalMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__muzzles)):
+        for muzzleNum in xrange(len(self.__muzzles)):
             self.__muzzles[muzzleNum].show()
 
     def hideNormalMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__muzzles)):
+        for muzzleNum in xrange(len(self.__muzzles)):
             self.__muzzles[muzzleNum].hide()
 
     def showAngryMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__angryMuzzles)):
+        for muzzleNum in xrange(len(self.__angryMuzzles)):
             self.__angryMuzzles[muzzleNum].show()
             self.__muzzles[muzzleNum].hide()
 
     def hideAngryMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__angryMuzzles)):
+        for muzzleNum in xrange(len(self.__angryMuzzles)):
             self.__angryMuzzles[muzzleNum].hide()
             self.__muzzles[muzzleNum].show()
 
     def showSadMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__sadMuzzles)):
+        for muzzleNum in xrange(len(self.__sadMuzzles)):
             self.__sadMuzzles[muzzleNum].show()
             self.__muzzles[muzzleNum].hide()
 
     def hideSadMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__sadMuzzles)):
+        for muzzleNum in xrange(len(self.__sadMuzzles)):
             self.__sadMuzzles[muzzleNum].hide()
             self.__muzzles[muzzleNum].show()
 
     def showSmileMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__smileMuzzles)):
+        for muzzleNum in xrange(len(self.__smileMuzzles)):
             self.__smileMuzzles[muzzleNum].show()
             self.__muzzles[muzzleNum].hide()
 
     def hideSmileMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__smileMuzzles)):
+        for muzzleNum in xrange(len(self.__smileMuzzles)):
             self.__smileMuzzles[muzzleNum].hide()
             self.__muzzles[muzzleNum].show()
 
     def showLaughMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__laughMuzzles)):
+        for muzzleNum in xrange(len(self.__laughMuzzles)):
             self.__laughMuzzles[muzzleNum].show()
             self.__muzzles[muzzleNum].hide()
 
     def hideLaughMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__laughMuzzles)):
+        for muzzleNum in xrange(len(self.__laughMuzzles)):
             self.__laughMuzzles[muzzleNum].hide()
             self.__muzzles[muzzleNum].show()
 
     def showSurpriseMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__surpriseMuzzles)):
+        for muzzleNum in xrange(len(self.__surpriseMuzzles)):
             self.__surpriseMuzzles[muzzleNum].show()
             self.__muzzles[muzzleNum].hide()
 
     def hideSurpriseMuzzle(self):
         if self.isIgnoreCheesyEffect():
             return
-        for muzzleNum in range(len(self.__surpriseMuzzles)):
+        for muzzleNum in xrange(len(self.__surpriseMuzzles)):
             self.__surpriseMuzzles[muzzleNum].hide()
             self.__muzzles[muzzleNum].show()
 

@@ -1,23 +1,26 @@
-from pandac.PandaModules import *
-from DistributedNPCToonBase import *
-from toontown.minigame import ClerkPurchase
-from toontown.shtiker.PurchaseManagerConstants import *
-import NPCToons
+from direct.interval.IntervalGlobal import Sequence
 from direct.task.Task import Task
-from toontown.toonbase import TTLocalizer
+from pandac.PandaModules import *
+
+from DistributedNPCToonBase import *
+import NPCToons
+from toontown.chat.ChatGlobals import *
 from toontown.hood import ZoneUtil
+from toontown.minigame import ClerkPurchase
+from toontown.nametag.NametagGlobals import *
+from toontown.shtiker.PurchaseManagerConstants import *
+from toontown.toonbase import TTLocalizer
 from toontown.toontowngui import TeaserPanel
-from otp.nametag.NametagConstants import *
+
 
 class DistributedNPCClerk(DistributedNPCToonBase):
-
     def __init__(self, cr):
         DistributedNPCToonBase.__init__(self, cr)
+
         self.purchase = None
         self.isLocalToon = 0
         self.av = None
         self.purchaseDoneEvent = 'purchaseDone'
-        return
 
     def disable(self):
         self.ignoreAll()
@@ -29,13 +32,11 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             self.purchase = None
         self.av = None
         base.localAvatar.posCamera(0, 0)
+
         DistributedNPCToonBase.disable(self)
-        return
 
     def allowedToEnter(self):
-        if hasattr(base, 'ttAccess') and base.ttAccess and base.ttAccess.canAccess():
-            return True
-        return False
+        return True
 
     def handleOkTeaser(self):
         self.dialog.destroy()
@@ -45,19 +46,12 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             place.fsm.request('walk')
 
     def handleCollisionSphereEnter(self, collEntry):
-        if self.allowedToEnter():
-            base.cr.playGame.getPlace().fsm.request('purchase')
-            self.sendUpdate('avatarEnter', [])
-        else:
-            place = base.cr.playGame.getPlace()
-            if place:
-                place.fsm.request('stopped')
-            self.dialog = TeaserPanel.TeaserPanel(pageName='otherGags', doneFunc=self.handleOkTeaser)
+        base.cr.playGame.getPlace().fsm.request('purchase')
+        self.sendUpdate('avatarEnter', [])
 
     def __handleUnexpectedExit(self):
         self.notify.warning('unexpected exit')
         self.av = None
-        return
 
     def resetClerk(self):
         self.ignoreAll()
@@ -71,6 +65,7 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.startLookAround()
         self.detectAvatars()
         if self.isLocalToon:
+            self.showNametag2d()
             self.freeAvatar()
         return Task.done
 
@@ -90,6 +85,8 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             self.setChatAbsolute(TTLocalizer.STOREOWNER_TOOKTOOLONG, CFSpeech | CFTimeout)
             self.resetClerk()
         elif mode == NPCToons.PURCHASE_MOVIE_START:
+            if self.isLocalToon:
+                self.hideNametag2d()
             self.av = base.cr.doId2do.get(avId)
             if self.av is None:
                 self.notify.warning('Avatar %d not found in doId' % avId)
@@ -99,8 +96,8 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             self.setupAvatars(self.av)
             if self.isLocalToon:
                 camera.wrtReparentTo(render)
-                self.cameraLerp = LerpPosQuatInterval(camera, 1, Point3(-5, 9, self.getHeight() - 0.5), Point3(-150, -2, 0), other=self, blendType='easeInOut')
-                self.cameraLerp.start()
+                seq = Sequence((camera.posQuatInterval(1, Vec3(-5, 9, self.getHeight() - 0.5), Vec3(-150, -2, 0), other=self, blendType='easeOut', name=self.uniqueName('lerpCamera'))))
+                seq.start()
             self.setChatAbsolute(TTLocalizer.STOREOWNER_GREETING, CFSpeech | CFTimeout)
             if self.isLocalToon:
                 taskMgr.doMethodLater(1.0, self.popupPurchaseGUI, self.uniqueName('popupPurchaseGUI'))
@@ -130,7 +127,6 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.purchase.exit()
         self.purchase.unload()
         self.purchase = None
-        return
 
     def d_setInventory(self, invString, money, done):
         self.sendUpdate('setInventory', [invString, money, done])

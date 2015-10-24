@@ -26,7 +26,7 @@ class EstateLoader(SafeZoneLoader.SafeZoneLoader):
          State.State('final', self.enterFinal, self.exitFinal, ['start'])], 'start', 'final')
         self.musicFile = 'phase_4/audio/bgm/TC_nbrhood.ogg'
         self.activityMusicFile = 'phase_3.5/audio/bgm/TC_SZ_activity.ogg'
-        self.dnaFile = 'phase_5.5/dna/estate_1.xml'
+        self.dnaFile = 'phase_5.5/dna/estate_1.pdna'
         self.safeZoneStorageDNAFile = None
         self.cloudSwitch = 0
         self.id = MyEstate
@@ -57,9 +57,9 @@ class EstateLoader(SafeZoneLoader.SafeZoneLoader):
             invModel = loader.loadModel('phase_3.5/models/gui/inventory_icons')
             self.invModels = []
             from toontown.toonbase import ToontownBattleGlobals
-            for track in range(len(ToontownBattleGlobals.AvPropsNew)):
+            for track in xrange(len(ToontownBattleGlobals.AvPropsNew)):
                 itemList = []
-                for item in range(len(ToontownBattleGlobals.AvPropsNew[track])):
+                for item in xrange(len(ToontownBattleGlobals.AvPropsNew[track])):
                     itemList.append(invModel.find('**/' + ToontownBattleGlobals.AvPropsNew[track][item]))
 
                 self.invModels.append(itemList)
@@ -128,17 +128,17 @@ class EstateLoader(SafeZoneLoader.SafeZoneLoader):
         self.loadSunMoon()
 
     def loadHouses(self):
-        for i in range(HouseGlobals.NUM_HOUSE_TYPES):
+        for i in xrange(HouseGlobals.NUM_HOUSE_TYPES):
             self.houseModels[i] = loader.loadModel(HouseGlobals.houseModels[i])
 
-        for i in range(6):
+        for i in xrange(6):
             posHpr = HouseGlobals.houseDrops[i]
             self.houseNode[i] = self.geom.attachNewNode('esHouse_' + str(i))
             self.houseNode[i].setPosHpr(*posHpr)
 
     def loadSunMoon(self):
-        self.sun = loader.loadModel('phase_4/models/props/sun')
-        self.moon = loader.loadModel('phase_5.5/models/props/moon')
+        self.sun = loader.loadModel('phase_4/models/props/sun.bam')
+        self.moon = loader.loadModel('phase_5.5/models/props/moon.bam')
         self.sunMoonNode = self.geom.attachNewNode('sunMoon')
         self.sunMoonNode.setPosHpr(0, 0, 0, 0, 0, 0)
         if self.sun:
@@ -287,12 +287,12 @@ class EstateLoader(SafeZoneLoader.SafeZoneLoader):
 
     def debugGeom(self, decomposed):
         print 'numPrimitives = %d' % decomposed.getNumPrimitives()
-        for primIndex in range(decomposed.getNumPrimitives()):
+        for primIndex in xrange(decomposed.getNumPrimitives()):
             prim = decomposed.getPrimitive(primIndex)
             print 'prim = %s' % prim
             print 'isIndexed = %d' % prim.isIndexed()
             print 'prim.getNumPrimitives = %d' % prim.getNumPrimitives()
-            for basicPrim in range(prim.getNumPrimitives()):
+            for basicPrim in xrange(prim.getNumPrimitives()):
                 print '%d start=%d' % (basicPrim, prim.getPrimitiveStart(basicPrim))
                 print '%d end=%d' % (basicPrim, prim.getPrimitiveEnd(basicPrim))
 
@@ -323,15 +323,15 @@ class EstateLoader(SafeZoneLoader.SafeZoneLoader):
         self.loadSkyCollision()
         self.numClouds = 12
         pinballScore = PinballScoring[PinballCloudBumperLow]
-        for i in range(12):
+        for i in xrange(12):
             self.loadOnePlatform(i, 40, 0, pinballScore[0], pinballScore[1])
 
         pinballScore = PinballScoring[PinballCloudBumperMed]
-        for i in range(12):
+        for i in xrange(12):
             self.loadOnePlatform(i, 60, 40, pinballScore[0], pinballScore[1])
 
         pinballScore = PinballScoring[PinballCloudBumperHigh]
-        for i in range(12):
+        for i in xrange(12):
             self.loadOnePlatform(i, 20, 80, pinballScore[0], pinballScore[1])
 
         self.cloudOrigin.stash()

@@ -3,8 +3,8 @@ import math
 import TTLocalizer
 BattleCamFaceOffFov = 30.0
 BattleCamFaceOffPos = Point3(0, -10, 4)
-BattleCamDefaultPos = Point3(0, -12, 16.5)
-BattleCamDefaultHpr = Vec3(0, -45, 0)
+BattleCamDefaultPos = Point3(0, -8.6, 16.5)
+BattleCamDefaultHpr = Vec3(0, -61, 0)
 BattleCamDefaultFov = 80.0
 BattleCamMenuFov = 65.0
 BattleCamJoinPos = Point3(0, -12, 13)
@@ -42,11 +42,32 @@ PropTypeToTrackBonus = {AnimPropTypes.Hydrant: SQUIRT_TRACK,
  AnimPropTypes.Mailbox: THROW_TRACK,
  AnimPropTypes.Trashcan: HEAL_TRACK}
 Levels = [[0,
-  10,
-  50,
-  400,
+  20,
+  200,
+  800,
   2000,
   6000,
+  10000],
+ [0,
+  20,
+  100,
+  800,
+  2000,
+  6000,
+  10000],
+ [0,
+  20,
+  100,
+  800,
+  2000,
+  6000,
+  10000],
+ [0,
+  40,
+  200,
+  1000,
+  2500,
+  7500,
   10000],
  [0,
   10,
@@ -63,30 +84,9 @@ Levels = [[0,
   6000,
   10000],
  [0,
-  10,
-  50,
-  400,
-  2000,
-  6000,
-  10000],
- [0,
-  10,
-  50,
-  400,
-  2000,
-  6000,
-  10000],
- [0,
-  10,
-  50,
-  400,
-  2000,
-  6000,
-  10000],
- [0,
-  10,
-  50,
-  400,
+  20,
+  100,
+  500,
   2000,
   6000,
   10000]]
@@ -100,7 +100,7 @@ UnpaidMaxSkills = [Levels[0][1] - 1,
  Levels[4][4] - 1,
  Levels[5][4] - 1,
  Levels[6][1] - 1]
-ExperienceCap = 999999999900
+ExperienceCap = 300
 
 def gagIsPaidOnly(track, level):
     return Levels[track][level] > UnpaidMaxSkills[track]
@@ -620,13 +620,13 @@ AvPropAccuracy = ((70,
   95,
   95,
   95),
- (70,
-  70,
-  70,
-  70,
-  70,
-  70,
-  70))
+ (50,
+  50,
+  50,
+  50,
+  50,
+  50,
+  50))
 AvLureBonusAccuracy = (60,
  60,
  70,
@@ -763,13 +763,13 @@ def getFactoryCreditMultiplier(factoryId):
 
 
 def getFactoryMeritMultiplier(factoryId):
-    return 8.0
+    return 4.0
 
 
 def getMintCreditMultiplier(mintId):
-    return {CashbotMintIntA: 4.0,
-     CashbotMintIntB: 2.5 * 2,
-     CashbotMintIntC: 6.0}.get(mintId, 1.0)
+    return {CashbotMintIntA: 2.0,
+     CashbotMintIntB: 2.5,
+     CashbotMintIntC: 3.0}.get(mintId, 1.0)
 
 
 def getStageCreditMultiplier(floor):
@@ -777,9 +777,9 @@ def getStageCreditMultiplier(floor):
 
 
 def getCountryClubCreditMultiplier(countryClubId):
-    return {BossbotCountryClubIntA: 4.0,
-     BossbotCountryClubIntB: 2.5 * 2,
-     BossbotCountryClubIntC: 6.0}.get(countryClubId, 1.0)
+    return {BossbotCountryClubIntA: 2.0,
+     BossbotCountryClubIntB: 2.5,
+     BossbotCountryClubIntC: 3.0}.get(countryClubId, 1.0)
 
 
 def getBossBattleCreditMultiplier(battleNumber):
@@ -796,7 +796,7 @@ def getMoreXpHolidayMultiplier():
 
 def encodeUber(trackList):
     bitField = 0
-    for trackIndex in range(len(trackList)):
+    for trackIndex in xrange(len(trackList)):
         if trackList[trackIndex] > 0:
             bitField += pow(2, trackIndex)
 

@@ -1,12 +1,14 @@
-from direct.showbase import DirectObject
-from otp.otpbase import OTPGlobals
-import sys
 from direct.gui.DirectGui import *
+from direct.showbase import DirectObject
 from pandac.PandaModules import *
+import sys
+
+from otp.otpbase import OTPGlobals
 from otp.otpbase import OTPLocalizer
+from toontown.chat.ChatGlobals import *
+
 
 class ChatInputTyped(DirectObject.DirectObject):
-
     def __init__(self, mainEntry = 0):
         self.whisperName = None
         self.whisperId = None
@@ -15,9 +17,9 @@ class ChatInputTyped(DirectObject.DirectObject):
         wantHistory = 0
         if __dev__:
             wantHistory = 1
-        self.wantHistory = config.GetBool('want-chat-history', wantHistory)
+        self.wantHistory = base.config.GetBool('want-chat-history', wantHistory)
         self.history = ['']
-        self.historySize = config.GetInt('chat-history-size', 10)
+        self.historySize = base.config.GetInt('chat-history-size', 10)
         self.historyIndex = 0
         return
 
@@ -81,7 +83,6 @@ class ChatInputTyped(DirectObject.DirectObject):
         self.typedChatButton.hide()
         self.typedChatBar.hide()
         if self.whisperId:
-            print 'have id'
             if self.toPlayer:
                 if not base.talkAssistant.checkWhisperTypedChatPlayer(self.whisperId):
                     messenger.send('Chat-Failed player typed chat test')

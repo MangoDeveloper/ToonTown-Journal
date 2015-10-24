@@ -3,20 +3,21 @@ from otp.avatar import Avatar
 import SuitDNA
 from toontown.toonbase import ToontownGlobals
 from pandac.PandaModules import *
-from otp.nametag.NametagGroup import NametagGroup
 from toontown.battle import SuitBattleGlobals
+from toontown.nametag import NametagGlobals
 from direct.task.Task import Task
 from toontown.battle import BattleProps
 from toontown.toonbase import TTLocalizer
 from pandac.PandaModules import VirtualFileMountHTTP, VirtualFileSystem, Filename, DSearchPath
 from direct.showbase import AppRunnerGlobal
+from toontown.nametag import NametagGroup
 import string
 import os
+from toontown.suit import SuitGlobals
 
 aSize = 6.06
 bSize = 5.29
 cSize = 4.14
-
 SuitDialogArray = []
 SkelSuitDialogArray = []
 AllSuits = (('walk', 'walk'), ('run', 'walk'), ('neutral', 'neutral'))
@@ -35,8 +36,8 @@ AllSuitsBattle = (('drop-react', 'anvil-drop'),
  ('reach', 'walknreach'),
  ('rake-react', 'rake'),
  ('hypnotized', 'hypnotize'),
- ('lured', 'lured'),
- ('soak', 'soak'))
+ ('soak', 'soak'),
+ ('lured', 'lured'))
 SuitsCEOBattle = (('sit', 'sit'),
  ('sit-eat-in', 'sit-eat-in'),
  ('sit-eat-loop', 'sit-eat-loop'),
@@ -73,8 +74,8 @@ hh = (('pen-squirt', 'fountain-pen', 7),
  ('throw-paper', 'throw-paper', 5),
  ('magic1', 'magic1', 5),
  ('roll-o-dex', 'roll-o-dex', 5))
-cr = (('magic1', 'magic1', 5),( 'pickpocket', 'pickpocket', 5), ('throw-paper', 'throw-paper', 3.5), ('glower', 'glower', 5))
-tbc = (('magic1', 'magic1', 5),
+cr = (('pickpocket', 'pickpocket', 5), ('throw-paper', 'throw-paper', 3.5), ('glower', 'glower', 5))
+tbc = (('cigar-smoke', 'cigar-smoke', 8),
  ('glower', 'glower', 5),
  ('song-and-dance', 'song-and-dance', 8),
  ('golf-club-swing', 'golf-club-swing', 5))
@@ -154,7 +155,7 @@ bw = (('finger-wag', 'fingerwag', 5),
  ('magic1', 'magic1', 5),
  ('throw-object', 'throw-object', 5),
  ('throw-paper', 'throw-paper', 5))
-if not config.GetBool('want-new-cogs', 0):
+if not base.config.GetBool('want-new-cogs', 0):
     ModelDict = {'a': ('/models/char/suitA-', 4),
      'b': ('/models/char/suitB-', 4),
      'c': ('/models/char/suitC-', 3.5)}
@@ -171,49 +172,43 @@ else:
 HeadModelDict = {'a': ('/models/char/suitA-', 4),
  'b': ('/models/char/suitB-', 4),
  'c': ('/models/char/suitC-', 3.5)}
+
+SuitParts = ['phase_3.5/models/char/suitA-mod',
+            'phase_3.5/models/char/suitB-mod',
+            'phase_3.5/models/char/suitC-mod',
+            'phase_4/models/char/suitA-heads',
+            'phase_4/models/char/suitB-heads',
+            'phase_3.5/models/char/suitC-heads']
+
 Preloaded = {}
+
+def loadModels():
+    global Preloaded
+    if not Preloaded:
+        print 'Preloading suits...'
+        for filepath in SuitParts:
+            Preloaded[filepath] = loader.loadModel(filepath)
+            Preloaded[filepath].flattenMedium()
+
 def loadTutorialSuit():
     loader.loadModel('phase_3.5/models/char/suitC-mod')
     loadDialog(1)
 
-
 def loadSuits(level):
-    loadSuitModelsAndAnims(level, flag=1)
     loadDialog(level)
 
-
 def unloadSuits(level):
-    loadSuitModelsAndAnims(level, flag=0)
+    #loadSuitModelsAndAnims(level, flag=0)
     unloadDialog(level)
-
 
 def loadSuitModelsAndAnims(level, flag = 0):
     for key in ModelDict.keys():
         model, phase = ModelDict[key]
-        if config.GetBool('want-new-cogs', 0):
-            headModel, headPhase = HeadModelDict[key]
-        else:
-            headModel, headPhase = ModelDict[key]
         if flag:
-            if config.GetBool('want-new-cogs', 0):
-                filepath = 'phase_3.5' + model + 'zero'
-                if cogExists(model + 'zero'):
-                     Preloaded[filepath] = loader.loadModel(filepath)
-            else:
-                filepath = 'phase_3.5' + model + 'mod'
-                Preloaded[filepath] = loader.loadModel(filepath)
-            filepath = 'phase_' + str(headPhase) + headModel + 'heads'
+            filepath = 'phase_3.5' + model + 'mod'
             Preloaded[filepath] = loader.loadModel(filepath)
-        else:
-            if config.GetBool('want-new-cogs', 0):
-                filepath = 'phase_3.5' + model + 'zero'
-                if cogExists(model + 'zero'):
-                    loader.unloadModel(Preloaded[filepath])
-            else:
-                filepath = 'phase_3.5' + model + 'mod'
-                loader.unloadModel(Preloaded[filepath])
-            filepath = 'phase_' + str(headPhase) + headModel + 'heads'
-            loader.unloadModel(Preloaded[filepath])
+            filepath = 'phase_' + str(phase) + model + 'heads'
+            Preloaded[filepath] = loader.loadModel(filepath)
 
 def cogExists(filePrefix):
     searchPath = DSearchPath()
@@ -233,9 +228,8 @@ def cogExists(filePrefix):
 def loadSuitAnims(suit, flag = 1):
     if suit in SuitDNA.suitHeadTypes:
         try:
-            animList = globals()[suit]
-        except KeyError:
-            print 'still keyError, gg'
+            animList = eval(suit)
+        except NameError:
             animList = ()
 
     else:
@@ -257,15 +251,15 @@ def loadDialog(level):
         return
     else:
         loadPath = 'phase_3.5/audio/dial/'
-        SuitDialogFiles = ['COG_VO_statement',
+        SuitDialogFiles = ['COG_VO_grunt',
          'COG_VO_murmur',
          'COG_VO_statement',
          'COG_VO_question']
         for file in SuitDialogFiles:
             SuitDialogArray.append(base.loadSfx(loadPath + file + '.ogg'))
 
-        SuitDialogArray.append(SuitDialogArray[0])
-        SuitDialogArray.append(SuitDialogArray[1])
+        SuitDialogArray.append(SuitDialogArray[2])
+        SuitDialogArray.append(SuitDialogArray[2])
 
 
 def loadSkelDialog():
@@ -323,26 +317,17 @@ def attachSuitHead(node, suitName):
 
 
 class Suit(Avatar.Avatar):
-    healthColors = (Vec4(0, 1, 0, 1),# 0 Green
-     Vec4(0.5, 1, 0, 1),#1 Green-Yellow
-     Vec4(0.75, 1, 0, 1),#2 Yellow-Green
-     Vec4(1, 1, 0, 1),#3 Yellow
-     Vec4(1, 0.866, 0, 1),#4 Yellow-Orange
-     Vec4(1, 0.6, 0, 1),#5 Orange-Yellow
-     Vec4(1, 0.5, 0, 1),#6 Orange
-     Vec4(1, 0.25, 0, 1.0),#7 Red-Orange
-     Vec4(1, 0, 0, 1),#8 Red
-     Vec4(0.3, 0.3, 0.3, 1))#9 Grey
-    healthGlowColors = (Vec4(0.25, 1, 0.25, 0.5),#Green
-     Vec4(0.5, 1, 0.25, .5),#1 Green-Yellow
-     Vec4(0.75, 1, 0.25, .5),#2 Yellow-Green
-     Vec4(1, 1, 0.25, 0.5),#Yellow 
-     Vec4(1, 0.866, 0.25, .5),#4 Yellow-Orange
-     Vec4(1, 0.6, 0.25, .5),#5 Orange-Yellow
-     Vec4(1, 0.5, 0.25, 0.5),#6 Orange
-     Vec4(1, 0.25, 0.25, 0.5),#7 Red-Orange    
-     Vec4(1, 0.25, 0.25, 0.5),#8 Red     
-     Vec4(0.3, 0.3, 0.3, 0))#9 Grey
+    __module__ = __name__
+    healthColors = (Vec4(0, 1, 0, 1),
+     Vec4(1, 1, 0, 1),
+     Vec4(1, 0.5, 0, 1),
+     Vec4(1, 0, 0, 1),
+     Vec4(0.3, 0.3, 0.3, 1))
+    healthGlowColors = (Vec4(0.25, 1, 0.25, 0.5),
+     Vec4(1, 1, 0.25, 0.5),
+     Vec4(1, 0.5, 0.25, 0.5),
+     Vec4(1, 0.25, 0.25, 0.5),
+     Vec4(0.3, 0.3, 0.3, 0))
     medallionColors = {'c': Vec4(0.863, 0.776, 0.769, 1.0),
      's': Vec4(0.843, 0.745, 0.745, 1.0),
      'l': Vec4(0.749, 0.776, 0.824, 1.0),
@@ -357,8 +342,7 @@ class Suit(Avatar.Avatar):
 
         Avatar.Avatar.__init__(self)
         self.setFont(ToontownGlobals.getSuitFont())
-        self.setSpeechFont(ToontownGlobals.getSuitFont())
-        self.setPlayerType(NametagGroup.CCSuit)
+        self.setPlayerType(NametagGlobals.CCSuit)
         self.setPickable(1)
         self.leftHand = None
         self.rightHand = None
@@ -370,7 +354,6 @@ class Suit(Avatar.Avatar):
         self.isDisguised = 0
         self.isWaiter = 0
         self.isRental = 0
-        return
 
     def delete(self):
         try:
@@ -396,8 +379,6 @@ class Suit(Avatar.Avatar):
             self.removeHealthBar()
             Avatar.Avatar.delete(self)
 
-        return
-
     def setHeight(self, height):
         Avatar.Avatar.setHeight(self, height)
         self.nametag3d.setPos(0, 0, height + 1.0)
@@ -412,12 +393,12 @@ class Suit(Avatar.Avatar):
 
     def setDNA(self, dna):
         if self.style:
-            pass
-        else:
-            self.style = dna
-            self.generateSuit()
-            self.initializeDropShadow()
-            self.initializeNametag3d()
+            return
+
+        self.style = dna
+        self.generateSuit()
+        self.initializeDropShadow()
+        self.initializeNametag3d()
 
     def generateSuit(self):
         dna = self.style
@@ -426,217 +407,31 @@ class Suit(Avatar.Avatar):
         self.headTexture = None
         self.loseActor = None
         self.isSkeleton = 0
-        scale = SuitBattleGlobals.SuitSizes[dna.name]
-        if dna.name == 'f':
-            self.scale = scale / cSize
-            self.handColor = SuitDNA.corpPolyColor
+
+        if dna.name in SuitGlobals.suitProperties:
+            self.scale = SuitGlobals.suitProperties[dna.name][SuitGlobals.SCALE_INDEX]
+            self.handColor = SuitGlobals.suitProperties[dna.name][SuitGlobals.HAND_COLOR_INDEX]
+
+            if dna.name == 'cc':
+                self.headColor = SuitGlobals.ColdCallerHead
+
             self.generateBody()
-            self.generateHead('flunky')
-            self.generateHead('glasses')
-            self.setHeight(4.88)
-        elif dna.name == 'p':
-            self.scale = scale / bSize
-            self.handColor = SuitDNA.corpPolyColor
-            self.generateBody()
-            self.generateHead('pencilpusher')
-            self.setHeight(5.0)
-        elif dna.name == 'ym':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.corpPolyColor
-            self.generateBody()
-            self.generateHead('yesman')
-            self.setHeight(5.28)
-        elif dna.name == 'mm':
-            self.scale = scale / cSize
-            self.handColor = SuitDNA.corpPolyColor
-            self.generateBody()
-            self.generateHead('micromanager')
-            self.setHeight(3.25)
-        elif dna.name == 'ds':
-            self.scale = scale / bSize
-            self.handColor = SuitDNA.corpPolyColor
-            self.generateBody()
-            self.generateHead('beancounter')
-            self.setHeight(6.08)
-        elif dna.name == 'hh':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.corpPolyColor
-            self.generateBody()
-            self.generateHead('headhunter')
-            self.setHeight(7.45)
-        elif dna.name == 'cr':
-            self.scale = scale / cSize
-            self.handColor = VBase4(0.85, 0.55, 0.55, 1.0)
-            self.generateBody()
-            self.headTexture = 'corporate-raider.jpg'
-            self.generateHead('flunky')
-            self.setHeight(8.23)
-        elif dna.name == 'tbc':
-            self.scale = scale / aSize
-            self.handColor = VBase4(0.75, 0.95, 0.75, 1.0)
-            self.generateBody()
-            self.generateHead('bigcheese')
-            self.setHeight(9.34)
-        elif dna.name == 'bf':
-            self.scale = scale / cSize
-            self.handColor = SuitDNA.legalPolyColor
-            self.generateBody()
-            self.headTexture = 'bottom-feeder.jpg'
-            self.generateHead('tightwad')
-            self.setHeight(4.81)
-        elif dna.name == 'b':
-            self.scale = scale / bSize
-            self.handColor = VBase4(0.95, 0.95, 1.0, 1.0)
-            self.generateBody()
-            self.headTexture = 'blood-sucker.jpg'
-            self.generateHead('movershaker')
-            self.setHeight(6.17)
-        elif dna.name == 'dt':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.legalPolyColor
-            self.generateBody()
-            self.headTexture = 'double-talker.jpg'
-            self.generateHead('twoface')
-            self.setHeight(5.63)
-        elif dna.name == 'ac':
-            self.scale = scale / bSize
-            self.handColor = SuitDNA.legalPolyColor
-            self.generateBody()
-            self.generateHead('ambulancechaser')
-            self.setHeight(6.39)
-        elif dna.name == 'bs':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.legalPolyColor
-            self.generateBody()
-            self.generateHead('backstabber')
-            self.setHeight(6.71)
-        elif dna.name == 'sd':
-            self.scale = scale / bSize
-            self.handColor = VBase4(0.5, 0.8, 0.75, 1.0)
-            self.generateBody()
-            self.headTexture = 'spin-doctor.jpg'
-            self.generateHead('telemarketer')
-            self.setHeight(7.9)
-        elif dna.name == 'le':
-            self.scale = scale / aSize
-            self.handColor = VBase4(0.25, 0.25, 0.5, 1.0)
-            self.generateBody()
-            self.generateHead('legaleagle')
-            self.setHeight(8.27)
-        elif dna.name == 'bw':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.legalPolyColor
-            self.generateBody()
-            self.generateHead('bigwig')
-            self.setHeight(8.69)
-        elif dna.name == 'sc':
-            self.scale = scale / cSize
-            self.handColor = SuitDNA.moneyPolyColor
-            self.generateBody()
-            self.generateHead('coldcaller')
-            self.setHeight(4.77)
-        elif dna.name == 'pp':
-            self.scale = scale / aSize
-            self.handColor = VBase4(1.0, 0.5, 0.6, 1.0)
-            self.generateBody()
-            self.generateHead('pennypincher')
-            self.setHeight(5.26)
-        elif dna.name == 'tw':
-            self.scale = scale / cSize
-            self.handColor = SuitDNA.moneyPolyColor
-            self.generateBody()
-            self.generateHead('tightwad')
-            self.setHeight(5.41)
-        elif dna.name == 'bc':
-            self.scale = scale / bSize
-            self.handColor = SuitDNA.moneyPolyColor
-            self.generateBody()
-            self.generateHead('beancounter')
-            self.setHeight(5.95)
-        elif dna.name == 'nc':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.moneyPolyColor
-            self.generateBody()
-            self.generateHead('numbercruncher')
-            self.setHeight(7.22)
-        elif dna.name == 'mb':
-            self.scale = scale / cSize
-            self.handColor = SuitDNA.moneyPolyColor
-            self.generateBody()
-            self.generateHead('moneybags')
-            self.setHeight(6.97)
-        elif dna.name == 'ls':
-            self.scale = scale / bSize
-            self.handColor = VBase4(0.5, 0.85, 0.75, 1.0)
-            self.generateBody()
-            self.generateHead('loanshark')
-            self.setHeight(8.58)
-        elif dna.name == 'rb':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.moneyPolyColor
-            self.generateBody()
-            self.headTexture = 'robber-baron.jpg'
-            self.generateHead('yesman')
-            self.setHeight(8.95)
-        elif dna.name == 'cc':
-            self.scale = scale / cSize
-            self.handColor = VBase4(0.55, 0.65, 1.0, 1.0)
-            self.headColor = VBase4(0.25, 0.35, 1.0, 1.0)
-            self.generateBody()
-            self.generateHead('coldcaller')
-            self.setHeight(4.63)
-        elif dna.name == 'tm':
-            self.scale = scale / bSize
-            self.handColor = SuitDNA.salesPolyColor
-            self.generateBody()
-            self.generateHead('telemarketer')
-            self.setHeight(5.24)
-        elif dna.name == 'nd':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.salesPolyColor
-            self.generateBody()
-            self.headTexture = 'name-dropper.jpg'
-            self.generateHead('numbercruncher')
-            self.setHeight(5.98)
-        elif dna.name == 'gh':
-            self.scale = scale / cSize
-            self.handColor = SuitDNA.salesPolyColor
-            self.generateBody()
-            self.generateHead('gladhander')
-            self.setHeight(6.4)
-        elif dna.name == 'ms':
-            self.scale = scale / bSize
-            self.handColor = SuitDNA.salesPolyColor
-            self.generateBody()
-            self.generateHead('movershaker')
-            self.setHeight(6.7)
-        elif dna.name == 'tf':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.salesPolyColor
-            self.generateBody()
-            self.generateHead('twoface')
-            self.setHeight(6.95)
-        elif dna.name == 'm':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.salesPolyColor
-            self.generateBody()
-            self.headTexture = 'mingler.jpg'
-            self.generateHead('twoface')
-            self.setHeight(7.61)
-        elif dna.name == 'mh':
-            self.scale = scale / aSize
-            self.handColor = SuitDNA.salesPolyColor
-            self.generateBody()
-            self.generateHead('yesman')
-            self.setHeight(8.95)
+
+            if SuitGlobals.suitProperties[dna.name][SuitGlobals.HEAD_TEXTURE_INDEX]:
+                self.headTexture = SuitGlobals.suitProperties[dna.name][SuitGlobals.HEAD_TEXTURE_INDEX]
+
+            for head in SuitGlobals.suitProperties[dna.name][SuitGlobals.HEADS_INDEX]:
+                self.generateHead(head)
+
+            self.setHeight(SuitGlobals.suitProperties[dna.name][SuitGlobals.HEIGHT_INDEX])
+
         self.setName(SuitBattleGlobals.SuitAttributes[dna.name]['name'])
         self.getGeomNode().setScale(self.scale)
         self.generateHealthBar()
         self.generateCorporateMedallion()
-        return
 
     def generateBody(self):
-        global Preloaded    
+        global Preloaded
         animDict = self.generateAnimDict()
         filePrefix, bodyPhase = ModelDict[self.style.body]
         filepath = 'phase_3.5' + filePrefix + 'mod'
@@ -674,8 +469,8 @@ class Suit(Avatar.Avatar):
                 animDict[anim[0]] = 'phase_12/models/char/suitC-' + anim[1]
 
         try:
-            animList = globals()[self.style.name]
-        except KeyError:
+            animList = eval(self.style.name)
+        except NameError:
             animList = ()
 
         for anim in animList:
@@ -694,6 +489,7 @@ class Suit(Avatar.Avatar):
             modelRoot = self
         dept = self.style.dept
         phase = 3.5
+
         torsoTex = loader.loadTexture('phase_%s/maps/%s_blazer.jpg' % (phase, dept))
         torsoTex.setMinfilter(Texture.FTLinearMipmapLinear)
         torsoTex.setMagfilter(Texture.FTLinear)
@@ -750,9 +546,9 @@ class Suit(Avatar.Avatar):
         filePrefix, phase = ModelDict[self.style.body]
         filepath = 'phase_' + str(phase) + filePrefix + 'heads'
         headModel = NodePath('cog_head')
-        Preloaded[filepath].copyTo(headModel) #loader.loadModel('phase_' + str(phase) + filePrefix + 'heads')
+        Preloaded[filepath].copyTo(headModel)
         headReferences = headModel.findAllMatches('**/' + headType)
-        for i in range(0, headReferences.getNumPaths()):
+        for i in xrange(0, headReferences.getNumPaths()):
             headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'joint_head')
             if self.headTexture:
                 headTex = loader.loadTexture('phase_' + str(phase) + '/maps/' + self.headTexture)
@@ -761,8 +557,8 @@ class Suit(Avatar.Avatar):
                 headPart.setTexture(headTex, 1)
             if self.headColor:
                 headPart.setColor(self.headColor)
+            headPart.flattenStrong()
             self.headParts.append(headPart)
-
         headModel.removeNode()
 
     def generateCorporateTie(self, modelPath = None):
@@ -806,6 +602,7 @@ class Suit(Avatar.Avatar):
         model = loader.loadModel('phase_3.5/models/gui/matching_game_gui')
         button = model.find('**/minnieCircle')
         model.removeNode()
+
         button.setScale(3.0)
         button.setH(180.0)
         button.setColor(self.healthColors[0])
@@ -832,32 +629,22 @@ class Suit(Avatar.Avatar):
         health = float(self.currHP) / float(self.maxHP)
         if health > 0.95:
             condition = 0
-        elif health > 0.9:
-            condition = 1
-        elif health > 0.8:
-            condition = 2
         elif health > 0.7:
-            condition = 3#Yellow
-        elif health > 0.6:
-            condition = 4            
-        elif health > 0.5:
-            condition = 5           
+            condition = 1
         elif health > 0.3:
-            condition = 6#Orange
-        elif health > 0.15:
-            condition = 8 
+            condition = 2
         elif health > 0.05:
-            condition = 9
+            condition = 3
         elif health > 0.0:
-            condition = 10
+            condition = 4
         else:
             condition = 5
         if self.healthCondition != condition or forceUpdate:
-            if condition == 9:
+            if condition == 4:
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.uniqueName('blink-task'))
-            elif condition == 10:
-                if self.healthCondition == 9:
+            elif condition == 5:
+                if self.healthCondition == 4:
                     taskMgr.remove(self.uniqueName('blink-task'))
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.25), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.uniqueName('blink-task'))
@@ -867,20 +654,18 @@ class Suit(Avatar.Avatar):
             self.healthCondition = condition
 
     def __blinkRed(self, task):
-        if not self.healthBar:
-            return Task.done    
-        self.healthBar.setColor(self.healthColors[8], 1)
-        self.healthBarGlow.setColor(self.healthGlowColors[8], 1)
-        if self.healthCondition == 7:
+        self.healthBar.setColor(self.healthColors[3], 1)
+        self.healthBarGlow.setColor(self.healthGlowColors[3], 1)
+        if self.healthCondition == 5:
             self.healthBar.setScale(1.17)
         return Task.done
 
     def __blinkGray(self, task):
         if not self.healthBar:
-            return Task.done
-        self.healthBar.setColor(self.healthColors[9], 1)
-        self.healthBarGlow.setColor(self.healthGlowColors[9], 1)
-        if self.healthCondition == 10:
+            return
+        self.healthBar.setColor(self.healthColors[4], 1)
+        self.healthBarGlow.setColor(self.healthGlowColors[4], 1)
+        if self.healthCondition == 5:
             self.healthBar.setScale(1.0)
         return Task.done
 
@@ -888,7 +673,7 @@ class Suit(Avatar.Avatar):
         if self.healthBar:
             self.healthBar.removeNode()
             self.healthBar = None
-        if self.healthCondition == 9 or self.healthCondition == 10:
+        if self.healthCondition == 4 or self.healthCondition == 5:
             taskMgr.remove(self.uniqueName('blink-task'))
         self.healthCondition = 0
         return
@@ -909,18 +694,14 @@ class Suit(Avatar.Avatar):
                 else:
                     self.setSuitClothes(self.loseActor)
             else:
-                loseModel = 'phase_5/models/char/cog' + self.style.body.upper() + '_robot-lose-mod'
+                loseModel = 'phase_5/models/char/cog' + string.upper(self.style.body) + '_robot-lose-mod'
                 filePrefix, phase = TutorialModelDict[self.style.body]
                 loseAnim = 'phase_' + str(phase) + filePrefix + 'lose'
                 self.loseActor = Actor.Actor(loseModel, {'lose': loseAnim})
                 self.generateCorporateTie(self.loseActor)
         self.loseActor.setScale(self.scale)
         self.loseActor.setPos(self.getPos())
-        self.loseActor.setHpr(self.getH(), 0, 0)
-        self.collTube = CollisionTube(0, 0, 0.5, 0, 0, 4, 2)
-        self.collNode = CollisionNode('loseActor')
-        self.collNode.addSolid(self.collTube)
-        self.collNodePath = self.loseActor.attachNewNode(self.collNode)
+        self.loseActor.setHpr(self.getHpr())
         shadowJoint = self.loseActor.find('**/joint_shadow')
         dropShadow = loader.loadModel('phase_3/models/props/drop_shadow')
         dropShadow.setScale(0.45)
@@ -937,26 +718,22 @@ class Suit(Avatar.Avatar):
         return
 
     def makeSkeleton(self):
-        model = 'phase_5/models/char/cog' + self.style.body.upper() + '_robot-zero'
+        model = 'phase_5/models/char/cog' + string.upper(self.style.body) + '_robot-zero'
         anims = self.generateAnimDict()
         anim = self.getCurrentAnim()
-        # Remove all of the previous cog except for a few necessary joints
-        modelRoot = self.getGeomNode()
-        modelRoot.find('**/torso').removeNode()
-        modelRoot.find('**/arms').removeNode()
-        modelRoot.find('**/hands').removeNode()
-        modelRoot.find('**/legs').removeNode()
-        modelRoot.find('**/').removeNode() # These are feet
-        modelRoot.find('**/joint_head').removeNode()
-        # Now, to load our skelecog
+        dropShadow = self.dropShadow
+        if not dropShadow.isEmpty():
+            dropShadow.reparentTo(hidden)
+        self.removePart('modelRoot')
         self.loadModel(model)
         self.loadAnims(anims)
         self.getGeomNode().setScale(self.scale * 1.0173)
         self.generateHealthBar()
+        self.generateCorporateMedallion()
         self.generateCorporateTie()
         self.setHeight(self.height)
         parts = self.findAllMatches('**/pPlane*')
-        for partNum in range(0, parts.getNumPaths()):
+        for partNum in xrange(0, parts.getNumPaths()):
             bb = parts.getPath(partNum)
             bb.setTwoSided(1)
 
@@ -969,6 +746,10 @@ class Suit(Avatar.Avatar):
         self.rightHand = self.find('**/joint_Rhold')
         self.shadowJoint = self.find('**/joint_shadow')
         self.nametagNull = self.find('**/joint_nameTag')
+        if not dropShadow.isEmpty():
+            dropShadow.setScale(0.75)
+            if not self.shadowJoint.isEmpty():
+                dropShadow.reparentTo(self.shadowJoint)
         self.loop(anim)
         self.isSkeleton = 1
 
@@ -992,5 +773,4 @@ class Suit(Avatar.Avatar):
             loadSkelDialog()
             return SkelSuitDialogArray
         else:
-            loadDialog(1)
             return SuitDialogArray

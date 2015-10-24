@@ -12,7 +12,14 @@ DefaultDatabaseChannelId = AccountDatabaseChannelId
 DatabaseIdFromClassName = {'Account': AccountDatabaseChannelId}
 CogHQCameraFov = 60.0
 BossBattleCameraFov = 72.0
-MakeAToonCameraFov = 52.0
+MakeAToonCameraFov = 48.0
+VPElevatorFov = 53.0
+CFOElevatorFov = 43.0
+CJElevatorFov = 59.0
+CEOElevatorFov = 59.0
+CBElevatorFov = 42.0
+WantPromotion = 0
+PendingPromotion = 1
 CeilingBitmask = BitMask32(256)
 FloorEventBitmask = BitMask32(16)
 PieBitmask = BitMask32(256)
@@ -37,7 +44,7 @@ BossbotHQCameraNear = 1.0
 SpeedwayCameraFar = 8000.0
 SpeedwayCameraNear = 1.0
 MaxMailboxContents = 30
-MaxHouseItems = 1000
+MaxHouseItems = 45
 MaxAccessories = 50
 ExtraDeletedItems = 5
 DeletedItemLifetime = 7 * 24 * 60
@@ -96,16 +103,11 @@ FM_RecoveredItem = 4
 SPDonaldsBoat = 3
 SPMinniesPiano = 4
 CEVirtual = 14
-MaxHpLimit = 200
-MaxCarryLimit = 255
+MaxHpLimit = 145
+MaxCarryLimit = 80
 MaxQuestCarryLimit = 4
 GravityValue = 32.174
-MaxCogSuitLevel = 50 - 1
-CogSuitHPLevels = (15 - 1,
- 20 - 1,
- 30 - 1,
- 40 - 1,
- 50 - 1)
+MaxCogSuitLevel = 12 - 1
 setInterfaceFont(TTLocalizer.InterfaceFont)
 setSignFont(TTLocalizer.SignFont)
 from toontown.toontowngui import TTDialog
@@ -142,7 +144,7 @@ def getSuitFont():
         SuitFont = loader.loadFont(TTLocalizer.SuitFont, pixelsPerUnit=40, spaceAdvance=0.25, lineHeight=1.0)
     return SuitFont
 
-SafezoneToonupFrequency = 30
+
 DonaldsDock = 1000
 ToontownCentral = 2000
 TheBrrrgh = 3000
@@ -405,7 +407,7 @@ phaseMap = {Tutorial: 4,
  GoofySpeedway: 6,
  TheBrrrgh: 8,
  DaisyGardens: 8,
- FunnyFarm: 6,
+ FunnyFarm: 8,
  DonaldsDreamland: 8,
  OutdoorZone: 6,
  BossbotHQ: 12,
@@ -538,12 +540,47 @@ PieCodeBossInsides = 4
 PieCodeDefensePan = 5
 PieCodeProsecutionPan = 6
 PieCodeLawyer = 7
+PieCodeInvasionSuit = 8
 PieCodeColors = {PieCodeBossCog: None,
  PieCodeNotBossCog: (0.8,
                      0.8,
                      0.8,
                      1),
  PieCodeToon: None}
+suitIndex = {
+'f' : 0,
+'p' : 1,
+'ym' : 2,
+'mm' : 3,
+'ds' : 4,
+'hh' : 5,
+'cr' : 6,
+'tbc' : 7,
+'bf' : 8,
+'b' : 9,
+'dt' : 10,
+'ac' : 11,
+'bs' : 12,
+'sd' : 13,
+'le' : 14,
+'bw' : 15,
+'sc' : 16,
+'pp' : 17,
+'tw' : 18,
+'bc' : 19,
+'nc' : 20,
+'mb' : 21,
+'ls' : 22,
+'rb' : 23,
+'cc' : 24,
+'tm' : 25,
+'nd' : 26,
+'gh' : 27,
+'ms' : 28,
+'tf' : 29,
+'m' : 30,
+'mh' : 31
+}
 BossCogRollSpeed = 7.5
 BossCogTurnSpeed = 20
 BossCogTreadSpeed = 3.5
@@ -806,9 +843,18 @@ NoItems = 0
 NewItems = 1
 OldItems = 2
 SuitInvasionBegin = 0
-SuitInvasionUpdate = 1
-SuitInvasionEnd = 2
+SuitInvasionEnd = 1
+SuitInvasionUpdate = 2
 SuitInvasionBulletin = 3
+SkelecogInvasionBegin = 4
+SkelecogInvasionEnd = 5
+SkelecogInvasionBulletin = 6
+WaiterInvasionBegin = 7
+WaiterInvasionEnd = 8
+WaiterInvasionBulletin = 9
+V2InvasionBegin = 10
+V2InvasionEnd = 11
+V2InvasionBulletin = 12
 NO_HOLIDAY = 0
 JULY4_FIREWORKS = 1
 NEWYEARS_FIREWORKS = 2
@@ -817,7 +863,6 @@ WINTER_DECORATIONS = 4
 SKELECOG_INVASION = 5
 MR_HOLLYWOOD_INVASION = 6
 FISH_BINGO_NIGHT = 7
-ELECTION_PROMOTION = 8
 BLACK_CAT_DAY = 9
 RESISTANCE_EVENT = 10
 KART_RECORD_DAILY_RESET = 11
@@ -932,7 +977,6 @@ SPOOKY_PROPS = 119
 SPOOKY_COSTUMES = 120
 WACKY_WINTER_DECORATIONS = 121
 WACKY_WINTER_CAROLING = 122
-OLLIES_BIRTHDAY = 123 
 TOT_REWARD_JELLYBEAN_AMOUNT = 100
 TOT_REWARD_END_OFFSET_AMOUNT = 0
 LawbotBossMaxDamage = 2700
@@ -1362,8 +1406,14 @@ LawbotBossBonusDuration = 20
 LawbotBossBonusToonup = 10
 LawbotBossBonusWeightMultiplier = 2
 LawbotBossChanceToDoAreaAttack = 11
-LOW_POP = 399
-MID_POP = 599
+LOW_POP_JP = 0
+MID_POP_JP = 100
+HIGH_POP_JP = 200
+LOW_POP_INTL = 399
+MID_POP_INTL = 499
+HIGH_POP_INTL = -1
+LOW_POP = 100
+MID_POP = 200
 HIGH_POP = -1
 PinballCannonBumper = 0
 PinballCloudBumperLow = 1
@@ -1545,7 +1595,7 @@ DG = 5
 BR = 6
 OZ = 7
 DL = 8
-DefaultWantNewsPageSetting = 1
+DefaultWantNewsPageSetting = 0
 gmMagicWordList = ['restock',
  'restockUber',
  'autoRestock',
@@ -1569,7 +1619,7 @@ AnimPropTypes = Enum(('Unknown',
  'Trashcan'), start=-1)
 EmblemTypes = Enum(('Silver', 'Gold'))
 NumEmblemTypes = 2
-DefaultMaxBankMoney = 99999
+MaxBankMoney = 50000
 DefaultBankItemId = 1350
 ToonAnimStates = set(['off',
  'neutral',
@@ -1624,3 +1674,11 @@ AV_TOUCH_CHECK_DIST_Z = 5.0
 AV_TOUCH_CHECK_TIMELIMIT_CL = 0.002
 AV_TOUCH_COUNT_LIMIT = 5
 AV_TOUCH_COUNT_TIME = 300
+
+# Buffs...
+
+BMovementSpeed = 0
+BMovementSpeedMultiplier = 1.3
+
+BGagAccuracy = 1
+BGagAccuracyMultiplier = 1.3

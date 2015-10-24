@@ -564,8 +564,8 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
         return self.ballShadowDict[self.currentGolfer]
 
     def cleanupGeom(self):
-        self.targets.removeNode()
-        self.terrainModel.removeNode()
+        self.targets.remove()
+        self.terrainModel.remove()
         self.powerBar.destroy()
 
     def cleanupPowerBar(self):

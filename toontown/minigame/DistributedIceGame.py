@@ -593,7 +593,7 @@ class DistributedIceGame(DistributedMinigame.DistributedMinigame, DistributedIce
         taskMgr.remove(self.debugTaskName)
 
     def debugTask(self, task):
-        if self.canDrive and self.tireDict.has_key(localAvatar.doId):
+        if self.canDrive and localAvatar.doId in self.tireDict:
             dt = globalClock.getDt()
             forceMove = 25000
             forceMoveDt = forceMove
@@ -1038,17 +1038,18 @@ class DistributedIceGame(DistributedMinigame.DistributedMinigame, DistributedIce
 
     def postStep(self):
         DistributedIceWorld.DistributedIceWorld.postStep(self)
-        if self.colCount:
-            for count in range(self.colCount):
-                c0, c1 = self.getOrderedContacts(count)
-                if c1 in self.tireCollideIds:
-                    tireIndex = self.tireCollideIds.index(c1)
-                    if c0 in self.tireCollideIds:
-                        self.tireSounds[tireIndex]['tireHit'].play()
-                    elif c0 == self.wallCollideId:
-                        self.tireSounds[tireIndex]['wallHit'].play()
-                    elif c0 == self.obstacleCollideId:
-                        self.tireSounds[tireIndex]['obstacleHit'].play()
+        if not self.colCount:
+            return
+        for count in xrange(self.colCount):
+            c0, c1 = self.getOrderedContacts(count)
+            if c1 in self.tireCollideIds:
+                tireIndex = self.tireCollideIds.index(c1)
+                if c0 in self.tireCollideIds:
+                    self.tireSounds[tireIndex]['tireHit'].play()
+                elif c0 == self.wallCollideId:
+                    self.tireSounds[tireIndex]['wallHit'].play()
+                elif c0 == self.obstacleCollideId:
+                    self.tireSounds[tireIndex]['obstacleHit'].play()
 
     def forceLocalToonToTire(self):
         toon = localAvatar

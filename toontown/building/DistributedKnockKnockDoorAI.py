@@ -1,22 +1,18 @@
-from otp.ai.AIBaseGlobal import *
-from direct.distributed.ClockDelta import *
-from direct.directnotify import DirectNotifyGlobal
-from direct.fsm import ClassicFSM
 import DistributedAnimatedPropAI
-from direct.task.Task import Task
+from direct.directnotify import DirectNotifyGlobal
+from direct.distributed.ClockDelta import *
+from direct.fsm import ClassicFSM
 from direct.fsm import State
+from direct.task.Task import Task
+from otp.ai.AIBaseGlobal import *
+
 
 class DistributedKnockKnockDoorAI(DistributedAnimatedPropAI.DistributedAnimatedPropAI):
-
     def __init__(self, air, propId):
         DistributedAnimatedPropAI.DistributedAnimatedPropAI.__init__(self, air, propId)
         self.fsm.setName('DistributedKnockKnockDoor')
         self.propId = propId
         self.doLaterTask = None
-        return
-
-    def delete(self):
-        DistributedAnimatedPropAI.DistributedAnimatedPropAI.delete(self)
 
     def enterOff(self):
         DistributedAnimatedPropAI.DistributedAnimatedPropAI.enterOff(self)
@@ -42,4 +38,3 @@ class DistributedKnockKnockDoorAI(DistributedAnimatedPropAI.DistributedAnimatedP
         DistributedAnimatedPropAI.DistributedAnimatedPropAI.exitPlaying(self)
         taskMgr.remove(self.doLaterTask)
         self.doLaterTask = None
-        return

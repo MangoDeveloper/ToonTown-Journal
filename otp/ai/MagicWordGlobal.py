@@ -1,8 +1,5 @@
 from direct.showbase import PythonUtil
 
-MINIMUM_MAGICWORD_ACCESS = 300
-MINIMUM_AI_OBJ_MW_ACCESS = config.GetInt('mw-minimum-ai-manipulation-access', 500)
-
 class MagicError(Exception): pass
 
 def ensureAccess(access, msg='Insufficient access'):
@@ -20,19 +17,12 @@ class Spellbook:
 
     def __init__(self):
         self.words = {}
-        self.alias2word = {}
-        self.categories = []
 
         self.currentInvoker = None
         self.currentTarget = None
 
     def addWord(self, word):
-        self.words[word.name.lower()] = word
-        for alias in word.aliases:
-            self.alias2word[alias.lower()] = word
-
-    def addCategory(self, category):
-        self.categories.append(category)
+        self.words[word.name.lower()] = word  # lets make this stuff case insensitive
 
     def process(self, invoker, target, incantation):
         self.currentInvoker = invoker
@@ -42,38 +32,34 @@ class Spellbook:
         try:
             return self.doWord(word, args)
         except MagicError as e:
-            return (e.message, True)
+            return e.message
         except Exception:
-            return (PythonUtil.describeException(backTrace=1), True)
+            return PythonUtil.describeException(backTrace=1)
         finally:
             self.currentInvoker = None
             self.currentTarget = None
 
     def doWord(self, wordName, args):
-        word = self.words.get(wordName.lower()) or self.alias2word.get(wordName.lower())
+        word = self.words.get(wordName.lower())   # look it up by its lower case value
+
         if not word:
-            return ('Unknown magic word!', False)
+            if process == 'ai':
+                wname = wordName.lower()
+                for key in self.words:
+                    if self.words.get(key).access <= self.getInvokerAccess():
+                        if wname in key:
+                            return 'Did you mean %s' % (self.words.get(key).name)
+            if not word:
+                return
 
         ensureAccess(word.access)
-
         if self.getTarget() and self.getTarget() != self.getInvoker():
-            # Check if the target is the correct class.
-            if word.targetClasses:
-                if not isinstance(self.getTarget(), tuple(word.targetClasses)):
-                    raise MagicError('Target is an invalid class! Expected: %s, Got: %s' % (str([x.__name__ for x in word.targetClasses]), self.getTarget().__class__.__name__))
-
-            if hasattr(self.getTarget(), 'getAdminAccess'):
-                targetAccess = self.getTarget().getAdminAccess()
-            else:
-                # Set it to the minimum access required to manipulate AI objects.
-                targetAccess = MINIMUM_AI_OBJ_MW_ACCESS - 1
-            if self.getInvokerAccess() <= targetAccess:
+            if self.getInvokerAccess() <= self.getTarget().getAdminAccess():
                 raise MagicError('Target must have lower access')
 
         result = word.run(args)
         if result is not None:
-            return (str(result), True)
-        return ('Magic word executed successfully!', True)
+            return str(result)
 
     def getInvoker(self):
         return self.currentInvoker
@@ -91,75 +77,29 @@ spellbook = Spellbook()
 
 # CATEGORIES
 class MagicWordCategory:
-    def __init__(self, name, defaultAccess=500, doc=''):
+    def __init__(self, name, defaultAccess=600):
         self.name = name
-        self.defaultAccess = self.getDefinedAccess() or defaultAccess
-        self.doc = doc
-
-        self.words = []
-
-        spellbook.addCategory(self)
-
-    def addWord(self, word):
-        self.words.append(word)
-
-    def getDefinedAccess(self):
-        return config.GetInt('mw-category-' + self.name.replace(' ', '-').lower(), 0)
+        self.defaultAccess = defaultAccess
 
 CATEGORY_UNKNOWN = MagicWordCategory('Unknown')
-CATEGORY_GRAPHICAL = MagicWordCategory('Graphical debugging', defaultAccess=300,
-    doc='Magic Words in this category are used to assist developers in locating '
-        'the cause of graphical glitches.')
-CATEGORY_GUI = MagicWordCategory('GUI debugging', defaultAccess=300,
-    doc='These Magic Words are intended to manipulate the on-screen GUI to '
-        'assist developers in testing/debugging the GUI system.')
-CATEGORY_MOBILITY = MagicWordCategory('Mobility cheats', defaultAccess=300,
-    doc='These Magic Words allow you to move around the area/world more easily, '
-        'allow you to get to areas more quickly.')
-CATEGORY_OVERRIDE = MagicWordCategory('Override cheats', defaultAccess=400,
-    doc='These Magic Words let you override normal game logic.')
-CATEGORY_CHARACTERSTATS = MagicWordCategory('Character-stats cheats', defaultAccess=400,
-    doc='These Magic Words let you alter the stats (e.g. gags, laff) of Toons.')
-CATEGORY_DEBUG = MagicWordCategory('Debug cheats', defaultAccess=300,
-    doc='These are Magic Words that may be useful in debugging, but have an impact '
-        'on the fairness of the game if you use them, therefore they are considered '
-        'cheats.')
-CATEGORY_MODERATION = MagicWordCategory('Moderation commands', defaultAccess=300,
-    doc='These are Magic Words focused on allowing moderators to deal with '
-        'unruly players.')
-CATEGORY_SYSADMIN = MagicWordCategory('Sysadmin commands', defaultAccess=500,
-    doc='These Magic Words are useful for executing/viewing system information.'
-        ' Note that these Magic Words may have an impact on the server\'s'
-        ' stability and speed, and should be used with caution.')
+CATEGORY_USER = MagicWordCategory('Community manager', defaultAccess=100)
+CATEGORY_COMMUNITY_MANAGER = MagicWordCategory('Community manager', defaultAccess=200)
+CATEGORY_MODERATOR = MagicWordCategory('Moderator', defaultAccess=300)
+CATEGORY_CREATIVE = MagicWordCategory('Creative', defaultAccess=400)
+CATEGORY_PROGRAMMER = MagicWordCategory('Programmer', defaultAccess=500)
+CATEGORY_ADMINISTRATOR = MagicWordCategory('Administrator', defaultAccess=600)
+CATEGORY_SYSTEM_ADMINISTRATOR = MagicWordCategory('System administrator', defaultAccess=700)
+
+MINIMUM_MAGICWORD_ACCESS = CATEGORY_COMMUNITY_MANAGER.defaultAccess
 
 
 class MagicWord:
-    def __init__(self, name, func, types, access, doc, category, targetClasses, aliases):
+    def __init__(self, name, func, types, access, doc):
         self.name = name
         self.func = func
         self.types = types
         self.access = access
         self.doc = doc
-        self.category = category
-        self.targetClasses = targetClasses
-        self.aliases = aliases
-
-        category.addWord(self)
-
-    def getUsage(self):
-        maxArgs = self.func.func_code.co_argcount
-        minArgs = maxArgs - (len(self.func.func_defaults) if self.func.func_defaults else 0)
-        argnames = self.func.func_code.co_varnames[:maxArgs]
-
-        usageArgs = []
-
-        for x in xrange(minArgs):
-            usageArgs.append(argnames[x])
-
-        for x in xrange(minArgs, maxArgs):
-            usageArgs.append('[%s]' % argnames[x])
-
-        return ' '.join(usageArgs)
 
     def parseArgs(self, string):
         maxArgs = self.func.func_code.co_argcount
@@ -192,7 +132,7 @@ class MagicWordDecorator:
     object process the Magic Word's construction.
     """
 
-    def __init__(self, name=None, types=[str], access=None, category=CATEGORY_UNKNOWN, targetClasses=[], aliases=[]):
+    def __init__(self, name=None, types=[str], access=None, category=CATEGORY_UNKNOWN):
         self.name = name
         self.types = types
         self.category = category
@@ -200,8 +140,6 @@ class MagicWordDecorator:
             self.access = access
         else:
             self.access = self.category.defaultAccess
-        self.targetClasses = targetClasses
-        self.aliases = aliases
 
     def __call__(self, mw):
         # This is the actual decoration routine. We add the function 'mw' as a
@@ -212,11 +150,7 @@ class MagicWordDecorator:
         if name is None:
             name = mw.func_name
 
-        config_access = config.GetInt('mw-word-' + name.lower(), 0)
-        if config_access:
-            self.access = config_access
-
-        word = MagicWord(name, mw, self.types, self.access, mw.__doc__, self.category, self.targetClasses, self.aliases)
+        word = MagicWord(name, mw, self.types, self.access, mw.__doc__)
         spellbook.addWord(word)
 
         return mw

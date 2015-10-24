@@ -1,33 +1,35 @@
-from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from otp.distributed.PotentialAvatar import PotentialAvatar
-from otp.otpbase import OTPLocalizer, OTPGlobals
-from otp.margins.WhisperPopup import *
+from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 import hmac
 from pandac.PandaModules import *
+
+from otp.distributed.PotentialAvatar import PotentialAvatar
+from otp.otpbase import OTPGlobals
+from toontown.chat.ChatGlobals import WTSystem
+from toontown.chat.WhisperPopup import WhisperPopup
+
 
 class ClientServicesManager(DistributedObjectGlobal):
     notify = directNotify.newCategory('ClientServicesManager')
 
-    systemMessageSfx = None
-    avIdsReportedThisSession = []
-
     # --- LOGIN LOGIC ---
     def performLogin(self, doneEvent):
         self.doneEvent = doneEvent
-        key = 'cGFzY2FsYW5kY29keWFyZXNvZnVja2luZ2hvdGl0aXNpbnNhbmU='
 
-        cookie = self.cr.playToken or 'dev'
+        self.systemMessageSfx = None
 
-        self.notify.debug('Sending login cookie: ' + cookie)
+        token = self.cr.playToken or 'dev'
+
+        key = 'bG9sLndlLmNoYW5nZS50aGlzLnRvby5tdWNo'
         digest_maker = hmac.new(key)
         digest_maker.update(token)
         clientKey = digest_maker.hexdigest()
 
         self.sendUpdate('login', [token, clientKey])
 
-    def acceptLogin(self):
-        messenger.send(self.doneEvent, [{'mode': 'success'}])
+    def acceptLogin(self, timestamp):
+        messenger.send(self.doneEvent, [{'mode': 'success', 'timestamp': timestamp}])
+
 
     # --- AVATARS LIST ---
     def requestAvatars(self):
@@ -86,36 +88,11 @@ class ClientServicesManager(DistributedObjectGlobal):
     def sendChooseAvatar(self, avId):
         self.sendUpdate('chooseAvatar', [avId])
 
-    # No response: instead, an OwnerView is sent or deleted.
-
-    def systemMessage(self, code, params):
-        # First, format message:
-        msg = OTPLocalizer.CRSystemMessages.get(code)
-        if not msg:
-            self.notify.warning('Got invalid system-message code: %d' % code)
-            return
-
-        try:
-            message = msg % tuple(params)
-        except TypeError:
-            self.notify.warning(
-                'Got invalid parameters for system-message %d: %r' % (code, params))
-            return
-
-        whisper = WhisperPopup(message, OTPGlobals.getInterfaceFont(), WhisperPopup.WTSystem)
+    def systemMessage(self, message):
+        whisper = WhisperPopup(message, OTPGlobals.getInterfaceFont(), WTSystem)
         whisper.manage(base.marginManager)
-        if not self.systemMessageSfx:
+
+        if self.systemMessageSfx is None:
             self.systemMessageSfx = base.loadSfx('phase_3/audio/sfx/clock03.ogg')
-        if self.systemMessageSfx:
-            base.playSfx(self.systemMessageSfx)
 
-    def hasReportedPlayer(self, avId):
-        return avId in self.avIdsReportedThisSession
-
-    def d_reportPlayer(self, avId, category):
-        # Drop-in replacement for Disney's "CentralLogger" reporting object.
-        if self.hasReportedPlayer(avId):
-            # We've already reported this avId.
-            return
-        self.avIdsReportedThisSession.append(avId)
-        self.sendUpdate('reportPlayer', [avId, category])
+        base.playSfx(self.systemMessageSfx)

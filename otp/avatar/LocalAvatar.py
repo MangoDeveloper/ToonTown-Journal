@@ -1,42 +1,35 @@
-from pandac.PandaModules import *
-from direct.gui.DirectGui import *
-from direct.showbase.PythonUtil import *
-from direct.interval.IntervalGlobal import *
-from direct.showbase.InputStateGlobal import inputState
-from pandac.PandaModules import *
-import Avatar
-import DistributedAvatar
-from direct.task import Task
-import PositionExaminer
-from otp.otpbase import OTPGlobals
-from otp.otpbase import OTPRender
-import math
-import string
-import random
-from direct.directnotify import DirectNotifyGlobal
-from direct.distributed import DistributedSmoothNode
-from direct.gui import DirectGuiGlobals
-from otp.otpbase import OTPLocalizer
+from direct.controls import ControlManager
 from direct.controls.GhostWalker import GhostWalker
 from direct.controls.GravityWalker import GravityWalker
 from direct.controls.ObserverWalker import ObserverWalker
-from direct.controls.PhysicsWalker import PhysicsWalker
 from direct.controls.SwimWalker import SwimWalker
 from direct.controls.TwoDWalker import TwoDWalker
-from otp.nametag.Nametag import Nametag
+from direct.directnotify import DirectNotifyGlobal
+from direct.distributed import DistributedSmoothNode
+from direct.gui.DirectGui import *
+from direct.interval.IntervalGlobal import *
+from direct.showbase.InputStateGlobal import inputState
+from direct.showbase.PythonUtil import *
+from direct.task import Task
+import math
+from pandac.PandaModules import *
+import random
+
+import DistributedAvatar
 from otp.ai.MagicWordGlobal import *
+from otp.otpbase import OTPGlobals
+from otp.otpbase import OTPLocalizer
+from toontown.chat.ChatGlobals import *
 from toontown.toonbase import ToontownGlobals
-from otp.control import ToontownControlManager
+
 
 class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.DistributedSmoothNode):
     notify = DirectNotifyGlobal.directNotify.newCategory('LocalAvatar')
-    wantDevCameraPositions = config.GetBool('want-dev-camera-positions', 0)
-    wantMouse = config.GetBool('want-mouse', 0)
-    sleepTimeout = config.GetInt('sleep-timeout', 120)
-    swimTimeout = config.GetInt('afk-timeout', 600)
-    __enableMarkerPlacement = config.GetBool('place-markers', 0)
-    acceptingNewFriends = config.GetBool('accepting-new-friends', 1)
-    acceptingNonFriendWhispers = config.GetBool('accepting-non-friend-whispers', 0)
+    wantDevCameraPositions = base.config.GetBool('want-dev-camera-positions', 0)
+    wantMouse = base.config.GetBool('want-mouse', 0)
+    sleepTimeout = base.config.GetInt('sleep-timeout', 120)
+    swimTimeout = base.config.GetInt('afk-timeout', 600)
+    __enableMarkerPlacement = base.config.GetBool('place-markers', 0)
 
     def __init__(self, cr, chatMgr, talkAssistant = None, passMessagesThrough = False):
         try:
@@ -52,7 +45,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         base.pushCTrav(self.cTrav)
         self.cTrav.setRespectPrevTransform(1)
         self.avatarControlsEnabled = 0
-        self.controlManager = ToontownControlManager.ToontownControlManager(True, passMessagesThrough)
+        self.controlManager = ControlManager.ControlManager(True, passMessagesThrough)
         self.initializeCollisions()
         self.initializeSmartCamera()
         self.cameraPositions = []
@@ -84,11 +77,8 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.jumpLandAnimFixTask = None
         self.fov = OTPGlobals.DefaultCameraFov
         self.accept('avatarMoving', self.clearPageUpDown)
-        self.nametag2dNormalContents = Nametag.CSpeech
         self.showNametag2d()
         self.setPickable(0)
-        self.neverSleep = False
-        return
 
     def useSwimControls(self):
         self.controlManager.use('swim', self)
@@ -591,7 +581,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def printCameraPositions(self):
         print '['
-        for i in range(len(self.cameraPositions)):
+        for i in xrange(len(self.cameraPositions)):
             self.printCameraPosition(i)
             print ','
 
@@ -624,8 +614,8 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             camera.setPos(savePos)
             camera.setHpr(saveHpr)
             taskMgr.remove('posCamera')
-            self.cameraLerp = LerpPosHprInterval(camera, time, Point3(x, y, z), Point3(h, p, r), other=self, name='posCamera', blendType = 'easeInOut') 
-            self.cameraLerp.start()
+            camera.lerpPosHpr(x, y, z, h, p, r, time, task='posCamera')
+
     def getClampedAvatarHeight(self):
         return max(self.getHeight(), 3.0)
 
@@ -777,8 +767,11 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         if not self.__disableSmartCam:
             self.ccTrav.traverse(self.__geom)
             if self.camCollisionQueue.getNumEntries() > 0:
-                self.camCollisionQueue.sortEntries()
-                self.handleCameraObstruction(self.camCollisionQueue.getEntry(0))
+                try:
+                    self.camCollisionQueue.sortEntries()
+                    self.handleCameraObstruction(self.camCollisionQueue.getEntry(0))
+                except AssertionError:  # FIXME: Hacky.
+                    pass
             if not self.__onLevelGround:
                 self.handleCameraFloorInteraction()
         if not self.__idealCameraObstructed:
@@ -807,9 +800,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         camera.setPos(targetCamPos)
         camera.lookAt(targetCamLookAt)
         targetCamHpr = camera.getHpr()
-        for x in xrange(3):
-            # This function is from PythonUtil:
-            targetCamHpr[x] = fitDestAngle2Src(curCamHpr[x], targetCamHpr[x])
         hprDone = 0
         if Vec3(curCamHpr - targetCamHpr).length() <= CLOSE_ENOUGH:
             hprDone = 1
@@ -917,7 +907,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
     def displayWhisper(self, fromId, chatString, whisperType):
         sender = None
         sfx = self.soundWhisper
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
+        if whisperType == WTNormal or whisperType == WTQuickTalker:
             if sender == None:
                 return
             chatString = sender.getName() + ': ' + chatString
@@ -926,7 +916,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             whisper.setClickable(sender.getName(), fromId)
         whisper.manage(base.marginManager)
         base.playSfx(sfx)
-        return
 
     def displayWhisperPlayer(self, fromId, chatString, whisperType):
         sender = None
@@ -936,14 +925,13 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         if playerInfo == None:
             return
         senderName = playerInfo.playerName
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
+        if whisperType == WTNormal or whisperType == WTQuickTalker:
             chatString = senderName + ': ' + chatString
         whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
         if sender != None:
             whisper.setClickable(senderName, fromId)
         whisper.manage(base.marginManager)
         base.playSfx(sfx)
-        return
 
     def setAnimMultiplier(self, value):
         self.animMultiplier = value
@@ -952,24 +940,24 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         return self.animMultiplier
 
     def enableRun(self):
-        self.accept(base.Move_Up, self.startRunWatch)
-        self.accept(base.Move_Up + '-up', self.stopRunWatch)
-        self.accept('control-'+ base.Move_Up, self.startRunWatch)
-        self.accept('control-'+ base.Move_Up + '-up', self.stopRunWatch)
-        self.accept('alt-'+ base.Move_Up, self.startRunWatch)
-        self.accept('alt-'+ base.Move_Up + '-up', self.stopRunWatch)
-        self.accept('shift-' + base.Move_Up, self.startRunWatch)
-        self.accept('shift-' + base.Move_Up + '-up', self.stopRunWatch)
+        self.accept('arrow_up', self.startRunWatch)
+        self.accept('arrow_up-up', self.stopRunWatch)
+        self.accept('control-arrow_up', self.startRunWatch)
+        self.accept('control-arrow_up-up', self.stopRunWatch)
+        self.accept('alt-arrow_up', self.startRunWatch)
+        self.accept('alt-arrow_up-up', self.stopRunWatch)
+        self.accept('shift-arrow_up', self.startRunWatch)
+        self.accept('shift-arrow_up-up', self.stopRunWatch)
 
     def disableRun(self):
-        self.ignore(base.Move_Up)
-        self.ignore(base.Move_Up + '-up')
-        self.ignore('control-'+ base.Move_Up)
-        self.ignore('control-' + base.Move_Up + '-up')
-        self.ignore('alt-' + base.Move_Up)
-        self.ignore('alt-' + base.Move_Up + '-up')
-        self.ignore('shift-' + base.Move_Up)
-        self.ignore('shift-' + base.Move_Up + '-up')
+        self.ignore('arrow_up')
+        self.ignore('arrow_up-up')
+        self.ignore('control-arrow_up')
+        self.ignore('control-arrow_up-up')
+        self.ignore('alt-arrow_up')
+        self.ignore('alt-arrow_up-up')
+        self.ignore('shift-arrow_up')
+        self.ignore('shift-arrow_up-up')
 
     def startRunWatch(self):
 
@@ -996,15 +984,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.soundRun.stop()
         self.soundWalk.stop()
 
-    def disableSleeping(self):
-        self.neverSleep = True
-
-    def enableSleeping(self):
-        self.neverSleep = False
-
     def wakeUp(self):
-        if self.neverSleep:
-            return
         if self.sleepCallback != None:
             taskMgr.remove(self.uniqueName('sleepwatch'))
             self.startSleepWatch(self.sleepCallback)
@@ -1014,8 +994,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         return
 
     def gotoSleep(self):
-        if self.neverSleep:
-            return
         if not self.sleepFlag:
             self.b_setAnimState('Sleep', self.animMultiplier)
             self.sleepFlag = 1
@@ -1240,63 +1218,58 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def handlePlayerFriendWhisper(self, playerId, charMessage):
         print 'handlePlayerFriendWhisper'
-        self.displayWhisperPlayer(playerId, charMessage, WhisperPopup.WTNormal)
+        self.displayWhisperPlayer(playerId, charMessage, WTNormal)
 
     def canChat(self):
         return 0
 
-@magicWord(category=CATEGORY_MOBILITY)
+
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def run():
-    """Toggle "running", which makes you move much faster."""
+    """
+    Toggles debugging run speed.
+    """
     inputState.set('debugRunning', inputState.isSet('debugRunning') != True)
+    return 'Toggled debug run speed.'
 
-@magicWord(category=CATEGORY_MOBILITY)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def collisionsOff():
-    """Turn off collisions. This allows you to run through things, and walk in air."""
-    if not base.localAvatar:
-        return 'No localAvatar!'
+    """
+    Turns collisions off.
+    """
     base.localAvatar.collisionsOff()
+    return 'Collisions are disabled.'
 
-@magicWord(category=CATEGORY_MOBILITY)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def collisionsOn():
-    """Re-enable collisions."""
-    if not base.localAvatar:
-        return 'No localAvatar!'
+    """
+    Turns collisions on.
+    """
     base.localAvatar.collisionsOn()
+    return 'Collisions are enabled.'
 
-@magicWord(category=CATEGORY_MOBILITY)
-def enableAFGravity():
-    """Turn on Estate April Fools gravity."""
-    if not base.localAvatar:
-        return 'No localAvatar!'
-    base.localAvatar.controlManager.currentControls.setGravity(ToontownGlobals.GravityValue * 0.75)
+@magicWord(category=CATEGORY_ADMINISTRATOR, types=[int])
+def gravity(value):
+    """
+    Modifies the invoker's gravity. For default, use 0.
+    """
+    if value < 0:
+        return 'Invalid gravity value!'
+    if value == 0:
+        base.localAvatar.controlManager.currentControls.setGravity(ToontownGlobals.GravityValue * 2.0)
+    else:
+        base.localAvatar.controlManager.currentControls.setGravity(value)
 
-@magicWord(category=CATEGORY_MOBILITY, types=[int, bool])
-def setGravity(gravityValue, overrideWarning=False):
-    """Set your gravity value!"""
-    if not base.localAvatar:
-        return 'No localAvatar!'
-    if gravityValue < 1 and not overrideWarning:
-        return 'A value lower than 1 may crash your client.'
-    base.localAvatar.controlManager.currentControls.setGravity(gravityValue)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER, types=[float, float, float])
+def xyz(x, y, z):
+    """
+    Modifies the position of the invoker.
+    """
+    base.localAvatar.setPos(x, y, z)
 
-@magicWord(category=CATEGORY_MOBILITY)
-def normalGravity():
-    """Turn off Estate April Fools gravity."""
-    if not base.localAvatar:
-        return 'No localAvatar!'
-    base.localAvatar.controlManager.currentControls.setGravity(ToontownGlobals.GravityValue * 2.0)
-
-@magicWord(category=CATEGORY_DEBUG)
-def getPos():
-    """Get current position of your toon."""
-    if not base.localAvatar:
-        return 'No localAvatar!'
-    return base.localAvatar.getPos()
-
-@magicWord(category=CATEGORY_DEBUG, types=[float, float, float])
-def setPos(toonX, toonY, toonZ):
-    """Set position of your toon."""
-    if not base.localAvatar:
-        return 'No localAvatar!'
-    base.localAvatar.setPos(toonX, toonY, toonZ)
+@magicWord(category=CATEGORY_COMMUNITY_MANAGER, types=[float, float, float])
+def hpr(h, p, r):
+    """
+    Modifies the rotation of the invoker.
+    """
+    base.localAvatar.setHpr(h, p, r)

@@ -39,42 +39,42 @@ TreasureModels = {
         'phase_4/audio/sfx/SZ_DD_treasure.ogg',
     ),
     TreasureE: (
-        'phase_4/models/props/icecream',
+        'phase_5.5/models/props/popsicle_treasure',
         'phase_4/audio/sfx/SZ_DD_treasure.ogg',
     ),
 }
 
 SafeZoneTreasureSpawns = {
     ToontownGlobals.ToontownCentral: (
-        TreasureTT, 5, # TTTreasure heals 3 each...
+        TreasureTT, 3, # TTTreasure heals 3 each...
         [
-            (-61.3,  -9.1,  1.2),
-            (-90.7, -5.7, -0.58),
+            (-60.976, -8.866, 1.3),
+            (-90.632, -5.828, -0.63),
             (27.1, -93.5, 2.5),
             (94.2, 33.5, 4),
-            (35.4, 43.1, 4),
+            (31.554, 56.915, 4),
             (67.1, 105.5, 2.5),
             (-99.15, -87.3407, 0.52499),
-            (1.60586, -119.492, 3.025),
-            (43.2026, -78.287, 3.025),
+            (8.183, -127.016, 3.025),
+            (39.684, -80.356, 2.525),
             (129.137, -61.9039, 2.525),
             (92.99, -158.399, 3.025),
             (111.749, -8.59927, 4.57466),
-            (41.999, -30.2923, 4.025),
+            (37.983, -26.281, 4.025),
             (31.0649, -43.9149, 4.025),
             (10.0156, 105.218, 2.525),
             (46.9667, 169.143, 3.025),
             (100.68, 93.9896, 2.525),
             (129.285, 58.6107, 2.525),
             (-28.6272, 85.9833, 0.525),
-            (-110.613, 86.1727, 0.525),
-            (-132.528, 31.255, 0.525),
+            (-111.589, 79.414, 0.525),
+            (-136.296, 32.794, 0.525),
         ],
         10, # Rate
         5 # Maximum
     ),
     ToontownGlobals.DonaldsDock: (
-        TreasureDD, 12, # DDTreasure heals 10 each...
+        TreasureDD, 10, # DDTreasure heals 10 each...
         [
             (52.9072, -23.4768, -12.308),
             (35.3827, -51.9196, -12.308),
@@ -104,10 +104,10 @@ SafeZoneTreasureSpawns = {
             (41.4197, 4.35384, -12.308),
         ],
         10, # Rate
-        3 # Maximum
+        2 # Maximum
     ),
     ToontownGlobals.DaisyGardens: (
-        TreasureDG, 14, # DGTreasure heals 10 each...
+        TreasureDG, 10, # DGTreasure heals 10 each...
         [
             (-49, 156, 0.0),
             (-59, 50, 0.0),
@@ -131,10 +131,10 @@ SafeZoneTreasureSpawns = {
             (-102, 101, 0.0),
         ],
         7, # Rate
-        4 # Maximum
+        2 # Maximum
     ),
     ToontownGlobals.TheBrrrgh: (
-        TreasureBR, 18, # +12 laff
+        TreasureBR, 12, # +12 laff
         [
             (-108, 46, 6.2),
             (-111, 74, 6.2),
@@ -156,10 +156,10 @@ SafeZoneTreasureSpawns = {
             (35, -98, 6.2),
         ],
         10, # Rate
-        3 # Maximum
+        2 # Maximum
     ),
     ToontownGlobals.MinniesMelodyland: (
-        TreasureMM, 16, # +10 laff
+        TreasureMM, 10, # +10 laff
         [
             (118, -39, 3.3),
             (118, 1, 3.3),
@@ -182,10 +182,10 @@ SafeZoneTreasureSpawns = {
             (-24, -75, -14.5),
         ],
         10, # Rate
-        4 # Maximum
+        2 # Maximum
     ),
     ToontownGlobals.DonaldsDreamland: (
-        TreasureDL, 20, # +12 laff
+        TreasureDL, 12, # +12 laff
         [
             (86, 69, -17.4),
             (34, -48, -16.4),
@@ -206,10 +206,10 @@ SafeZoneTreasureSpawns = {
             (-34, -88, 0.0),
         ],
         10, # Rate
-        3 #Maximum
+        2 #Maximum
     ),
     ToontownGlobals.OutdoorZone: (
-        TreasureOZ, 5, # +3 laff
+        TreasureOZ, 3, # +3 laff
         [
             (-156.9, -118.9, 0.025),
             (-35.6, 86.0, 1.25),
@@ -231,7 +231,7 @@ SafeZoneTreasureSpawns = {
         5 # Maximum
     ),
     ToontownGlobals.MyEstate: (
-        TreasureE, 10, # +2 laff
+        TreasureE, 2, # +2 laff
         [
             (102.9, 14.17, 0.57),
             (131.3, 45.31, 0.42),

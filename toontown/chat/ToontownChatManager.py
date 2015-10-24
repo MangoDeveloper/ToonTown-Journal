@@ -38,24 +38,25 @@ class ToontownChatManager(ChatManager.ChatManager):
         self.openScSfx.setVolume(0.6)
         self.scButton = DirectButton(image=(gui.find('**/ChtBx_ChtBtn_UP'), gui.find('**/ChtBx_ChtBtn_DN'), gui.find('**/ChtBx_ChtBtn_RLVR')), pos=TTLocalizer.TCMscButtonPos, parent=base.a2dTopLeft, scale=1.179, relief=None, image_color=Vec4(0.75, 1, 0.6, 1), text=('', OTPLocalizer.GlobalSpeedChatName, OTPLocalizer.GlobalSpeedChatName), text_scale=TTLocalizer.TCMscButton, text_fg=Vec4(1, 1, 1, 1), text_shadow=Vec4(0, 0, 0, 1), text_pos=(0, -0.09), textMayChange=0, sortOrder=DGG.FOREGROUND_SORT_INDEX, command=self.__scButtonPressed, clickSound=self.openScSfx)
         self.scButton.hide()
-        self.whisperFrame = DirectFrame(parent=base.a2dTopLeft, relief=None, image=DGG.getDefaultDialogGeom(), image_scale=(0.77, 0.70, 0.20), image_color=OTPGlobals.GlobalDialogColor, pos=(0.40, 0, -0.105), text=OTPLocalizer.ChatManagerWhisperTo, text_wordwrap=6.5, text_scale=TTLocalizer.TCMwhisperFrame, text_fg=Vec4(0, 0, 0, 1), text_pos=(0.18, 0.01), textMayChange=1, sortOrder=DGG.FOREGROUND_SORT_INDEX)
+        self.whisperFrame = DirectFrame(parent=base.a2dTopLeft, relief=None, image=DGG.getDefaultDialogGeom(), image_scale=(0.45, 0.45, 0.45), image_color=OTPGlobals.GlobalDialogColor, pos=(1.25, 0, -0.269), text=OTPLocalizer.ChatManagerWhisperTo, text_wordwrap=7.0, text_scale=TTLocalizer.TCMwhisperFrame, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0.14), textMayChange=1, sortOrder=DGG.FOREGROUND_SORT_INDEX)
         self.whisperFrame.hide()
-        self.whisperButton = DirectButton(parent=self.whisperFrame, image=(gui.find('**/ChtBx_ChtBtn_UP'), gui.find('**/ChtBx_ChtBtn_DN'), gui.find('**/ChtBx_ChtBtn_RLVR')), pos=(-0.33, 0, 0.033), scale=1.179, relief=None, image_color=Vec4(1, 1, 1, 1), text=('',
+        self.whisperButton = DirectButton(parent=self.whisperFrame, image=(gui.find('**/ChtBx_ChtBtn_UP'), gui.find('**/ChtBx_ChtBtn_DN'), gui.find('**/ChtBx_ChtBtn_RLVR')), pos=(-0.125, 0, -0.1), scale=1.179, relief=None, image_color=Vec4(1, 1, 1, 1), text=('',
          OTPLocalizer.ChatManagerChat,
          OTPLocalizer.ChatManagerChat,
          ''), image3_color=Vec4(0.6, 0.6, 0.6, 0.6), text_scale=TTLocalizer.TCMwhisperButton, text_fg=(0, 0, 0, 1), text_pos=(0, -0.09), textMayChange=0, command=self.__whisperButtonPressed)
-        self.whisperScButton = DirectButton(parent=self.whisperFrame, image=(gui.find('**/ChtBx_ChtBtn_UP'), gui.find('**/ChtBx_ChtBtn_DN'), gui.find('**/ChtBx_ChtBtn_RLVR')), pos=(-0.195, 0, 0.033), scale=1.179, relief=None, image_color=Vec4(0.75, 1, 0.6, 1), text=('',
+        self.whisperScButton = DirectButton(parent=self.whisperFrame, image=(gui.find('**/ChtBx_ChtBtn_UP'), gui.find('**/ChtBx_ChtBtn_DN'), gui.find('**/ChtBx_ChtBtn_RLVR')), pos=(0.0, 0, -0.1), scale=1.179, relief=None, image_color=Vec4(0.75, 1, 0.6, 1), text=('',
          OTPLocalizer.GlobalSpeedChatName,
          OTPLocalizer.GlobalSpeedChatName,
          ''), image3_color=Vec4(0.6, 0.6, 0.6, 0.6), text_scale=TTLocalizer.TCMwhisperScButton, text_fg=(0, 0, 0, 1), text_pos=(0, -0.09), textMayChange=0, command=self.__whisperScButtonPressed)
-        self.whisperCancelButton = DirectButton(parent=self.whisperFrame, image=(gui.find('**/CloseBtn_UP'), gui.find('**/CloseBtn_DN'), gui.find('**/CloseBtn_Rllvr')), pos=(-0.06, 0, 0.033), scale=1.179, relief=None, text=('', OTPLocalizer.ChatManagerCancel, OTPLocalizer.ChatManagerCancel), text_scale=0.05, text_fg=(0, 0, 0, 1), text_pos=(0, -0.09), textMayChange=0, command=self.__whisperCancelPressed)
+        self.whisperCancelButton = DirectButton(parent=self.whisperFrame, image=(gui.find('**/CloseBtn_UP'), gui.find('**/CloseBtn_DN'), gui.find('**/CloseBtn_Rllvr')), pos=(0.125, 0, -0.1), scale=1.179, relief=None, text=('', OTPLocalizer.ChatManagerCancel, OTPLocalizer.ChatManagerCancel), text_scale=0.05, text_fg=(0, 0, 0, 1), text_pos=(0, -0.09), textMayChange=0, command=self.__whisperCancelPressed)
         gui.removeNode()
         ChatManager.ChatManager.__init__(self, cr, localAvatar)
-        self.defaultToWhiteList = config.GetBool('white-list-is-default', 1)
+        self.defaultToWhiteList = base.config.GetBool('white-list-is-default', 1)
         self.chatInputSpeedChat = TTChatInputSpeedChat(self)
         self.normalPos = Vec3(0.25, 0, -0.196)
-        self.whisperPos = Vec3(0.25, 0, -0.28)
+        self.whisperPos = Vec3(0, 0, -0.296)
         self.speedChatPlusPos = Vec3(-0.35, 0, 0.71)
+        self.SCWhisperPos = Vec3(0, 0, 0)
         self.chatInputWhiteList = TTChatInputWhiteList()
         if self.defaultToWhiteList:
             self.chatInputNormal = self.chatInputWhiteList
@@ -132,6 +133,7 @@ class ToontownChatManager(ChatManager.ChatManager):
 
     def enterMainMenu(self):
         self.chatInputNormal.setPos(self.normalPos)
+        self.chatInputNormal.reparentTo(base.a2dTopLeft)
         if self.chatInputWhiteList.isActive():
             self.notify.debug('enterMainMenu calling checkObscured')
             ChatManager.ChatManager.checkObscurred(self)
@@ -365,13 +367,13 @@ class ToontownChatManager(ChatManager.ChatManager):
         self.problemActivatingChat.hide()
 
     def __normalButtonPressed(self):
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: CHAT: Speedchat Plus')
         messenger.send('wakeup')
         self.fsm.request('normalChat')
 
     def __scButtonPressed(self):
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: CHAT: Speedchat')
         messenger.send('wakeup')
         if self.fsm.getCurrentState().getName() == 'speedChat':
@@ -381,15 +383,11 @@ class ToontownChatManager(ChatManager.ChatManager):
 
     def __whisperButtonPressed(self, avatarName, avatarId, playerId):
         messenger.send('wakeup')
-        playerInfo = None
         if playerId:
             playerInfo = base.cr.playerFriendsManager.getFriendInfo(playerId)
-        if playerInfo:
-            if playerInfo.understandableYesNo:
-                self.fsm.request('whisperChatPlayer', [avatarName, playerId])
-                return
         if avatarId:
-            self.fsm.request('whisperChat', [avatarName, avatarId])
+            self.enterWhisperChat(avatarName, avatarId)
+        self.whisperFrame.hide()
         return
 
     def enterNormalChat(self):
@@ -409,6 +407,7 @@ class ToontownChatManager(ChatManager.ChatManager):
 
     def enterWhisperChat(self, avatarName, avatarId):
         result = ChatManager.ChatManager.enterWhisperChat(self, avatarName, avatarId)
+        self.chatInputNormal.reparentTo(base.a2dTopCenter)
         self.chatInputNormal.setPos(self.whisperPos)
         if result == None:
             self.notify.warning('something went wrong in enterWhisperChat, falling back to main menu')
@@ -457,7 +456,7 @@ class ToontownChatManager(ChatManager.ChatManager):
         self.fsm.request('mainMenu')
 
     def __whisperScButtonPressed(self, avatarName, avatarId, playerId):
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: CHAT: Whisper')
         messenger.send('wakeup')
         hasManager = hasattr(base.cr, 'playerFriendsManager')
@@ -476,6 +475,7 @@ class ToontownChatManager(ChatManager.ChatManager):
                 self.fsm.request('whisper', [avatarName, avatarId, playerId])
             else:
                 self.fsm.request('whisperSpeedChatPlayer', [playerId])
+        # Do more work here for position of SCWhisperpos
 
     def __whisperCancelPressed(self):
         self.fsm.request('mainMenu')

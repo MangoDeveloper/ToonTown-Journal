@@ -5,7 +5,7 @@ from BattleBase import *
 from direct.distributed.ClockDelta import *
 from toontown.toonbase import ToontownBattleGlobals
 from direct.distributed import DistributedNode
-from direct.fsm import ClassicFSM, State
+from direct.fsm import ClassicFSM
 from direct.fsm import State
 from direct.task.Task import Task
 from direct.directnotify import DirectNotifyGlobal
@@ -20,18 +20,18 @@ from toontown.hood import ZoneUtil
 from toontown.distributed import DelayDelete
 from toontown.toon import TTEmote
 from otp.avatar import Emote
-from otp.nametag.NametagConstants import *
-from otp.nametag import NametagGlobals
+from toontown.nametag import NametagGlobals
+
 
 class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBattleBase')
-    id = 0
     camPos = ToontownBattleGlobals.BattleCamDefaultPos
     camHpr = ToontownBattleGlobals.BattleCamDefaultHpr
     camFov = ToontownBattleGlobals.BattleCamDefaultFov
     camMenuFov = ToontownBattleGlobals.BattleCamMenuFov
     camJoinPos = ToontownBattleGlobals.BattleCamJoinPos
     camJoinHpr = ToontownBattleGlobals.BattleCamJoinHpr
+    id = 0
 
     def __init__(self, cr, townBattle):
         DistributedNode.DistributedNode.__init__(self, cr)
@@ -80,6 +80,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.adjustFsm = ClassicFSM.ClassicFSM('Adjust', [State.State('Adjusting', self.enterAdjusting, self.exitAdjusting, ['NotAdjusting']), State.State('NotAdjusting', self.enterNotAdjusting, self.exitNotAdjusting, ['Adjusting'])], 'NotAdjusting', 'NotAdjusting')
         self.adjustFsm.enterInitialState()
         self.interactiveProp = None
+        self.fireCount = 0
         return
 
     def uniqueBattleName(self, name):
@@ -108,21 +109,21 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.activeIntervals = {}
 
     def clearInterval(self, name, finish = 0):
-        if self.activeIntervals.has_key(name):
+        if name in self.activeIntervals:
             ival = self.activeIntervals[name]
             if finish:
                 ival.finish()
             else:
                 ival.pause()
-            if self.activeIntervals.has_key(name):
+            if name in self.activeIntervals:
                 DelayDelete.cleanupDelayDeletes(ival)
-                if self.activeIntervals.has_key(name):
+                if name in self.activeIntervals:
                     del self.activeIntervals[name]
         else:
             self.notify.debug('interval: %s already cleared' % name)
 
     def finishInterval(self, name):
-        if self.activeIntervals.has_key(name):
+        if name in self.activeIntervals:
             interval = self.activeIntervals[name]
             interval.finish()
 
@@ -363,7 +364,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.suits = []
         suitGone = 0
         for s in suits:
-            if self.cr.doId2do.has_key(s):
+            if s in self.cr.doId2do:
                 suit = self.cr.doId2do[s]
                 suit.setState('Battle')
                 self.suits.append(suit)
@@ -443,7 +444,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         if len(oldSuitTraps) != len(self.suitTraps):
             self.needAdjustTownBattle = 1
         else:
-            for i in range(len(oldSuitTraps)):
+            for i in xrange(len(oldSuitTraps)):
                 if oldSuitTraps[i] == '9' and self.suitTraps[i] != '9' or oldSuitTraps[i] != '9' and self.suitTraps[i] == '9':
                     self.needAdjustTownBattle = 1
                     break
@@ -532,9 +533,9 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
                 if self.levelBattle:
                     self.unlockLevelViz()
             if currStateName != 'NoLocalToon':
-    	        for suit in self.luredSuits:
-                    suit.loop('lured')            
                 self.localToonFsm.request('NoLocalToon')
+        for suit in self.luredSuits:
+            suit.loop('lured')
         return oldtoons
 
     def adjust(self, timestamp):
@@ -562,7 +563,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         targetIndices = []
         unAttack = 0
         localToonInList = 0
-        for i in range(len(ids)):
+        for i in xrange(len(ids)):
             track = tracks[i]
             level = levels[i]
             toon = self.findToon(ids[i])
@@ -609,7 +610,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
                     targetIndex = -1
             targetIndices.append(targetIndex)
 
-        for i in range(4 - len(ids)):
+        for i in xrange(4 - len(ids)):
             toonIndices.append(-1)
             tracks.append(-1)
             levels.append(-1)
@@ -944,7 +945,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.storeInterval(runMTrack, runName)
 
     def getToon(self, toonId):
-        if self.cr.doId2do.has_key(toonId):
+        if toonId in self.cr.doId2do:
             return self.cr.doId2do[toonId]
         else:
             self.notify.warning('getToon() - toon: %d not in repository!' % toonId)
@@ -1019,7 +1020,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.notify.debug('enterLocalToonWaitForInput()')
         camera.setPosHpr(self.camPos, self.camHpr)
         base.camLens.setMinFov(self.camMenuFov/(4./3.))
-        NametagGlobals.setMasterArrowsOn(0)
+        NametagGlobals.setWant2dNametags(False)
         self.townBattle.setState('Attack')
         self.accept(self.localToonBattleEvent, self.__handleLocalToonBattleEvent)
 
@@ -1139,7 +1140,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         elif mode == 'PETSOSINFO':
             petProxyId = response['id']
             self.notify.debug('got a PETSOSINFO for pet: %d' % petProxyId)
-            if base.cr.doId2do.has_key(petProxyId):
+            if petProxyId in base.cr.doId2do:
                 self.notify.debug('pet: %d was already in the repository' % petProxyId)
                 proxyGenerateMessage = 'petProxy-%d-generated' % petProxyId
                 messenger.send(proxyGenerateMessage)
@@ -1184,7 +1185,8 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.notify.debug('enterPlayMovie()')
         self.delayDeleteMembers()
         if self.hasLocalToon():
-            NametagGlobals.setMasterArrowsOn(0)
+            NametagGlobals.setWant2dNametags(False)
+            pass
         if ToontownBattleGlobals.SkipMovie:
             self.movie.play(ts, self.__handleMovieDone)
             self.movie.finish()
@@ -1504,3 +1506,9 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
 
     def getCollisionName(self):
         return 'enter' + self.lockoutNodePath.getName()
+
+    def setFireCount(self, amount):
+        self.fireCount = amount
+
+    def getFireCount(self):
+        return self.fireCount

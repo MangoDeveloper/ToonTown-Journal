@@ -2,22 +2,22 @@
 cd ..
 
 # Get the user input:
-read -p "Username: " TTRUsername
-read -s -p "Password: " TTRPassword
+read -p "Username: " ttiUsername
+read -s -p "Password: " ttiPassword
 echo
-read -p "Gameserver (DEFAULT: 167.114.28.238): " TTR_GAMESERVER
-TTR_GAMESERVER=${TTR_GAMESERVER:-"167.114.28.238"}
+read -p "Gameserver (DEFAULT: 167.114.28.238): " TTI_GAMESERVER
+TTI_GAMESERVER=${TTI_GAMESERVER:-"167.114.28.238"}
 
 # Export the environment variables:
-export TTRUsername=$TTRUsername
-export TTRPassword=$TTRPassword
-export TTR_PLAYTOKEN=$TTRUsername
-export TTR_GAMESERVER=$TTR_GAMESERVER
+export ttiUsername=$ttiUsername
+export ttiPassword=$ttiPassword
+export TTI_PLAYCOOKIE=$ttiUsername
+export TTI_GAMESERVER=$TTI_GAMESERVER
 
 echo "==============================="
-echo "Starting Toontown Custom”
-echo "Username: $TTRUsername"
-echo "Gameserver: $TTR_GAMESERVER"
+echo "Starting Toontown Infinite..."
+echo "Username: $ttiUsername"
+echo "Gameserver: $TTI_GAMESERVER"
 echo "==============================="
 
-/usr/bin/python2 -m toontown.toonbase.ToontownStartRemoteDB
+/usr/bin/python2 -m toontown.toonbase.ClientStartRemoteDB

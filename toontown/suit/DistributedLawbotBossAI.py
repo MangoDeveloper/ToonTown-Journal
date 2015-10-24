@@ -1,5 +1,6 @@
 from otp.ai.AIBaseGlobal import *
 from direct.distributed.ClockDelta import *
+from otp.ai.MagicWordGlobal import *
 import DistributedBossCogAI
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatarAI
@@ -19,7 +20,8 @@ from toontown.suit import DistributedLawbotBossSuitAI
 from toontown.coghq import DistributedLawbotCannonAI
 from toontown.coghq import DistributedLawbotChairAI
 from toontown.toonbase import ToontownBattleGlobals
-from otp.ai.MagicWordGlobal import *
+import math
+
 
 class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedLawbotBossAI')
@@ -273,7 +275,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
              (1, 1),
              (1, 1, 1, 1, 1))
             listVersion = list(SuitBuildingGlobals.SuitBuildingInfo)
-            if config.GetBool('lawbot-boss-cheat', 0):
+            if simbase.config.GetBool('lawbot-boss-cheat', 0):
                 listVersion[13] = weakenedValue
                 SuitBuildingGlobals.SuitBuildingInfo = tuple(listVersion)
             return self.invokeSuitPlanner(13, 0)
@@ -296,12 +298,12 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.notify.debug('enterElevatro')
         DistributedBossCogAI.DistributedBossCogAI.enterElevator(self)
         self.b_setBossDamage(ToontownGlobals.LawbotBossInitialDamage, 0, 0)
-        self.__makeChairs()
 
     def enterIntroduction(self):
         self.notify.debug('enterIntroduction')
         DistributedBossCogAI.DistributedBossCogAI.enterIntroduction(self)
         self.b_setBossDamage(ToontownGlobals.LawbotBossInitialDamage, 0, 0)
+        self.__makeChairs()
 
     def exitIntroduction(self):
         self.notify.debug('exitIntroduction')
@@ -338,7 +340,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             self.notify.debug('totalDisplacement=%s' % totalDisplacement)
             numToons = len(self.involvedToons)
             stepDisplacement = totalDisplacement / (numToons + 1)
-            for index in range(numToons):
+            for index in xrange(numToons):
                 newPos = stepDisplacement * (index + 1)
                 self.notify.debug('curDisplacement = %s' % newPos)
                 newPos += startPt
@@ -352,7 +354,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def __makeChairs(self):
         if self.chairs == None:
             self.chairs = []
-            for index in range(12):
+            for index in xrange(12):
                 chair = DistributedLawbotChairAI.DistributedLawbotChairAI(self.air, self, index)
                 chair.generateWithRequired(self.zoneId)
                 self.chairs.append(chair)
@@ -391,14 +393,14 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.__deleteChairs()
 
     def getCannonBallsLeft(self, avId):
-        if self.cannonBallsLeft.has_key(avId):
+        if avId in self.cannonBallsLeft:
             return self.cannonBallsLeft[avId]
         else:
             self.notify.warning('getCannonBalsLeft invalid avId: %d' % avId)
             return 0
 
     def decrementCannonBallsLeft(self, avId):
-        if self.cannonBallsLeft.has_key(avId):
+        if avId in self.cannonBallsLeft:
             self.cannonBallsLeft[avId] -= 1
             if self.cannonBallsLeft[avId] < 0:
                 self.notify.warning('decrementCannonBallsLeft <0 cannonballs for %d' % avId)
@@ -444,7 +446,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                 self.numToonJurorsSeated += 1
 
         self.notify.debug('numToonJurorsSeated=%d' % self.numToonJurorsSeated)
-        self.air.writeServerEvent('jurorsSeated', doId=self.doId, dept=self.dept, involvedToons=self.involvedToons, numToonJurors=self.numToonJurorsSeated)
+        self.air.writeServerEvent('jurorsSeated', self.doId, '%s|%s|%s' % (self.dept, self.involvedToons, self.numToonJurorsSeated))
         self.__deleteCannons()
         self.__stopChairs()
 
@@ -486,12 +488,12 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
          self.numGavels,
          self.numLawyers,
          self.toonupValue))
-        self.air.writeServerEvent('lawbotBossSettings', doId=self.doId, dept=self.dept,
-         difficulty=self.battleDifficulty,
-         ammoCount=self.ammoCount,
-         numGavels=self.numGavels,
-         numLawyers=self.numLawyers,
-         toonupValue=self.toonupValue)
+        self.air.writeServerEvent('lawbotBossSettings', self.doId, '%s|%s|%s|%s|%s|%s' % (self.dept,
+         self.battleDifficulty,
+         self.ammoCount,
+         self.numGavels,
+         self.numLawyers,
+         self.toonupValue))
         self.__makeBattleThreeObjects()
         self.__makeLawyers()
         self.numPies = self.ammoCount
@@ -500,7 +502,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         jurorsOver = self.numToonJurorsSeated - ToontownGlobals.LawbotBossJurorsForBalancedScale
         dmgAdjust = jurorsOver * ToontownGlobals.LawbotBossDamagePerJuror
         self.b_setBossDamage(ToontownGlobals.LawbotBossInitialDamage + dmgAdjust, 0, 0)
-        if config.GetBool('lawbot-boss-cheat', 0):
+        if simbase.config.GetBool('lawbot-boss-cheat', 0):
             self.b_setBossDamage(ToontownGlobals.LawbotBossMaxDamage - 1, 0, 0)
         self.battleThreeStart = globalClock.getFrameTime()
         for toonId in self.involvedToons:
@@ -516,24 +518,17 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.numToonsAtStart = len(self.involvedToons)
 
     def getToonDifficulty(self):
-        highestCogSuitLevel = 0
-        totalCogSuitLevels = 0.0
-        totalNumToons = 0.0
+        totalCogSuitTier = 0
+        totalToons = 0
+
         for toonId in self.involvedToons:
             toon = simbase.air.doId2do.get(toonId)
             if toon:
-                toonLevel = toon.getNumPromotions(self.dept)
-                totalCogSuitLevels += toonLevel
-                totalNumToons += 1
-                if toon.cogLevels > highestCogSuitLevel:
-                    highestCogSuitLevel = toonLevel
+                totalToons += 1
+                totalCogSuitTier += toon.cogTypes[1]
 
-        if not totalNumToons:
-            totalNumToons = 1.0
-        averageLevel = totalCogSuitLevels / totalNumToons
-        self.notify.debug('toons average level = %f, highest level = %d' % (averageLevel, highestCogSuitLevel))
-        retval = min(averageLevel, self.maxToonLevels)
-        return retval
+        averageTier = math.floor(totalCogSuitTier / totalToons) + 1
+        return int(averageTier)
 
     def __saySomething(self, task = None):
         index = None
@@ -571,7 +566,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def __makeBattleThreeObjects(self):
         if self.gavels == None:
             self.gavels = []
-            for index in range(self.numGavels):
+            for index in xrange(self.numGavels):
                 gavel = DistributedLawbotBossGavelAI.DistributedLawbotBossGavelAI(self.air, self, index)
                 gavel.generateWithRequired(self.zoneId)
                 self.gavels.append(gavel)
@@ -601,20 +596,20 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                 self.numToonsAtEnd += 1
                 toonHps.append(toon.hp)
 
-        self.air.writeServerEvent('b3Info', doId=self.doId, victory=didTheyWin,
-         time=self.battleThreeTimeInMin,
-         numToonsAtStart=self.numToonsAtStart,
-         numToonsAtEnd=self.numToonsAtEnd,
-         toonJurors=self.numToonJurorsSeated,
-         difficulty=self.battleDifficulty,
-         ammoCount=self.ammoCount,
-         numGavels=self.numGavels,
-         numLawyers=self.numLawyers,
-         toonupValue=self.toonupValue,
-         numBonuses=self.numBonusStates,
-         numAreaAttacks=self.numAreaAttacks,
-         toonHps=toonHps,
-         weightPerToon=self.weightPerToon)
+        self.air.writeServerEvent('b3Info', self.doId, '%d|%.2f|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%s|%s' % (didTheyWin,
+         self.battleThreeTimeInMin,
+         self.numToonsAtStart,
+         self.numToonsAtEnd,
+         self.numToonJurorsSeated,
+         self.battleDifficulty,
+         self.ammoCount,
+         self.numGavels,
+         self.numLawyers,
+         self.toonupValue,
+         self.numBonusStates,
+         self.numAreaAttacks,
+         toonHps,
+         self.weightPerToon))
 
     def exitBattleThree(self):
         self.doBattleThreeInfo()
@@ -660,77 +655,75 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                 toon.b_promote(self.deptIndex)
 
     def giveCogSummonReward(self, toon, prefDeptIndex, prefSummonType):
-        cogLevel = int(self.toonLevels / self.maxToonLevels * SuitDNA.suitsPerDept)
-        cogLevel = min(cogLevel, SuitDNA.suitsPerDept - 1)
+        cogLevel = self.toonLevels - 1
         deptIndex = prefDeptIndex
         summonType = prefSummonType
         hasSummon = toon.hasParticularCogSummons(prefDeptIndex, cogLevel, prefSummonType)
-        if hasSummon:
-            self.notify.debug('trying to find another reward')
-            if not toon.hasParticularCogSummons(prefDeptIndex, cogLevel, 'single'):
-                summonType = 'single'
-            elif not toon.hasParticularCogSummons(prefDeptIndex, cogLevel, 'building'):
-                summonType = 'building'
-            elif not toon.hasParticularCogSummons(prefDeptIndex, cogLevel, 'invasion'):
-                summonType = 'invasion'
-            else:
-                foundOne = False
-                for curDeptIndex in range(len(SuitDNA.suitDepts)):
-                    if not toon.hasParticularCogSummons(curDeptIndex, cogLevel, prefSummonType):
-                        deptIndex = curDeptIndex
+        self.notify.debug('trying to find another reward')
+        if not toon.hasParticularCogSummons(prefDeptIndex, cogLevel, 'single'):
+            summonType = 'single'
+        elif not toon.hasParticularCogSummons(prefDeptIndex, cogLevel, 'building'):
+            summonType = 'building'
+        elif not toon.hasParticularCogSummons(prefDeptIndex, cogLevel, 'invasion'):
+            summonType = 'invasion'
+        else:
+            foundOne = False
+            for curDeptIndex in xrange(len(SuitDNA.suitDepts)):
+                if not toon.hasParticularCogSummons(curDeptIndex, cogLevel, prefSummonType):
+                    deptIndex = curDeptIndex
+                    foundOne = True
+                    break
+                elif not toon.hasParticularCogSummons(curDeptIndex, cogLevel, 'single'):
+                    deptIndex = curDeptIndex
+                    summonType = 'single'
+                    foundOne = True
+                    break
+                elif not toon.hasParticularCogSummons(curDeptIndex, cogLevel, 'building'):
+                    deptIndex = curDeptIndex
+                    summonType = 'building'
+                    foundOne = True
+                    break
+                elif not toon.hasParticularCogSummons(curDeptIndex, cogLevel, 'invasion'):
+                    summonType = 'invasion'
+                    deptIndex = curDeptIndex
+                    foundOne = True
+                    break
+
+            possibleCogLevel = range(SuitDNA.suitsPerDept)
+            possibleDeptIndex = range(len(SuitDNA.suitDepts))
+            possibleSummonType = ['single', 'building', 'invasion']
+            typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
+            if not foundOne:
+                 for i in xrange(5):
+                    randomCogLevel = random.choice(possibleCogLevel)
+                    randomSummonType = random.choice(typeWeights)
+                    randomDeptIndex = random.choice(possibleDeptIndex)
+                    if not toon.hasParticularCogSummons(randomDeptIndex, randomCogLevel, randomSummonType):
                         foundOne = True
-                        break
-                    elif not toon.hasParticularCogSummons(curDeptIndex, cogLevel, 'single'):
-                        deptIndex = curDeptIndex
-                        summonType = 'single'
-                        foundOne = True
-                        break
-                    elif not toon.hasParticularCogSummons(curDeptIndex, cogLevel, 'building'):
-                        deptIndex = curDeptIndex
-                        summonType = 'building'
-                        foundOne = True
-                        break
-                    elif not toon.hasParticularCogSummons(curDeptIndex, cogLevel, 'invasion'):
-                        summonType = 'invasion'
-                        deptIndex = curDeptIndex
-                        foundOne = True
+                        cogLevel = randomCogLevel
+                        summonType = randomSummonType
+                        deptIndex = randomDeptIndex
                         break
 
-                possibleCogLevel = range(SuitDNA.suitsPerDept)
-                possibleDeptIndex = range(len(SuitDNA.suitDepts))
-                possibleSummonType = ['single', 'building', 'invasion']
-                typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
-                if not foundOne:
-                    for i in range(5):
-                        randomCogLevel = random.choice(possibleCogLevel)
-                        randomSummonType = random.choice(typeWeights)
-                        randomDeptIndex = random.choice(possibleDeptIndex)
-                        if not toon.hasParticularCogSummons(randomDeptIndex, randomCogLevel, randomSummonType):
-                            foundOne = True
-                            cogLevel = randomCogLevel
-                            summonType = randomSummonType
-                            deptIndex = randomDeptIndex
-                            break
-
-                for curType in possibleSummonType:
+            for curType in possibleSummonType:
+                if foundOne:
+                    break
+                for curCogLevel in possibleCogLevel:
                     if foundOne:
                         break
-                    for curCogLevel in possibleCogLevel:
+                    for curDeptIndex in possibleDeptIndex:
                         if foundOne:
                             break
-                        for curDeptIndex in possibleDeptIndex:
-                            if foundOne:
-                                break
-                            if not toon.hasParticularCogSummons(curDeptIndex, curCogLevel, curType):
-                                foundOne = True
-                                cogLevel = curCogLevel
-                                summonType = curType
-                                deptIndex = curDeptIndex
+                        if not toon.hasParticularCogSummons(curDeptIndex, curCogLevel, curType):
+                            foundOne = True
+                            cogLevel = curCogLevel
+                            summonType = curType
+                            deptIndex = curDeptIndex
 
-                if not foundOne:
-                    cogLevel = None
-                    summonType = None
-                    deptIndex = None
+            if not foundOne:
+                cogLevel = None
+                summonType = None
+                deptIndex = None
         toon.assignNewCogSummons(cogLevel, summonType, deptIndex)
         return
 
@@ -787,7 +780,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
          'sd',
          'le',
          'bw']
-        for i in range(self.numLawyers):
+        for i in xrange(self.numLawyers):
             suit = DistributedLawbotBossSuitAI.DistributedLawbotBossSuitAI(self.air, None)
             suit.dna = SuitDNA.SuitDNA()
             lawCog = random.choice(lawCogChoices)
@@ -875,8 +868,6 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             self.weightPerToon[toonId] = newWeight
             self.notify.debug('toon %d has weight of %d' % (toonId, newWeight))
 
-        return
-
     def b_setBattleDifficulty(self, batDiff):
         self.setBattleDifficulty(batDiff)
         self.d_setBattleDifficulty(batDiff)
@@ -889,13 +880,10 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     def calcAndSetBattleDifficulty(self):
         self.toonLevels = self.getToonDifficulty()
-        numDifficultyLevels = len(ToontownGlobals.LawbotBossDifficultySettings)
-        battleDifficulty = int(self.toonLevels / self.maxToonLevels * numDifficultyLevels)
-        if battleDifficulty >= numDifficultyLevels:
-            battleDifficulty = numDifficultyLevels - 1
-        self.b_setBattleDifficulty(battleDifficulty)
+        self.b_setBattleDifficulty(self.toonLevels)
 
-@magicWord(category=CATEGORY_OVERRIDE)
+
+@magicWord(category=CATEGORY_ADMINISTRATOR)
 def skipCJ():
     """
     Skips to the final round of the CJ.
@@ -913,18 +901,21 @@ def skipCJ():
         return "You can't skip this round."
     boss.exitIntroduction()
     boss.b_setState('PrepareBattleThree')
-    return 'Skipping the first round...'
 
-@magicWord(category=CATEGORY_OVERRIDE, types=[])
-def endCJ():
-    toon = spellbook.getTarget()
-    if toon:
-        z = toon.zoneId
-        for obj in simbase.air.doId2do.values():
-            zone = getattr(obj, "zoneId", -1)
-            if zone == z:
-                if obj.__class__.__name__ == "DistributedLawbotBossAI":
-                    obj.b_setState('Victory')
-                    return "CJ defeated!"
-        return "CJ not found!"
-    return "Error!"
+
+@magicWord(category=CATEGORY_ADMINISTRATOR)
+def killCJ():
+    """
+    Kills the CJ.
+    """
+    invoker = spellbook.getInvoker()
+    boss = None
+    for do in simbase.air.doId2do.values():
+        if isinstance(do, DistributedLawbotBossAI):
+            if invoker.doId in do.involvedToons:
+                boss = do
+                break
+    if not boss:
+        return "You aren't in a CJ"
+    boss.b_setState('Victory')
+    return 'Killed CJ.'

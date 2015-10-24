@@ -1,33 +1,34 @@
-import argparse
+#!/usr/bin/env python2
 import os
+import sys
+
+import argparse
+
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--panda3d-dir', default='C:/Panda3D-1.9.0',
-                    help='The path to the Panda3D build to use for this distribution.')
-parser.add_argument('--main-module', default='toontown.toonbase.ToontownStart',
-                    help='The path to the main module.')
-parser.add_argument('modules', nargs='*', default=['otp', 'toontown'],
-                    help='The Toontown Offline modules to be included in the build.')
+parser.add_argument('--build-dir', default='build',
+                    help='The directory of which the build was prepared.')
+parser.add_argument('--output', default='GameData.pyd',
+                    help='The built file.')
+parser.add_argument('--main-module', default='infinite.base.ClientStart',
+                    help='The module to load at the start of the game.')
+parser.add_argument('modules', nargs='*', default=['shared', 'infinite'],
+                    help='The Toontown Infinite modules to be included in the build.')
 args = parser.parse_args()
 
 print 'Building the client...'
 
-os.chdir('build')
-try:
-	cmd = os.path.join(args.panda3d_dir, 'python/ppython.exe')
-	cmd += ' -m direct.showutil.pfreeze'
-	args.modules.extend(['direct', 'panda3d', 'pandac'])
-	for module in args.modules:
-    	 cmd += ' -i {0}.*.*'.format(module)
-	cmd += ' -i {0}.*'.format('encodings')
-	cmd += ' -i {0}'.format('base64')
-	cmd += ' -i {0}'.format('site')
-	cmd += ' -o GameData.pyd'
-	cmd += ' {0}'.format(args.main_module)
+os.chdir(args.build_dir)
 
-	os.system(cmd)
+cmd = sys.executable + ' -m direct.showutil.pfreeze'
+args.modules.extend(['direct', 'pandac'])
+for module in args.modules:
+    cmd += ' -i %s.*.*' % module
+cmd += ' -i encodings.*'
+cmd += ' -i base64'
+cmd += ' -i site'
+cmd += ' -o ' + args.output
+cmd += ' ' + args.main_module
+os.system(cmd)
 
-	print 'Done building the client.'
-
-except:
-  print 'building failed'
+print 'Done building the client.'

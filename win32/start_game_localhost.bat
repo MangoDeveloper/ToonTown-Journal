@@ -9,15 +9,15 @@ set /P ttiUsername="Username: "
 
 rem Export the environment variables:
 set ttiPassword=password
-set TTR_PLAYTOKEN=%ttiUsername%
-set TTR_GAMESERVER=127.0.0.1
+set TTI_PLAYCOOKIE=%ttiUsername%
+set TTI_GAMESERVER=127.0.0.1
 
 echo ===============================
-echo Starting Toontown Custom…
+echo Starting Toontown Infinite...
 echo ppython: %PPYTHON_PATH%
 echo Username: %ttiUsername%
-echo Gameserver: %TTR_GAMESERVER%
+echo Gameserver: %TTI_GAMESERVER%
 echo ===============================
 
-%PPYTHON_PATH% -m toontown.toonbase.ToontownStart
+%PPYTHON_PATH% -m toontown.toonbase.ClientStart
 pause

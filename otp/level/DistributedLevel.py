@@ -32,8 +32,6 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
         self.titleColor = (1, 1, 1, 1)
         self.titleText = OnscreenText.OnscreenText('', fg=self.titleColor, shadow=(0, 0, 0, 1), font=ToontownGlobals.getSuitFont(), pos=(0, -0.5), scale=0.16, drawOrder=0, mayChange=1)
         self.smallTitleText = OnscreenText.OnscreenText('', fg=self.titleColor, font=ToontownGlobals.getSuitFont(), pos=(0.65, 0.9), scale=0.08, drawOrder=0, mayChange=1, bg=(0.5, 0.5, 0.5, 0.5), align=TextNode.ARight)
-        self.smallTitleText.setPos(-0.685,-0.098)
-        self.smallTitleText.reparentTo(base.a2dTopRight)
         self.titleSeq = None
         self.zonesEnteredList = []
         self.fColorZones = 0
@@ -133,11 +131,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
         if self.entranceId in self.entranceId2entity:
             epEnt = self.entranceId2entity[self.entranceId]
             if moveLocalAvatar:
-                if base.localAvatar.getAdminAccess() >= 300 and base.localAvatar.doId not in self.avIdList:
-                    # This is a moderator teleporting in to the level.
-                    epEnt.placeToon(base.localAvatar, 0, len(self.avIdList))
-                else:
-                    epEnt.placeToon(base.localAvatar, self.avIdList.index(base.localAvatar.doId), len(self.avIdList))
+                epEnt.placeToon(base.localAvatar, self.avIdList.index(base.localAvatar.doId), len(self.avIdList))
             initialZoneEnt = self.getEntity(epEnt.getZoneEntId())
         elif self.EmulateEntrancePoint:
             self.notify.debug('unknown entranceId %s' % self.entranceId)
@@ -481,6 +475,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
             self.levelSpec.setAttribChange(entId, attribName, value, username)
 
     def spawnTitleText(self):
+
         def getDescription(zoneNum, self = self):
             ent = self.entities.get(zoneNum)
             if ent and hasattr(ent, 'description'):

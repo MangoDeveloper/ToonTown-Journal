@@ -28,7 +28,7 @@ class LevelSpec:
                  'scenarios': [{}]}
         self.entId2specDict = {}
         self.entId2specDict.update(list2dict(self.getGlobalEntIds(), value=self.privGetGlobalEntityDict()))
-        for i in range(self.getNumScenarios()):
+        for i in xrange(self.getNumScenarios()):
             self.entId2specDict.update(list2dict(self.getScenarioEntIds(i), value=self.privGetScenarioEntityDict(i)))
 
         self.setScenario(scenario)
@@ -320,7 +320,7 @@ class LevelSpec:
                 str = t(0) + '%s = {\n' % topLevelName
                 str += t(1) + "'globalEntities': %s,\n" % globalEntitiesName
                 str += t(1) + "'scenarios': [\n"
-                for i in range(self.getNumScenarios()):
+                for i in xrange(self.getNumScenarios()):
                     str += t(2) + '%s,\n' % (scenarioEntitiesName % i)
 
                 str += t(2) + '],\n'
@@ -332,7 +332,7 @@ class LevelSpec:
             str += getPrettyEntityDictStr('GlobalEntities', self.privGetGlobalEntityDict())
             str += '\n'
             numScenarios = self.getNumScenarios()
-            for i in range(numScenarios):
+            for i in xrange(numScenarios):
                 str += getPrettyEntityDictStr('Scenario%s' % i, self.privGetScenarioEntityDict(i))
                 str += '\n'
 
@@ -368,7 +368,7 @@ class LevelSpec:
         def checkSpecIntegrity(self):
             entIds = self.getGlobalEntIds()
             entIds = list2dict(entIds)
-            for i in range(self.getNumScenarios()):
+            for i in xrange(self.getNumScenarios()):
                 for id in self.getScenarioEntIds(i):
                     entIds[id] = None
 
@@ -386,7 +386,7 @@ class LevelSpec:
                             del spec[attrib]
 
                     for attribName in attribNames:
-                        if not spec.has_key(attribName):
+                        if attribName not in spec:
                             LevelSpec.notify.warning("entId %s (%s): missing attrib '%s'" % (entId, spec['type'], attribName))
 
             return

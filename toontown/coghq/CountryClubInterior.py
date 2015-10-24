@@ -5,6 +5,7 @@ from direct.fsm import State
 from direct.showbase import BulletinBoardWatcher
 from pandac.PandaModules import *
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
+from toontown.nametag import NametagGlobals
 from toontown.toon import Toon
 from toontown.toonbase import ToontownGlobals
 from toontown.hood import ZoneUtil
@@ -13,7 +14,7 @@ from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedCountryClub
 from toontown.building import Elevator
-from otp.nametag import NametagGlobals
+from toontown.nametag import NametagGlobals
 import random
 
 class CountryClubInterior(BattlePlace.BattlePlace):
@@ -86,11 +87,11 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         self.fsm.enterInitialState()
         base.transitions.fadeOut(t=0)
         base.localAvatar.inventory.setRespectInvasions(0)
-        
+        base.cr.forbidCheesyEffects(1)
         self._telemLimiter = TLGatherAllAvs('CountryClubInterior', RotationLimitToH)
 
         def commence(self = self):
-            NametagGlobals.setMasterArrowsOn(1)
+            NametagGlobals.setWant2dNametags(True)
             self.fsm.request(requestStatus['how'], [requestStatus])
             base.playMusic(self.music, looping=1, volume=0.8)
             base.transitions.irisIn()
@@ -110,11 +111,11 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         self.acceptOnce('localToonConfrontedCountryClubBoss', handleConfrontedBoss)
 
     def exit(self):
-        NametagGlobals.setMasterArrowsOn(0)
+        NametagGlobals.setWant2dNametags(False)
         bboard.remove(DistributedCountryClub.DistributedCountryClub.ReadyPost)
         self._telemLimiter.destroy()
         del self._telemLimiter
-        
+        base.cr.forbidCheesyEffects(0)
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
         self.loader.music.stop()

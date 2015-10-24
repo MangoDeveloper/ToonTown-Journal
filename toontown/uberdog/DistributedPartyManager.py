@@ -1,10 +1,12 @@
 from direct.distributed.DistributedObject import DistributedObject
 from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
-from otp.nametag.NametagConstants import CFSpeech, CFTimeout
-from toontown.toonbase import ToontownGlobals
-from toontown.toonbase import TTLocalizer
-from toontown.toon import ToonDNA
+
+from toontown.chat.ChatGlobals import *
 from toontown.parties import PartyGlobals
+from toontown.toon import ToonDNA
+from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
+
 
 class DistributedPartyManager(DistributedObject):
     neverDisable = 1
@@ -163,7 +165,7 @@ class DistributedPartyManager(DistributedObject):
             base.cr.playGame.getPlace().handleBookClose()
             return
         hoodId = ToontownGlobals.PartyHood
-        if shardId == base.localAvatar.defaultShard or shardId == (base.localAvatar.defaultShard - 1):
+        if shardId == base.localAvatar.defaultShard:
             shardId = None
         base.cr.playGame.getPlace().requestLeave({'loader': 'safeZoneLoader',
          'where': 'party',

@@ -7,7 +7,6 @@ class BackupManager:
         self.filepath = filepath
         self.extension = extension
 
-
     def getFileName(self, category, info):
         filename = os.path.join(self.filepath, category) + '/'
         for i in info:

@@ -1,3 +1,4 @@
+from otp.ai.AIBaseGlobal import *
 from pandac.PandaModules import *
 from DistributedNPCToonBaseAI import *
 from toontown.toonbase import TTLocalizer
@@ -19,13 +20,13 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
 
     def avatarEnter(self):
         avId = self.air.getAvatarIdFromSender()
-        if not self.air.doId2do.has_key(avId):
+        if avId not in self.air.doId2do:
             self.notify.warning('Avatar: %s not found' % avId)
             return
         if self.isBusy():
             self.freeAvatar(avId)
             return
-        self.petSeeds = simbase.air.petMgr.getAvailablePets(3, 2)
+        self.petSeeds = simbase.air.petMgr.getAvailablePets(5)
         numGenders = len(PetDNA.PetGenders)
         self.petSeeds *= numGenders
         self.petSeeds.sort()
@@ -64,7 +65,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
     def fishSold(self):
         avId = self.air.getAvatarIdFromSender()
         if self.busy != avId:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCPetshopAI.fishSold busy with %s' % self.busy)
+            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.fishSold busy with %s' % self.busy)
             self.notify.warning('somebody called fishSold that I was not busy with! avId: %s' % avId)
             return
         av = simbase.air.doId2do.get(avId)
@@ -84,27 +85,27 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
     def petAdopted(self, petNum, nameIndex):
         avId = self.air.getAvatarIdFromSender()
         if self.busy != avId:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCPetshopAI.petAdopted busy with %s' % self.busy)
+            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.petAdopted busy with %s' % self.busy)
             self.notify.warning('somebody called petAdopted that I was not busy with! avId: %s' % avId)
             return
         av = simbase.air.doId2do.get(avId)
         if av:
             from toontown.hood import ZoneUtil
             zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)
-            if petNum not in range(0, len(self.petSeeds)):
-                self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCPetshopAI.petAdopted and no such pet!')
+            if petNum not in xrange(0, len(self.petSeeds)):
+                self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.petAdopted and no such pet!')
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
             cost = PetUtil.getPetCostFromSeed(self.petSeeds[petNum], zoneId)
             if cost > av.getTotalMoney():
-                self.air.writeServerEvent('suspicious', avId=avId, issue="DistributedNPCPetshopAI.petAdopted and toon doesn't have enough money!")
+                self.air.writeServerEvent('suspicious', avId, "DistributedNPCPetshopAI.petAdopted and toon doesn't have enough money!")
                 self.notify.warning("somebody called petAdopted and didn't have enough money to adopt! avId: %s" % avId)
                 return
             if av.petId != 0:
                 simbase.air.petMgr.deleteToonsPet(avId)
             gender = petNum % len(PetDNA.PetGenders)
-            if nameIndex not in range(0, TTLocalizer.PetNameIndexMAX):
-                self.air.writeServerEvent('suspicious', avId=avId, issue="DistributedNPCPetclerkAI.petAdopted and didn't have valid nameIndex!")
+            if nameIndex not in xrange(0, TTLocalizer.PetNameIndexMAX):
+                self.air.writeServerEvent('avoid_crash', avId, "DistributedNPCPetclerkAI.petAdopted and didn't have valid nameIndex!")
                 self.notify.warning("somebody called petAdopted and didn't have valid nameIndex to adopt! avId: %s" % avId)
                 return
             simbase.air.petMgr.createNewPetFromSeed(avId, self.petSeeds[petNum], nameIndex=nameIndex, gender=gender, safeZoneId=zoneId)
@@ -117,7 +118,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
     def petReturned(self):
         avId = self.air.getAvatarIdFromSender()
         if self.busy != avId:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCPetshopAI.petReturned busy with %s' % self.busy)
+            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.petReturned busy with %s' % self.busy)
             self.notify.warning('somebody called petReturned that I was not busy with! avId: %s' % avId)
             return
         av = simbase.air.doId2do.get(avId)
@@ -128,7 +129,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
     def transactionDone(self):
         avId = self.air.getAvatarIdFromSender()
         if self.busy != avId:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='DistributedNPCPetshopAI.transactionDone busy with %s' % self.busy)
+            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.transactionDone busy with %s' % self.busy)
             self.notify.warning('somebody called transactionDone that I was not busy with! avId: %s' % avId)
             return
         av = simbase.air.doId2do.get(avId)

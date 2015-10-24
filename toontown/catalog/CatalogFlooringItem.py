@@ -115,7 +115,7 @@ class CatalogFlooringItem(CatalogSurfaceItem):
         if versionNumber < 4 or store & CatalogItem.Customization:
             self.colorIndex = di.getUint8()
         else:
-            self.colorIndex = 0
+            self.colorIndex = None
         wtype = FlooringTypes[self.patternIndex]
         return
 
@@ -123,7 +123,10 @@ class CatalogFlooringItem(CatalogSurfaceItem):
         CatalogAtticItem.CatalogAtticItem.encodeDatagram(self, dg, store)
         dg.addUint16(self.patternIndex)
         if store & CatalogItem.Customization:
-            dg.addUint8(self.colorIndex)
+            colorIndex = self.colorIndex
+            if self.colorIndex is None:
+                colorIndex = 0
+            dg.addUint8(colorIndex)
 
 
 def getFloorings(*indexList):
@@ -139,7 +142,7 @@ def getAllFloorings(*indexList):
     for index in indexList:
         colors = FlooringTypes[index][FTColor]
         if colors:
-            for n in range(len(colors)):
+            for n in xrange(len(colors)):
                 list.append(CatalogFlooringItem(index, n))
 
         else:
@@ -163,7 +166,7 @@ def getFlooringRange(fromIndex, toIndex, *otherRanges):
             if patternIndex >= fromIndex and patternIndex <= toIndex:
                 colors = FlooringTypes[patternIndex][FTColor]
                 if colors:
-                    for n in range(len(colors)):
+                    for n in xrange(len(colors)):
                         list.append(CatalogFlooringItem(patternIndex, n))
 
                 else:

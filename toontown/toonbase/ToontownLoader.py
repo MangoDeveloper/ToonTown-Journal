@@ -2,8 +2,7 @@ from pandac.PandaModules import *
 from direct.directnotify.DirectNotifyGlobal import *
 from direct.showbase import Loader
 from toontown.toontowngui import ToontownLoadingScreen
-from toontown.dna import DNAParser
-from direct.stdpy.file import open
+from toontown.dna.DNAParser import *
 
 class ToontownLoader(Loader.Loader):
     TickPeriod = 0.2
@@ -20,15 +19,10 @@ class ToontownLoader(Loader.Loader):
         del self.loadingScreen
         Loader.Loader.destroy(self)
 
-    def loadDNA(self, filename):
-        filename = '/' + filename
+    def loadDNAFile(self, dnastore, filename):
+        return loadDNAFile(dnastore, filename)
 
-        with open(filename, 'r') as f:
-            tree = DNAParser.parse(f)
-
-        return tree
-
-    def beginBulkLoad(self, name, label, range, gui, tipCategory):
+    def beginBulkLoad(self, name, label, range, gui, tipCategory, zoneId):
         self._loadStartT = globalClock.getRealTime()
         Loader.Loader.notify.info("starting bulk load of block '%s'" % name)
         if self.inBulkBlock:
@@ -37,7 +31,7 @@ class ToontownLoader(Loader.Loader):
         self.inBulkBlock = 1
         self._lastTickT = globalClock.getRealTime()
         self.blockName = name
-        self.loadingScreen.begin(range, label, gui, tipCategory)
+        self.loadingScreen.begin(range, label, gui, tipCategory, zoneId)
         return None
 
     def endBulkLoad(self, name):
@@ -76,6 +70,10 @@ class ToontownLoader(Loader.Loader):
 
     def loadModel(self, *args, **kw):
         ret = Loader.Loader.loadModel(self, *args, **kw)
+        if ret:
+            gsg = base.win.getGsg()
+            if gsg:
+                ret.prepareScene(gsg)
         self.tick()
         return ret
 
@@ -90,6 +88,20 @@ class ToontownLoader(Loader.Loader):
         if alphaPath:
             self.tick()
         return ret
+
+    def pdnaModel(self, *args, **kw):
+        ret = Loader.Loader.loadModel(self, *args, **kw)
+        if ret:
+            gsg = base.win.getGsg()
+            if gsg:
+                ret.prepareScene(gsg)
+        return ret
+
+    def pdnaFont(self, *args, **kw):
+        return Loader.Loader.loadFont(self, *args, **kw)
+
+    def pdnaTexture(self, texturePath, alphaPath = None, okMissing = False):
+        return Loader.Loader.loadTexture(self, texturePath, alphaPath, okMissing=okMissing)
 
     def loadSfx(self, soundPath):
         ret = Loader.Loader.loadSfx(self, soundPath)

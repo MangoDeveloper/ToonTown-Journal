@@ -122,16 +122,15 @@ class TeaserPanel(DirectObject):
     def showPage(self, pageName):
         if pageName not in PageOrder:
             self.notify.error("unknown page '%s'" % pageName)
-        base.cr.centralLogger.writeClientEvent('velvetRope: %s' % pageName)
         self.browser.scrollTo(PageOrder.index(pageName))
         self.cleanup()
         self.dialog = TTDialog.TTDialog(parent=aspect2dp, text=TTLocalizer.TeaserTop, text_scale=TTLocalizer.TPdialog, text_align=TextNode.ACenter, text_wordwrap=TTLocalizer.TPdialogWordwrap, topPad=-0.15, midPad=1.25, sidePad=0.25, pad=(0.25, 0.25), command=self.__handleDone, fadeScreen=0.5, style=TTDialog.TwoChoice, buttonTextList=[TTLocalizer.TeaserSubscribe, TTLocalizer.TeaserContinue], button_text_scale=TTLocalizer.TPbuttonTextList, buttonPadSF=5.5, sortOrder=NO_FADE_SORT_INDEX, image=self.upsellBackground)
         self.dialog.setPos(0, 0, 0.75)
         self.browser.reparentTo(self.dialog)
         base.transitions.fadeScreen(0.5)
-        if config.GetBool('want-teaser-scroll-keys', 0):
-            self.accept(base.Move_Right, self.showNextPage)
-            self.accept(base.Move_Left, self.showPrevPage)
+        if base.config.GetBool('want-teaser-scroll-keys', 0):
+            self.accept('arrow_right', self.showNextPage)
+            self.accept('arrow_left', self.showPrevPage)
         self.accept('stoppedAsleep', self.__handleDone)
 
     def showNextPage(self):

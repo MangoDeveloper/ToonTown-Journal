@@ -10,7 +10,7 @@ from direct.directnotify import DirectNotifyGlobal
 
 class NameGenerator:
     text = TextNode('text')
-    if game.name != 'uberDog': # Hacky... this is for the sandbox server which throws IOErrors when reading fonts.
+    if process == 'client':
         text.setFont(ToontownGlobals.getInterfaceFont())
     notify = DirectNotifyGlobal.directNotify.newCategory('NameGenerator')
     boyTitles = []
@@ -38,19 +38,21 @@ class NameGenerator:
         self.lastSuffixes = []
         self.nameDictionary = {}
         searchPath = DSearchPath()
+        if __debug__:
+            searchPath.appendDirectory(Filename('../resources/phase_3/etc'))
         searchPath.appendDirectory(Filename('/phase_3/etc'))
         filename = Filename(TTLocalizer.NameShopNameMaster)
         found = vfs.resolveFilename(filename, searchPath)
         if not found:
             self.notify.error("NameGenerator: Error opening name list text file '%s.'" % TTLocalizer.NameShopNameMaster)
         input = StreamReader(vfs.openReadFile(filename, 1), 1)
-        currentLine = input.readline()
+        currentLine = input.readline().strip()
         while currentLine:
             if currentLine.lstrip()[0:1] != '#':
                 a1 = currentLine.find('*')
                 a2 = currentLine.find('*', a1 + 1)
-                self.nameDictionary[int(currentLine[0:a1])] = (int(currentLine[a1 + 1:a2]), currentLine[a2 + 1:].rstrip())
-            currentLine = input.readline()
+                self.nameDictionary[int(currentLine[0:a1])] = (int(currentLine[a1 + 1:a2]), currentLine[a2 + 1:len(currentLine)])
+            currentLine = input.readline().strip()
 
         masterList = [self.boyTitles,
          self.girlTitles,

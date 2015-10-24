@@ -1,7 +1,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from pandac.PandaModules import *
-from otp.nametag.NametagFloat3d import NametagFloat3d
-from otp.nametag.Nametag import Nametag
+from toontown.nametag.NametagFloat3d import NametagFloat3d
+from toontown.nametag.Nametag import Nametag
 from toontown.toonbase.ToonBaseGlobal import *
 from DistributedMinigame import *
 from direct.distributed.ClockDelta import *
@@ -50,11 +50,11 @@ class DistributedCannonGame(DistributedMinigame):
     HIT_GROUND = 0
     HIT_TOWER = 1
     HIT_WATER = 2
-    FIRE_KEY = base.JUMP
-    UP_KEY = base.Move_Up
-    DOWN_KEY = base.Move_Down
-    LEFT_KEY = base.Move_Left
-    RIGHT_KEY = base.Move_Right
+    FIRE_KEY = 'control'
+    UP_KEY = 'arrow_up'
+    DOWN_KEY = 'arrow_down'
+    LEFT_KEY = 'arrow_left'
+    RIGHT_KEY = 'arrow_right'
     INTRO_TASK_NAME = 'CannonGameIntro'
     INTRO_TASK_NAME_CAMERA_LERP = 'CannonGameIntroCamera'
 
@@ -199,7 +199,7 @@ class DistributedCannonGame(DistributedMinigame):
             if av:
                 av.loop('neutral')
                 av.setPlayRate(1.0, 'run')
-                av.nametag.removeNametag(head.tag)
+                av.nametag.remove(head.tag)
             head.delete()
 
         del self.toonHeadDict
@@ -346,10 +346,11 @@ class DistributedCannonGame(DistributedMinigame):
         self.toonHeadDict[avId] = head
         toon = self.getAvatar(avId)
         tag = NametagFloat3d()
-        tag.setContents(Nametag.CSpeech | Nametag.CThought)
+        tag.hideNametag()
+        tag.update()
         tag.setBillboardOffset(0)
         tag.setAvatar(head)
-        toon.nametag.addNametag(tag)
+        toon.nametag.add(tag)
         tagPath = head.attachNewNode(tag)
         tagPath.setPos(0, 0, 1)
         head.tag = tag
@@ -364,7 +365,7 @@ class DistributedCannonGame(DistributedMinigame):
         DistributedMinigame.setGameStart(self, timestamp)
         self.__stopIntro()
         self.__putCameraBehindCannon()
-        if not config.GetBool('endless-cannon-game', 0):
+        if not base.config.GetBool('endless-cannon-game', 0):
             self.timer.show()
             self.timer.countdown(CannonGameGlobals.GameTime, self.__gameTimerExpired)
         self.rewardPanel.reparentTo(base.a2dTopRight)

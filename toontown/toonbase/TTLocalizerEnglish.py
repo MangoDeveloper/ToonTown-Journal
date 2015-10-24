@@ -14,34 +14,40 @@ MinnieFont = 'phase_3/models/fonts/MinnieFont'
 FancyFont = 'phase_3/models/fonts/Comedy'
 BuildingNametagFont = 'phase_3/models/fonts/MickeyFont'
 BuildingNametagShadow = None
-NametagFonts = ('phase_3/models/fonts/AnimGothic',
- 'phase_3/models/fonts/Aftershock',
- 'phase_3/models/fonts/JiggeryPokery',
- 'phase_3/models/fonts/Ironwork',
- 'phase_3/models/fonts/HastyPudding',
- 'phase_3/models/fonts/Comedy',
- 'phase_3/models/fonts/Humanist',
- 'phase_3/models/fonts/Portago',
- 'phase_3/models/fonts/Musicals',
- 'phase_3/models/fonts/Scurlock',
- 'phase_3/models/fonts/Danger',
- 'phase_3/models/fonts/Alie',
- 'phase_3/models/fonts/OysterBar',
- 'phase_3/models/fonts/RedDogSaloon')
-NametagFontNames = ('Simple',
- 'Shivering',
- 'Wonky',
- 'Fancy',
- 'Silly',
- 'Zany',
- 'Practical',
- 'Nautical',
- 'Whimsical',
- 'Spooky',
- 'Action',
- 'Poetic',
- 'Boardwalk',
- 'Western')
+NametagFonts = (
+    'phase_3/models/fonts/ImpressBT.ttf',
+    'phase_3/models/fonts/AnimGothic.bam',
+    'phase_3/models/fonts/Aftershock.bam',
+    'phase_3/models/fonts/JiggeryPokery.bam',
+    'phase_3/models/fonts/Ironwork.bam',
+    'phase_3/models/fonts/HastyPudding.bam',
+    'phase_3/models/fonts/Comedy.bam',
+    'phase_3/models/fonts/Humanist.bam',
+    'phase_3/models/fonts/Portago.bam',
+    'phase_3/models/fonts/Musicals.bam',
+    'phase_3/models/fonts/Scurlock.bam',
+    'phase_3/models/fonts/Danger.bam',
+    'phase_3/models/fonts/Alie.bam',
+    'phase_3/models/fonts/OysterBar.bam',
+    'phase_3/models/fonts/RedDogSaloon.bam'
+)
+NametagFontNames = (
+    'Default',
+    'Plain',
+    'Shivering',
+    'Wonky',
+    'Fancy',
+    'Silly',
+    'Zany',
+    'Practical',
+    'Nautical',
+    'Whimsical',
+    'Spooky',
+    'Action',
+    'Poetic',
+    'Boardwalk',
+    'Western'
+)
 NametagLabel = ' Nametag'
 UnpaidNameTag = 'Basic'
 ScreenshotPath = 'screenshots/'
@@ -49,7 +55,7 @@ GM_NAMES = ('TOON COUNCIL',
  'TOON TROOPER',
  'RESISTANCE RANGER',
  'GC')
-ProductPrefix = 'TTU'
+ProductPrefix = 'TT'
 Mickey = 'Mickey'
 VampireMickey = 'VampireMickey'
 Minnie = 'Minnie'
@@ -132,7 +138,7 @@ TheBrrrgh = ('to', 'in', lTheBrrrgh)
 MinniesMelodyland = ('to', 'in', lMinniesMelodyland)
 DaisyGardens = ('to', 'in', lDaisyGardens)
 OutdoorZone = ('to', 'in', lOutdoorZone)
-FunnyFarm = ('to the', 'in the', 'Funny Farm')
+FunnyFarm = ('to', 'in', 'The Unpainted Playground')
 GoofySpeedway = ('to', 'in', lGoofySpeedway)
 DonaldsDreamland = ('to', 'in', lDonaldsDreamland)
 BossbotHQ = ('to', 'in', 'Bossbot HQ')
@@ -163,7 +169,7 @@ lNext = 'Next'
 lQuit = 'Quit'
 lYes = 'Yes'
 lNo = 'No'
-sleep_auto_reply = '%s is sleeping right now'
+SleepAutoReply = '%s is sleeping right now.'
 lHQOfficerF = 'HQ Officer'
 lHQOfficerM = 'HQ Officer'
 MickeyMouse = 'Mickey Mouse'
@@ -223,34 +229,17 @@ QuestsDefaultLeaving = ('Bye!',
  'Good luck!',
  'Have fun in Toontown!',
  'See you later!')
-QuestsDefaultReject = ('Hello.',
- 'Can I help you?',
- 'How are you?',
- 'Hello there.',
- "I'm a little busy now, _avName_.",
+QuestsDefaultReject = ('Heya, _avName_!',
+ 'Whatcha need?',
+ 'Hello! How are you doing?',
+ 'Hi there.',
+ "Sorry _avName_, I'm a bit busy right now.",
  'Yes?',
  'Howdy, _avName_!',
  'Welcome, _avName_!',
- "Hey, _avName_! How's it going?",
- 'Did you know you can open your Shticker Book by hitting F8?',
- 'You can use your map to teleport back to the playground!',
- 'You can make friends with other players by clicking on them.',
- 'You can discover more about a ' + Cog + ' by clicking on him.',
- 'Gather treasures in the playgrounds to fill your Laff meter.',
- Cog + ' buildings are dangerous places! Do not go in alone!',
- 'When you lose a battle, the ' + Cogs + ' take all your gags.',
- 'To get more gags, play Trolley games!',
- 'You can get more Laff points by completing ToonTasks.',
- 'Every ToonTask gives you a reward.',
- 'Some rewards let you carry more gags.',
- 'If you win a battle, you get ToonTask credit for every ' + Cog + ' defeated.',
- 'If you recapture a ' + Cog + ' building, go back inside to see a special thank-you from its owner!',
- 'If you press the Page Up key, you can look up!',
- 'If you press the Tab key, you can see different views of your surroundings!',
- "To show True Friends what you're thinking, enter a '.' before your thought.",
- 'If a ' + Cog + ' is stunned, it is more difficult for them to avoid falling objects.',
- 'Each kind of ' + Cog + ' building has a distinct look.',
- 'Defeating ' + Cogs + ' on the higher floors of a building will give you greater skill rewards.')
+ "Hey, _avName_! How's it hanging?",
+ "Need any help?",
+ "Hi _avName_, what brings you here?")
 QuestsDefaultTierNotDone = ('Hello, _avName_! You must finish your current ToonTasks before getting a new one.', 'Hi there! You need to finish the ToonTasks you are working on in order to get a new one.', 'Hi, _avName_! Before I can give you a new ToonTask, you need to finish the ones you have.')
 QuestsDefaultQuest = None
 QuestsDefaultVisitQuestDialog = ('I heard _toNpcName_ is looking for you._where_',
@@ -352,7 +341,7 @@ QuestsDeliverGagQuestProgress = '%(progress)s of %(numGags)s delivered'
 QuestsDeliverGagQuestHeadline = 'DELIVER'
 QuestsDeliverGagQuestToSCStringS = 'I need to deliver %(gagName)s.'
 QuestsDeliverGagQuestToSCStringP = 'I need to deliver some %(gagName)s.'
-QuestsDeliverGagQuestSCString = 'I need make a delivery.'
+QuestsDeliverGagQuestSCString = 'I need to make a delivery.'
 QuestsDeliverGagQuestString = 'Deliver %s'
 QuestsDeliverGagQuestStringLong = 'Deliver %s to _toNpcName_.'
 QuestsDeliverGagQuestInstructions = 'You can buy this gag in the Gag Shop once you earn access to it.'
@@ -407,14 +396,14 @@ QuestsMinigameNewbieQuestCaption = 'Help a new Toon %d laff or less'
 QuestsMinigameNewbieQuestAux = 'Play:'
 QuestsMaxHpReward = 'Your Laff limit has been increased by %s.'
 QuestsMaxHpRewardPoster = 'Reward: %s point Laff boost'
-QuestsMoneyRewardSingular = 'You get 1 jellybean.'
-QuestsMoneyRewardPlural = 'You get %s jellybeans.'
-QuestsMoneyRewardPosterSingular = 'Reward: 1 jellybean'
-QuestsMoneyRewardPosterPlural = 'Reward: %s jellybeans'
-QuestsMaxMoneyRewardSingular = 'You can now carry 1 jellybean.'
-QuestsMaxMoneyRewardPlural = 'You can now carry %s jellybeans.'
-QuestsMaxMoneyRewardPosterSingular = 'Reward: Carry 1 jellybean'
-QuestsMaxMoneyRewardPosterPlural = 'Reward: Carry %s jellybeans'
+QuestsMoneyRewardSingular = 'You get 1 Jellybean.'
+QuestsMoneyRewardPlural = 'You get %s Jellybeans.'
+QuestsMoneyRewardPosterSingular = 'Reward: 1 Jellybean'
+QuestsMoneyRewardPosterPlural = 'Reward: %s Jellybeans'
+QuestsMaxMoneyRewardSingular = 'You can now carry 1 Jellybean.'
+QuestsMaxMoneyRewardPlural = 'You can now carry %s Jellybeans.'
+QuestsMaxMoneyRewardPosterSingular = 'Reward: Carry 1 Jellybean'
+QuestsMaxMoneyRewardPosterPlural = 'Reward: Carry %s Jellybeans'
 QuestsMaxGagCarryReward = 'You get a %(name)s. You can now carry %(num)s gags.'
 QuestsMaxGagCarryRewardPoster = 'Reward: %(name)s (%(num)s)'
 QuestsMaxQuestCarryReward = 'You can now have %s ToonTasks.'
@@ -788,8 +777,8 @@ QuestDialogDict = {160: {GREETING: '',
         INCOMPLETE_PROGRESS: "Still haven't found him?\x07He's tall and has a pointy head",
         COMPLETE: "You found it!?!?\x07Aren't you a darling!\x07You've more than earned this..."},
  2209: {QUEST: 'Melville is preparing for an important voyage.\x07Pop in and see what you can do to help sort him out._where_'},
- 2210: {QUEST: "I can use your help.\x07I've been asked by Toon HQ to take a voyage and see if I can find where the Cogs are coming from.\x07I'll need a few things for my ship but I don't have many jellybeans.\x07Stop by and pick up some ballast from Alice. You'll have to do a favor for her to get it._where_",
-        GREETING: 'Howdy, _avName_',
+ 2210: {QUEST: "I can use your help.\x07I've been asked by Toon HQ to take a voyage and see if I can find where the Cogs are coming from.\x07I'll need a few things for my ship but I don't have many Jellybeans.\x07Stop by and pick up some ballast from Alice. You'll have to do a favor for her to get it._where_",
+        GREETING: 'Howdy, _avName_!',
         LEAVING: ''},
  2211: {QUEST: "So Melville wants ballast, does he?\x07He still owes me for the last bushel.\x07I'll give it to you if you can clear five Micromanagers off my street.",
         INCOMPLETE_PROGRESS: 'No, silly! I said FIVE micromanagers...',
@@ -1270,22 +1259,22 @@ QuestDialogDict = {160: {GREETING: '',
  5254: {GREETING: '',
         QUEST: "All right!  Now I'm in business.\x07If only they hadn't taken my platform shoes...\x07Those shoes probably ended up with a Mr. Hollywood, if I had to guess.",
         LEAVING: '',
-        COMPLETE: "Alright!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
+        COMPLETE: "Allright!!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
         INCOMPLETE_PROGRESS: "I can't perform barefoot, can I?"},
  5282: {GREETING: '',
-        QUEST: "Alright!  Now I'm in business.\x07If only they hadn't taken my platform shoes...\x07Those shoes probably ended up with a Big Cheese, if I had to guess.",
+        QUEST: "All right!  Now I'm in business.\x07If only they hadn't taken my platform shoes...\x07Those shoes probably ended up with a Big Cheese, if I had to guess.",
         LEAVING: '',
-        COMPLETE: "Alright!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
+        COMPLETE: "Allright!!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
         INCOMPLETE_PROGRESS: "I can't perform barefoot, can I?"},
  5283: {GREETING: '',
-        QUEST: "Alright!  Now I'm in business.\x07If only they hadn't taken my platform shoes...\x07Those shoes probably ended up with a Robber Baron, if I had to guess.",
+        QUEST: "All right!  Now I'm in business.\x07If only they hadn't taken my platform shoes...\x07Those shoes probably ended up with a Robber Baron, if I had to guess.",
         LEAVING: '',
-        COMPLETE: "Alright!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
+        COMPLETE: "Allright!!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
         INCOMPLETE_PROGRESS: "I can't perform barefoot, can I?"},
  5284: {GREETING: '',
-        QUEST: "Alright!  Now I'm in business.\x07If only they hadn't taken my platform shoes...\x07Those shoes probably ended up with a Big Wig, if I had to guess.",
+        QUEST: "All right!  Now I'm in business.\x07If only they hadn't taken my platform shoes...\x07Those shoes probably ended up with a Big Wig, if I had to guess.",
         LEAVING: '',
-        COMPLETE: "Alright!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
+        COMPLETE: "Allright!!  I'm ready now.\x07Hello Brrrgh!!!\x07Huh?  Where is everyone?\x07Okay, take this and round me up some fans, huh?",
         INCOMPLETE_PROGRESS: "I can't perform barefoot, can I?"},
  5255: {QUEST: 'You look like you could use more Laff points.\x07Maybe _toNpcName_ could sort you out._where_'},
  5256: {GREETING: '',
@@ -1885,14 +1874,6 @@ QuestDialogDict = {160: {GREETING: '',
          QUEST: 'You need to go tell Flippy about this...',
          INCOMPLETE_PROGRESS: 'Flippy can be found in Toon Hall',
          COMPLETE: 'A new type of Cog!\x07Good work!\x07Here is your final disguise part.'}}
-'''
- #New Tasks
- 13000: {GREETING: '',
-         LEAVING: '',
-         QUEST: "You have conquered BBHQ, but there is still one more task to prove you're Toon-Enough.\x07Flippy has asked that all 110 laff Toons complete this task.\x07Defeat 10 Cog Bosses in any Cog HQ.",
-         INCOMPLETE_PROGRESS: 'How do those bosses keep coming back...',
-         COMPLETE: 'Great work! Now, I believe Flippy has a task of his own for you...'}}
-'''
 ChatGarblerDog = ['woof', 'arf', 'rruff']
 ChatGarblerCat = ['meow', 'mew']
 ChatGarblerMouse = ['squeak', 'squeaky', 'squeakity']
@@ -1926,7 +1907,6 @@ BossbotSkelP = 'Bossbot Skelecogs'
 LawbotSkelP = 'Lawbot Skelecogs'
 CashbotSkelP = 'Cashbot Skelecogs'
 SellbotSkelP = 'Sellbot Skelecogs'
-SkeleReviveCogName = 'Version 2.0 %(cog_name)s'
 SkeleRevivePostFix = ' v2.0'
 AvatarDetailPanelOK = lOK
 AvatarDetailPanelCancel = lCancel
@@ -1957,6 +1937,7 @@ AvatarPanelCogLevel = 'Level: %s'
 AvatarPanelCogDetailClose = lClose
 AvatarPanelDetail = 'Toon Details'
 AvatarPanelGroupInvite = 'Invite'
+AvatarPanelGroupMerge = 'Resulting in'
 AvatarPanelGroupRetract = 'Retract Invitation'
 AvatarPanelGroupMember = 'Already In Group'
 AvatarPanelGroupMemberKick = 'Remove'
@@ -1973,12 +1954,12 @@ ReportPanelCategoryHacking = 'Hacking'
 ReportPanelConfirmations = ('You are about to report that %s has used obscene, bigoted or sexually explicit language.',
  'You are about to report that %s is being unsafe by giving out or requesting a phone number, address, last name, email address, password or account name.',
  'You are about to report that %s is bullying, harassing, or using extreme behavior to disrupt the game.',
- "You are about to report that %s has created a name that does not follow Toontown United's House Rules.",
+ "You are about to report that %s has created a name that does not follow the Toontown Infinite rules.",
  'You are about to report that %s has hacked/tampered with the game or used third party software.')
 ReportPanelWarning = "We take reporting very seriously. Your report will be viewed by a Moderator who will take appropriate action for anyone breaking our rules. If your account is found to have participated in breaking the rules, or if you make false reports or abuse the 'Report a Player' system, a Moderator may take action against your account. Are you absolutely sure you want to report this player?"
 ReportPanelThanks = 'Thank you! Your report has been sent to a Moderator for review. There is no need to contact us again about the issue. The moderation team will take appropriate action for a player found breaking our rules.'
 ReportPanelRemovedFriend = 'We have automatically removed %s from your Toon Friends List.'
-ReportPanelRemovedPlayerFriend = 'We have automatically removed %s as a Player friend so as such you will not see them as your friend in any Toontown United product.'
+ReportPanelRemovedPlayerFriend = 'We have automatically removed %s as a Player friend so as such you will not see them as your friend in any Toontown Infinite product.'
 ReportPanelAlreadyReported = 'You have already reported %s during this session. A Moderator will review your previous report.'
 IgnorePanelTitle = 'Ignore A Player'
 IgnorePanelAddIgnore = 'Would you like to ignore %s for the rest of this session?'
@@ -2015,13 +1996,13 @@ PetMoodAdjectives = {'neutral': 'neutral',
  'surprise': 'surprised',
  'affection': 'affectionate'}
 SpokenMoods = {'neutral': 'neutral',
- 'hunger': ["I'm tired of JellyBeans! How'bout giving me a slice of pie?", "How'bout a Red JellyBean? I'm tired of the Green ones!", "Oh, those JellyBeans were for planting?!! But I'm hungry!"],
+ 'hunger': ["I'm tired of Jellybeans! How'bout giving me a slice of pie?", "How'bout a Red Jellybean? I'm tired of the Green ones!", "Oh, those Jellybeans were for planting?!! But I'm hungry!"],
  'boredom': ["I'm dying of boredom over here!", "You didn't think I understood you, huh?", 'Could we, like, DO something already?'],
  'excitement': ["Wow, it's you, it's you, it's you!",
-                'mmm, jellybeans, mmm!',
+                'mmm, Jellybeans, mmm!',
                 'Does it GET any better than this?',
                 "Happy April Toons' Week!"],
- 'sadness': ["Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go...", "I'll be good, I promise!", "I don't know WHY I'm sad, I just am!!!", "I'm too sad to walk."] #lol inside out
+ 'sadness': ["Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go, Don't go...", "I'll be good, I promise!", "I don't know WHY I'm sad, I just am!!!"],
  'restlessness': ["I'm sooo restless!!!"],
  'playfulness': ["Let's play, Let's play, Let's play, Let's play, Let's play, Let's play, Let's play, Let's play, Let's play...", 'Play with me or I dig up some flowers!', 'Lets run around and  around and around and around and around and around...'],
  'loneliness': ['Where have you been?', 'Wanna cuddle?', 'I want to go with you when you fight Cogs!'],
@@ -2042,19 +2023,18 @@ TeleportPanelIgnored = '%s is ignoring you.'
 TeleportPanelNotOnline = "%s isn't online right now."
 TeleportPanelWentAway = '%s went away.'
 TeleportPanelUnknownHood = "You don't know how to get to %s!"
-TeleportPanelUnavailableHood = '%s is not available right now; try again later.' 
-TeleportPanelDenySelf = "You can't go to yourself!" #lol only admins can do this
+TeleportPanelUnavailableHood = '%s is not available right now; try again later.'
+TeleportPanelDenySelf = "You can't go to yourself!"
 TeleportPanelOtherShard = "%(avName)s is in district %(shardName)s, and you're in district %(myShardName)s.  Do you want to switch to %(shardName)s?"
-TeleportPanelBusyShard = '%(avName)s is in a full District. Playing in a full District can severely slow down game performance. Are you sure you want to switch districts?'
-TeleportPanelFullShard = '%(avName)s is in a full District. This district is too full to join. Please try switching to another district.'
+TeleportPanelBusyShard = '%(avName)s is in a full District.'
 BattleBldgBossTaunt = "I'm the boss."
 CogdoBattleBldgBossTaunt = "I don't take meetings with Toons."
 FactoryBossTaunt = "I'm the Foreman."
 FactoryBossBattleTaunt = 'Let me introduce you to the Foreman.'
 MintBossTaunt = "I'm the Supervisor."
 MintBossBattleTaunt = 'You need to talk to the Supervisor.'
-StageBossTaunt = "My Justice isn't Blind"
-StageBossBattleTaunt = 'I am above the Law'
+StageBossTaunt = "My Justice isn't Blind."
+StageBossBattleTaunt = 'I am above the Law.'
 CountryClubBossTaunt = "I'm the Club President."
 CountryClubBossBattleTaunt = 'You need to talk to the Club President.'
 ForcedLeaveCountryClubAckMsg = 'The Club President was defeated before you could reach him. You did not recover any Stock Options.'
@@ -2093,6 +2073,7 @@ ToonHealJokes = [['What goes TICK-TICK-TICK-WOOF?', 'A watchdog! '],
  ['What did the hat say to the scarf?', 'You hang around while I go on a head.'],
  ["What's the best parting gift?", 'A comb.'],
  ['What kind of cats like to go bowling?', 'Alley cats.'],
+ ["What's wrong if you keep seeing talking animals?", "You're having Disney spells."],
  ['What did one eye say to the other?', 'Between you and me, something smells.'],
  ["What's round, white and giggles?", 'A tickled onion.'],
  ['What do you get when you cross Bambi with a ghost?', 'Bamboo.'],
@@ -2148,11 +2129,15 @@ ToonHealJokes = [['What goes TICK-TICK-TICK-WOOF?', 'A watchdog! '],
  ['Why are elephants big and gray?', "Because if they were small and yellow they'd be canaries."],
  ['If athletes get tennis elbow what do astronauts get?', 'Missile toe.'],
  ['Did you hear about the man who hated Santa?', 'He suffered from Claustrophobia.'],
+ ['Why did ' + Donald + ' sprinkle sugar on his pillow?', 'Because he wanted to have sweet dreams.'],
+ ['Why did ' + Goofy + ' take his comb to the dentist?', 'Because it had lost all its teeth.'],
+ ['Why did ' + Goofy + ' wear his shirt in the bath?', 'Because the label said wash and wear.'],
  ['Why did the dirty chicken cross the road?', 'For some fowl purpose.'],
  ["Why didn't the skeleton go to the party?", 'He had no body to go with.'],
  ['Why did the burglar take a shower?', 'To make a clean getaway.'],
  ['Why does a sheep have a woolly coat?', "Because he'd look silly in a plastic one."],
  ['Why do potatoes argue all the time?', "They can't see eye to eye."],
+ ['Why did ' + Pluto + ' sleep with a banana peel?', 'So he could slip out of bed in the morning.'],
  ['Why did the mouse wear brown sneakers?', 'His white ones were in the wash.'],
  ['Why are false teeth like stars?', 'They come out at night.'],
  ['Why are Saturday and Sunday so strong?', 'Because the others are weekdays.'],
@@ -2162,6 +2147,7 @@ ToonHealJokes = [['What goes TICK-TICK-TICK-WOOF?', 'A watchdog! '],
  ['What do you get if you cross a dog with a phone?', 'A golden receiver.'],
  ['What do you get if you cross an elephant with a shark?', 'Swimming trunks with sharp teeth.'],
  ['What did the tablecloth say to the table?', "Don't move, I've got you covered."],
+ ['Did you hear about the time ' + Goofy + ' ate a candle?', 'He wanted a light snack.'],
  ['What did the balloon say to the pin?', 'Hi Buster.'],
  ['What did the big chimney say to the little chimney?', "You're too young to smoke."],
  ['What did the carpet say to the floor?', 'I got you covered.'],
@@ -2228,7 +2214,8 @@ ToonHealJokes = [['What goes TICK-TICK-TICK-WOOF?', 'A watchdog! '],
  ['What do you get if you cross a hyena with a mynah bird?', 'An animal that laughs at its own jokes.'],
  ['What do you get if you cross a railway engine with a stick of gum?', 'A chew-chew train.'],
  ['What would you get if you crossed an elephant with a computer?', 'A big know-it-all.'],
- ['What would you get if you crossed an elephant with a skunk?', 'A big stinker.']
+ ['What would you get if you crossed an elephant with a skunk?', 'A big stinker.'],
+ ['Why did ' + MickeyMouse + ' take a trip to outer space?', 'He wanted to find ' + Pluto + '.']]
 MovieHealLaughterMisses = ('hmm',
  'heh',
  'ha',
@@ -2271,12 +2258,12 @@ RewardPanelCongratsStrings = ['Yeah!',
 RewardPanelNewGag = 'New %(gagName)s gag for %(avName)s!'
 RewardPanelUberGag = '%(avName)s earned the %(gagName)s gag with %(exp)s experience points!'
 RewardPanelEndTrack = 'Yay! %(avName)s has reached the end of the %(gagName)s Gag Track!'
+RewardPanelPromotionPending = 'Pending promotion...'
 RewardPanelMeritsMaxed = 'Maxed'
 RewardPanelMeritBarLabels = ['Stock Options',
  'Jury Notices',
  'Cogbucks',
  'Merits']
-RewardPanelMeritAlert = 'Ready for promotion!'
 RewardPanelCogPart = 'You gained a Cog disguise part!'
 RewardPanelPromotion = 'Ready for promotion in %s  track!'
 RewardPanelSkip = 'Skip'
@@ -2337,14 +2324,14 @@ SuitMicromanagerS = 'a Micromanager'
 SuitDownsizerS = 'a Downsizer'
 SuitHeadHunterS = 'a Head Hunter'
 SuitCorporateRaiderS = 'a Corporate Raider'
-SuitTheBigCheeseS = 'The Big Cheese'
+SuitTheBigCheeseS = 'a The Big Cheese'
 SuitColdCallerS = 'a Cold Caller'
 SuitTelemarketerS = 'a Telemarketer'
 SuitNameDropperS = 'a Name Dropper'
 SuitGladHanderS = 'a Glad Hander'
 SuitMoverShakerS = 'a Mover & Shaker'
 SuitTwoFaceS = 'a Two-Face'
-SuitTheMinglerS = 'The Mingler'
+SuitTheMinglerS = 'a The Mingler'
 SuitMrHollywoodS = 'a Mr. Hollywood'
 SuitShortChangeS = 'a Short Change'
 SuitPennyPincherS = 'a Penny Pincher'
@@ -2750,7 +2737,7 @@ SuitAttackTaunts = {'Audit': ["I believe your books don't balance.",
               "You aren't above the law!",
               'There should be a law against you.',
               "There's no ex post facto with me!",
-              "The opinions expressed in this attack are not those of Toontown United.",
+              "The opinions expressed in this attack are not those of Toontown Infinite.",
               'We cannot be held responsible for damages suffered in this attack.',
               'Your results for this attack may vary.',
               'This attack is void where prohibited.',
@@ -2905,7 +2892,7 @@ SuitAttackTaunts = {'Audit': ["I believe your books don't balance.",
  'ReOrg': ["You don't like the way I reorganized things!",
            'Perhaps a little reorganization is in order.',
            "You're not that bad, you just need to be reorganized.",
-           'Do you like my organizational skills?',
+           'Do you like my organizational skills.',
            "I just thought I'd give things a new look.",
            'You need to get organized!',
            "You're looking a little disorganized.",
@@ -3111,20 +3098,9 @@ FADoorCodes_TALK_TO_HQ_TOM = 'Go get your reward from Toon Headquarters!'
 FADoorCodes_SUIT_APPROACHING = None
 FADoorCodes_BUILDING_TAKEOVER = "Watch out! There's a Cog in there!"
 FADoorCodes_SB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Sellbot Disguise first!\n\nBuild your Sellbot Disguise out of parts from the Factory."
-FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Cashbot Disguise first!\n\nBuild your Cashbot Disguise by doing ToonTasks in Donald's Dreamland."
-FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Lawbot Disguise first!\n\nBuild your Lawbot Disguise by doing the ToonTasks after Donald's Dreamland."
-FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Bossbot Disguise first!\n\nBuild your Bossbot Disguise by doing the ToonTasks after Donald's Dreamland."
-KnockKnockContestJokes = {2100: ['Wally', "Wally's not looking, hit him with a pie!"],
- 2200: {28: ['Biscuit', 'Biscuit out of here the Cogs are coming!'],
-        41: ['Dewey', 'Dewey want to go defeat some more Cogs?'],
-        40: ['Minnie', "Minnie people have asked that, and it's driving me crazy!"],
-        27: ['Disguise', 'Disguise where the Cogs fly!']},
- 2300: ['Justin', 'Justin other couple of Cog parts and off we go!'],
- 3300: {10: ['Aladdin', 'Aladdin HQ wants a word with you.'],
-        6: ['Weirdo', 'Weirdo all these Cogs come from?'],
-        30: ['Bacon', 'Bacon a cake to throw at the Cogs.'],
-        28: ['Isaiah', 'Isaiah we go ride the trolley.'],
-        12: ['Juliet', "Juliet me in that Cog building with you and I'll give you a Toon-Up."]}}
+FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Cashbot Disguise first!\n\nBuild your Cashbot Disguise out of parts from the Mints."
+FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Lawbot Disguise first!\n\nBuild your Lawbot Disguise out of parts from the DA Offices."
+FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Bossbot Disguise first!\n\nBuild your Bossbot Disguise out of parts from the Cog Golf Courses."
 KnockKnockJokes = [['Who', "Bad echo in here, isn't there?"],
  ['Dozen', 'Dozen anybody want to let me in?'],
  ['Freddie', 'Freddie or not, here I come.'],
@@ -3389,7 +3365,7 @@ MinnieChatter = (['Welcome to Melodyland.', 'Hi, my name is ' + Minnie + ". What
   'I like to make people giggle.',
   'Boy, trotting around in heels all day is hard on your feet!',
   'Nice shirt, %.',
-  'Is that a jellybean on the ground?'], ["Gosh, I'm late for my date with %s!" % Mickey, "Looks like it's time for %s's dinner." % Pluto, "It's time for a nap. I'm going to Dreamland."])
+  'Is that a Jellybean on the ground?'], ["Gosh, I'm late for my date with %s!" % Mickey, "Looks like it's time for %s's dinner." % Pluto, "It's time for a nap. I'm going to Dreamland."])
 WinterMinnieCChatter = (["Hi, I'm Merry Minnie!",
   'Welcome to the land of carols!',
   'Happy Winter Holiday!',
@@ -3457,8 +3433,8 @@ DaisyChatter = (['Welcome to my garden!', "Hello, I'm " + Daisy + ". What's your
   'The better gardening tools you have the better plants you can grow.',
   'There are far too many ' + Cogs + ' near ' + lDonaldsDock + '.',
   'Watering your garden every day keeps your plants happy.',
-  'To grow a Pink Daisy plant a yellow and red jellybean together.',
-  'Yellow daisies are easy to grow, just plant a yellow jellybean.',
+  'To grow a Pink Daisy plant a yellow and red Jellybean together.',
+  'Yellow daisies are easy to grow, just plant a yellow Jellybean.',
   'If you see sand under a plant it needs water or it will wilt!'], ["I'm going to Melody Land to see %s!" % Minnie,
   "I'm late for my picnic with %s!" % Donald,
   "I think I'll go swimming at " + lDonaldsDock + '.',
@@ -3589,9 +3565,9 @@ GoofyChatter = (['Welcome to ' + lDaisyGardens + '.', 'Hi, my name is ' + Goofy 
   "D'oh! I forgot to fix " + Mickey + "'s breakfast!",
   'Gawrsh there sure are a lot of ' + Cogs + ' near ' + lDonaldsDock + '.',
   'It looks like ' + Daisy + ' has planted some new flowers in her garden.',
-  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 jellybean!',
+  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 Jellybean!',
   "Goofy's Gag Shops offer the best jokes, tricks, and funnybone-ticklers in all of Toontown!",
-  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your jellybeans back!"], ["I'm going to Melody Land to see %s!" % Mickey,
+  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your Jellybeans back!"], ["I'm going to Melody Land to see %s!" % Mickey,
   "Gosh, I'm late for my game with %s!" % Donald,
   "I think I'll go swimming at " + lDonaldsDock + '.',
   "It's time for a nap. I'm going to Dreamland."])
@@ -3620,9 +3596,9 @@ GoofySpeedwayChatter = (['Welcome to ' + lGoofySpeedway + '.', 'Hi, my name is '
   'If you see my friend ' + Mickey + ', say hi to him for me.',
   "D'oh! I forgot to fix " + Mickey + "'s breakfast!",
   'Gawrsh there sure are a lot of ' + Cogs + ' near ' + lDonaldsDock + '.',
-  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 jellybean!',
+  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 Jellybean!',
   "Goofy's Gag Shops offer the best jokes, tricks, and funnybone-ticklers in all of Toontown!",
-  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your jellybeans back!"], ["I'm going to Melody Land to see %s!" % Mickey,
+  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your Jellybeans back!"], ["I'm going to Melody Land to see %s!" % Mickey,
   "Gosh, I'm late for my game with %s!" % Donald,
   "I think I'll go swimming at " + lDonaldsDock + '.',
   "It's time for a nap. I'm going to Dreamland."])
@@ -3894,9 +3870,9 @@ CLGoofySpeedwayChatter = (['Welcome to ' + lGoofySpeedway + '.',
   'If you see my friend ' + Mickey + ', say hi to him for me.',
   "D'oh! I forgot to fix " + Mickey + "'s breakfast!",
   'Gawrsh there sure are a lot of ' + Cogs + ' near ' + lDonaldsDock + '.',
-  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 jellybean!',
+  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 Jellybean!',
   "Goofy's Gag Shops offer the best jokes, tricks, and funnybone-ticklers in all of Toontown!",
-  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your jellybeans back!"], ['I better go get my kart a new paint job for the upcoming Grand Prix Weekend.',
+  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your Jellybeans back!"], ['I better go get my kart a new paint job for the upcoming Grand Prix Weekend.',
   "Gosh, I better get workin' on this broken Leaderboard!",
   "Hope I'll see y'all on Grand Prix Weekend!  Goodbye!",
   "It's time for a nap. I'm going to Dreamland to dream about winnin' the Grand Prix."])
@@ -3915,9 +3891,9 @@ GPGoofySpeedwayChatter = (['Welcome to ' + lGoofySpeedway + '.',
   'If you see my friend ' + Mickey + ", tell him he's missing some great racing!",
   "D'oh! I forgot to fix " + Mickey + "'s breakfast!",
   'Gawrsh there sure are a lot of ' + Cogs + ' near ' + lDonaldsDock + '.',
-  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 jellybean!',
+  'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 Jellybean!',
   "Goofy's Gag Shops offer the best jokes, tricks, and funnybone-ticklers in all of Toontown!",
-  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your jellybeans back!"], ['Good luck in the Grand Prix!',
+  "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your Jellybeans back!"], ['Good luck in the Grand Prix!',
   "I'm going to catch the next race in the Grand Prix!",
   'Gawrsh I think the next race is about to start!',
   'Gosh, I better go check on the new Leaderboard and make sure it is working right!'])
@@ -3933,7 +3909,7 @@ SillyPhase2Chatter = ['Silly levels are still rising!',
  'A mailbox on Lighthouse Lane has gone nuts!',
  'Go see the Silly Meter in Toon Hall!',
  'Keep causing those silly surges!']
-SillyPhase3Chatter = ['The Cogs hated how silly Toontown was becoming!',
+SillyPhase3Chatter = ['The Cogs hate how silly Toontown is becoming!',
  'Keep a sharp eye out for Cog Invasions!',
  'Cog Invasions have caused the silly levels to drop!',
  'The Silly Meter went down after the Cog Invasions!',
@@ -4044,7 +4020,7 @@ FriendInviterPlayer = 'Player'
 FriendInviterThatPlayer = 'That player'
 FriendInviterBegin = 'What type of friend would you like to make?'
 FriendInviterToonFriendInfo = 'A friend only in Toontown'
-FriendInviterPlayerFriendInfo = 'A friend across the ToontownUnited.com network'
+FriendInviterPlayerFriendInfo = 'A friend across the Toontown Infinite network'
 FriendInviterToonTooMany = 'You have too many toon friends to add another one now. You will have to remove some toon friends if you want to make friends with %s. You could also try making player friends them.'
 FriendInviterPlayerTooMany = 'You have too many player friends to add another one now. You will have to remove some player friends if you want to make friends with %s. You could also try making toon friends with them.'
 FriendInviterToonAlready = '%s is already your toon friend.'
@@ -4109,7 +4085,7 @@ LauncherPhaseNames = {0: 'Initialization',
  12: Bossbot + ' HQ',
  13: 'Parties'}
 LauncherProgress = '%(name)s (%(current)s of %(total)s)'
-LauncherStartingMessage = "Starting Toontown United... "
+LauncherStartingMessage = "Starting Toontown Infinite... "
 LauncherDownloadFile = 'Downloading update for ' + LauncherProgress + '...'
 LauncherDownloadFileBytes = 'Downloading update for ' + LauncherProgress + ': %(bytes)s'
 LauncherDownloadFilePercent = 'Downloading update for ' + LauncherProgress + ': %(percent)s%%'
@@ -4119,16 +4095,16 @@ LauncherExtractingFile = 'Extracting update for ' + LauncherProgress + '...'
 LauncherExtractingPercent = 'Extracting update for ' + LauncherProgress + ': %(percent)s%%'
 LauncherPatchingFile = 'Applying update for ' + LauncherProgress + '...'
 LauncherPatchingPercent = 'Applying update for ' + LauncherProgress + ': %(percent)s%%'
-LauncherConnectProxyAttempt = 'Connecting to Toontown: %s (proxy: %s) attempt: %s'
-LauncherConnectAttempt = 'Connecting to Toontown: %s attempt %s'
-LauncherDownloadServerFileList = 'Updating Toontown...'
-LauncherCreatingDownloadDb = 'Updating Toontown...'
-LauncherDownloadClientFileList = 'Updating Toontown...'
-LauncherFinishedDownloadDb = 'Updating Toontown... '
-LauncherStartingGame = 'Starting Toontown...'
-LauncherRecoverFiles = 'Updating Toontown. Recovering files...'
+LauncherConnectProxyAttempt = 'Connecting to Toontown Infinite: %s (proxy: %s) attempt: %s'
+LauncherConnectAttempt = 'Connecting to Toontown Infinite: %s attempt %s'
+LauncherDownloadServerFileList = 'Updating Toontown Infinite...'
+LauncherCreatingDownloadDb = 'Updating Toontown Infinite...'
+LauncherDownloadClientFileList = 'Updating Toontown Infinite...'
+LauncherFinishedDownloadDb = 'Updating Toontown Infinite... '
+LauncherStartingGame = 'Starting Toontown Infinite...'
+LauncherRecoverFiles = 'Updating Toontown Infinite. Recovering files...'
 LauncherCheckUpdates = 'Checking for updates for ' + LauncherProgress
-LauncherVerifyPhase = 'Updating Toontown...'
+LauncherVerifyPhase = 'Updating Toontown Infinite...'
 LoadingDownloadWatcherUpdate = 'Loading %s'
 AvatarChoiceMakeAToon = 'Make A\nToon'
 AvatarChoicePlayThisToon = 'Play\nThis Toon'
@@ -4147,7 +4123,7 @@ AvatarChoicePassword = 'Password'
 AvatarChoiceDeletePasswordOK = lOK
 AvatarChoiceDeletePasswordCancel = lCancel
 AvatarChoiceDeleteWrongPassword = 'That password does not seem to match.  To delete this Toon, enter your password.'
-AvatarChoiceDeleteWrongConfirm = 'You did not type the right thing.  To delete %(name)s, type "%(confirm)s" and click OK.  Do not type the quotation marks.  Click Cancel if you have changed your mind.'
+AvatarChoiceDeleteWrongConfirm = 'You didn\'t type the right thing.  To delete %(name)s, type "%(confirm)s" and click OK.  Do not type the quotation marks.  Click Cancel if you have changed your mind.'
 AvatarChooserPickAToon = 'Pick  A  Toon  To  Play'
 AvatarChooserQuit = lQuit
 DateOfBirthEntryMonths = ['Jan',
@@ -4163,8 +4139,18 @@ DateOfBirthEntryMonths = ['Jan',
  'Nov',
  'Dec']
 DateOfBirthEntryDefaultLabel = 'Date of Birth'
+PhotoPageTitle = 'Snapshots'
+PhotoPageNoName = 'Unnamed'
+PhotoPageUnknownName = 'Unknown'
+PhotoPageAddName = 'Add Caption'
+PhotoPageAddNamePanel = 'Add a Caption to this Snapshot:'
+PhotoPageDelete = 'Are you sure you want to delete'
+PhotoPageConfirm = 'Yep!'
+PhotoPageCancel = lCancel
+PhotoPageClose = lClose
+PhotoPageDirectory = 'Open Folder'
+PhotoPageTutorial = 'You haven\'t taken any snapshots yet! Press TAB to change your camera angle, and press F9 to take a snapshot.\n\n Once you\'ve made a snapshot, come here to manage and name them.'
 AchievePageTitle = 'Achievements\n(Coming Soon)'
-PhotoPageTitle = 'Photo\n(Coming Soon)'
 BuildingPageTitle = 'Buildings\n(Coming Soon)'
 InventoryPageTitle = 'Gags'
 InventoryPageDeleteTitle = 'DELETE GAGS'
@@ -4172,6 +4158,7 @@ InventoryPageTrackFull = 'You have all the gags in the %s track.'
 InventoryPagePluralPoints = 'You will get a new\n%(trackName)s gag when you\nget %(numPoints)s more %(trackName)s points.'
 InventoryPageSinglePoint = 'You will get a new\n%(trackName)s gag when you\nget %(numPoints)s more %(trackName)s point.'
 InventoryPageNoAccess = 'You do not have access to the %s track yet.'
+AchievementsPageTitle = 'Achievements'
 NPCFriendPageTitle = 'SOS Toons'
 PartyDateFormat = '%(mm)s %(dd)d, %(yyyy).4d'
 PartyTimeFormat = '%d:%.2d %s'
@@ -4185,7 +4172,7 @@ EventsPageCalendarTabName = 'Calendar'
 EventsPageCalendarTabParty = 'Party'
 EventsPageToontownTimeIs = 'TOONTOWN TIME IS'
 EventsPageConfirmCancel = 'If you cancel, you will get a %d%% refund. Are you sure you want to cancel your party?'
-EventsPageCancelPartyResultOk = 'Your party was cancelled and you got %d jellybeans back!'
+EventsPageCancelPartyResultOk = 'Your party was cancelled and you got %d Jellybeans back!'
 EventsPageCancelPartyResultError = 'Sorry, your party was not cancelled.'
 EventsPageCancelPartyAlreadyRefunded = 'Your party was never started. Check your mailbox for your refund!'
 EventsPageTooLateToStart = 'Sorry, it is too late to start your party. You can cancel it and plan another one.'
@@ -4219,7 +4206,7 @@ EventsPageNewsTabTitle = 'News'
 EventsPageNewsDownloading = 'Retrieving News...'
 EventsPageNewsUnavailable = 'Chip and Dale played with the printing press. News not available.'
 EventsPageNewsPaperTitle = 'TOONTOWN TIMES'
-EventsPageNewsLeftSubtitle = 'Still only 1 jellybean'
+EventsPageNewsLeftSubtitle = 'Still only 1 Jellybean'
 EventsPageNewsRightSubtitle = 'Established toon-thousand nine'
 NewsPageName = 'News'
 NewsPageImportError = 'Whoops! There is an issue loading the "Toon News ... for the Amused!" Please check back later.'
@@ -4311,6 +4298,7 @@ MusicEncntrGeneralBg = 'Encounter With Cogs'
 MusicTcSzActivity = 'Toontorial Medley'
 MusicTcSz = 'Strolling Along'
 MusicCreateAToon = 'The New Toon in Town'
+MusicTtiTheme = 'The Toontown Infinite Theme'
 MusicTtTheme = 'The Toontown Theme'
 MusicMinigameRace = 'Slow and Steady'
 MusicMgPairing = 'Remember Me?'
@@ -4384,10 +4372,10 @@ PartyOverWarningWithName = '%s party has ended! Thanks for coming!'
 PartyCountdownClockText = 'Time\n\nLeft'
 PartyTitleText = '%s Party'
 PartyActivityConjunction = ', and'
-PartyActivityNameDict = {0: {'generic': 'Jukebox\n20 songs',
-     'invite': 'a 20 song Jukebox',
-     'editor': 'Jukebox - 20',
-     'description': 'Listen to music with your own 20 song jukebox!'},
+PartyActivityNameDict = {0: {'generic': 'Jukebox',
+     'invite': 'a Jukebox',
+     'editor': 'Jukebox',
+     'description': 'Listen to music with your own jukebox!'},
  1: {'generic': 'Party Cannons',
      'invite': 'Party Cannons',
      'editor': 'Cannons',
@@ -4395,7 +4383,7 @@ PartyActivityNameDict = {0: {'generic': 'Jukebox\n20 songs',
  2: {'generic': 'Trampoline',
      'invite': 'Trampoline',
      'editor': 'Trampoline',
-     'description': 'Collect jellybeans and bounce the highest!'},
+     'description': 'Collect Jellybeans and bounce the highest!'},
  3: {'generic': 'Party Catch',
      'invite': 'Party Catch',
      'editor': 'Party Catch',
@@ -4416,10 +4404,10 @@ PartyActivityNameDict = {0: {'generic': 'Jukebox\n20 songs',
      'invite': 'a Party Clock',
      'editor': 'Party Clock',
      'description': 'Counts down the time left in your party.'},
- 8: {'generic': 'Jukebox\n40 songs',
-     'invite': 'a 40 song jukebox',
-     'editor': 'Jukebox - 40',
-     'description': 'Listen to music with your own 40 song jukebox!'},
+ 8: {'generic': 'Deluxe Jukebox',
+     'invite': 'a deluxe jukebox',
+     'editor': 'Deluxe Jukebox',
+     'description': 'Your own deluxe jukebox with double the tunes for double the deal!'},
  9: {'generic': 'Dance Floor\n20 moves',
      'invite': 'a 20 move Dance Floor',
      'editor': 'Dance Floor - 20',
@@ -4463,12 +4451,7 @@ PartyActivityNameDict = {0: {'generic': 'Jukebox\n20 songs',
  19: {'generic': 'Trampoline',
       'invite': 'ValenToons Trampoline',
       'editor': 'Trampoline',
-      'description': "Jump to your heart's content!"},
-#Merry-Go-Round
- 20: {'generic': 'Merry\nGo\nRound',
-      'invite': 'ValenToons Merry\nGo\nRound',
-      'editor': 'Merry\nGo\nRound',
-      'description': 'Go around and round!'}}
+      'description': "Jump to your heart's content!"}}
 PartyDecorationNameDict = {0: {'editor': 'Balloon Anvil',
      'description': 'Try to keep the fun from floating away!'},
  1: {'editor': 'Party Stage',
@@ -4532,7 +4515,7 @@ PartyPlannerMaybeNextTime = 'Maybe next time.  Have a good day!'
 PartyPlannerHostingTooMany = 'You can only host one party at a time, sorry.'
 PartyPlannerOnlyPaid = 'Only paid toons can host a party, sorry.'
 PartyPlannerNpcComingSoon = 'Parties are coming soon! Try again later.'
-PartyPlannerNpcMinCost = 'It costs a minimum of %d jellybeans to plan a party.'
+PartyPlannerNpcMinCost = 'It costs a minimum of %d Jellybeans to plan a party.'
 PartyHatPublicPartyChoose = 'Do you want to go to the 1st available public party?'
 PartyGateTitle = 'Public Parties'
 PartyGateGoToParty = 'Go to\nParty!'
@@ -4599,7 +4582,7 @@ DanceAnimLeft = 'Left'
 PartyCannonActivityTitle = 'Party Cannons'
 PartyCannonActivityInstructions = 'Hit the clouds to change their color and bounce in the air! While IN THE AIR, you can USE THE ARROW KEYS to GLIDE.'
 PartyCannonResults = 'You collected %d jelly beans!\n\nNumber of Clouds Hit: %d'
-FireworksActivityInstructions = 'Hit the "Page Up" key to see better.'
+FireworksActivityInstructions = 'Look up using the "Page Up" key to see better.'
 FireworksActivityBeginning = 'Party fireworks are about to start! Enjoy the show!'
 FireworksActivityEnding = 'Hope you enjoyed the show!'
 PartyFireworksAlreadyActive = 'The fireworks show has already started.'
@@ -4610,7 +4593,7 @@ PartyTrampolineActivityInstructions = 'Use the Control key to jump.\n\nJump when
 PartyTrampolineActivityOccupied = 'Trampoline in use.'
 PartyTrampolineQuitEarlyButton = 'Hop Off'
 PartyTrampolineBeanResults = 'You collected %d jelly beans.'
-PartyTrampolineBonusBeanResults = 'You collected %d jelly beans, plus %d more for getting the Big Bean.'
+PartyTrampolineBonusBeanResults = 'You collected %d jelly beans, plus %d more for getting the Big Bean. '
 PartyTrampolineTopHeightResults = 'Your top height was %d ft.'
 PartyTrampolineTimesUp = "Time's Up"
 PartyTrampolineReady = 'Ready...'
@@ -4632,10 +4615,10 @@ PartyTeamActivityJoinDenied = "Sorry, you can't join %s at this time."
 PartyTeamActivityExitDenied = 'Sorry, you are unable to leave %s at this time.'
 PartyTeamActivitySwitchDenied = "Sorry, you cant's switch teams at this time."
 PartyTeamActivityTeamFull = 'Sorry, that team is already full!'
-PartyTeamActivityRewardMessage = 'You got %d jellybeans. Good job!'
+PartyTeamActivityRewardMessage = 'You got %d Jellybeans. Good job!'
 PartyCogTeams = ('Blue', 'Orange')
 PartyCogRewardMessage = 'Your Score: %d\n'
-PartyCogRewardBonus = '\nYou got %d additional jellybean%s because your team won!'
+PartyCogRewardBonus = '\nYou got %d additional Jellybean%s because your team won!'
 PartyCogJellybeanPlural = 's'
 PartyCogSignNote = 'HI-SCORE\n%s\n%d'
 PartyCogTitle = 'Cog-O-War'
@@ -4673,7 +4656,7 @@ MapPageYouAreAtSomeonesHome = 'You are at %s estate'
 MapPageGoTo = 'Go To\n%s'
 OptionsPageTitle = 'Options'
 OptionsTabTitle = 'Options\n& Codes'
-OptionsPagePurchase = 'Appeal'
+OptionsPagePurchase = 'Subscribe'
 OptionsPageLogout = 'Logout'
 OptionsPageExitToontown = 'Exit Toontown'
 OptionsPageMusicOnLabel = 'Music is on.'
@@ -4688,7 +4671,6 @@ OptionsPageWhisperEnabledLabel = 'Allowing whispers from anyone.'
 OptionsPageWhisperDisabledLabel = 'Allowing whispers from friends only.'
 OptionsPageSpeedChatStyleLabel = 'SpeedChat Color'
 OptionsPageDisplayWindowed = 'windowed'
-OptionsPageDisplayEmbedded = 'In the browser'
 OptionsPageSelect = 'Select'
 OptionsPageToggleOn = 'Turn On'
 OptionsPageToggleOff = 'Turn Off'
@@ -4697,13 +4679,12 @@ OptionsPageDisplaySettings = 'Display: %(screensize)s, %(api)s'
 OptionsPageDisplaySettingsNoApi = 'Display: %(screensize)s'
 OptionsPageExitConfirm = 'Exit Toontown?'
 DisplaySettingsTitle = 'Display Settings'
-DisplaySettingsIntro = 'The following settings are used to configure the way Toontown is displayed on your computer.  It is probably not necessary to adjust these unless you are experiencing a problem.'
+DisplaySettingsIntro = 'The following settings are used to configure the way Toontown is displayed on your computer.  It is usually unnecessary to adjust these unless you are experiencing a problem.'
 DisplaySettingsIntroSimple = 'You may adjust the screen resolution to a higher value to improve the clarity of text and graphics in Toontown, but depending on your graphics card, some higher values may make the game run less smoothly or may not work at all.'
 DisplaySettingsApi = 'Graphics API:'
 DisplaySettingsResolution = 'Resolution:'
 DisplaySettingsWindowed = 'In a window'
 DisplaySettingsFullscreen = 'Full screen'
-DisplaySettingsEmbedded = 'In the browser'
 DisplaySettingsApply = 'Apply'
 DisplaySettingsCancel = lCancel
 DisplaySettingsApplyWarning = 'When you press OK, the display settings will change.  If the new configuration does not display properly on your computer, the display will automatically return to its original configuration after %s seconds.'
@@ -4796,14 +4777,14 @@ FishPageWeightLargeP = '%d lbs. '
 FishPageWeightSmallS = '%d oz.'
 FishPageWeightSmallP = '%d oz.'
 FishPageWeightConversion = 16
-FishPageValueS = 'Value: %d jellybean'
-FishPageValueP = 'Value: %d jellybeans'
+FishPageValueS = 'Value: %d Jellybean'
+FishPageValueP = 'Value: %d Jellybeans'
 FishPageCollectedTotal = 'Fish Species Collected: %d of %d'
 FishPageRodInfo = '%s Rod\n%d - %d Pounds'
 FishPageTankTab = 'Bucket'
 FishPageCollectionTab = 'Album'
 FishPageTrophyTab = 'Trophies'
-FishPickerTotalValue = 'Bucket: %s / %s\nValue: %d jellybeans'
+FishPickerTotalValue = 'Bucket: %s / %s\nValue: %d Jellybeans'
 UnknownFish = '???'
 FishingRod = '%s Rod'
 FishingRodNameDict = {0: 'Twig',
@@ -4828,9 +4809,9 @@ GardenPageCollectionTab = 'Album'
 GardenPageTrophyTab = 'Trophies'
 GardenPageSpecialsTab = 'Specials'
 GardenPageCollectedTotal = 'Flower Varieties Collected: %d of %d'
-GardenPageValueS = 'Value: %d jellybean'
-GardenPageValueP = 'Value: %d jellybeans'
-FlowerPickerTotalValue = 'Basket: %s / %s\nValue: %d jellybeans'
+GardenPageValueS = 'Value: %d Jellybean'
+GardenPageValueP = 'Value: %d Jellybeans'
+FlowerPickerTotalValue = 'Basket: %s / %s\nValue: %d Jellybeans'
 GardenPageShovelInfo = '%s Shovel: %d / %d\n'
 GardenPageWateringCanInfo = '%s Watering Can: %d / %d'
 FlowerPageWeightConversion = 1
@@ -5098,6 +5079,7 @@ BattleGlobalLureAccMedium = 'Medium'
 AttackMissed = 'MISSED'
 NPCCallButtonLabel = 'CALL'
 LoaderLabel = 'Loading...'
+StarringIn = 'Starring In...'
 HeadingToHood = 'Heading %(to)s %(hood)s...'
 HeadingToYourEstate = 'Heading to your estate...'
 HeadingToEstate = "Heading to %s's estate..."
@@ -5140,11 +5122,11 @@ FishingFailureAutoReel = "The auto-reel didn't work this time.  Turn the crank b
 FishingFailureTooSlow = 'You turned the crank too slowly.  Some fish are faster than others.  Try to keep the speed bar centered!'
 FishingFailureTooFast = 'You turned the crank too quickly.  Some fish are slower than others.  Try to keep the speed bar centered!'
 FishingOverTankLimit = 'Your fish bucket is full. Go sell your fish to the Pet Shop Clerk and come back.'
-FishingBroke = 'You do not have any more jellybeans for bait! Ride the trolley or sell fish to the Pet Shop Clerks to earn more jellybeans.'
+FishingBroke = 'You do not have any more Jellybeans for bait! Ride the trolley or sell fish to the Pet Shop Clerks to earn more Jellybeans.'
 FishingHowToFirstTime = 'Click and drag down from the Cast button. The farther down you drag, the stronger your cast will be. Adjust your angle to hit the fish targets.\n\nTry it now!'
 FishingHowToFailed = 'Click and drag down from the Cast button. The farther down you drag, the stronger your cast will be. Adjust your angle to hit the fish targets.\n\nTry it again now!'
 FishingBootItem = 'An old boot'
-FishingJellybeanItem = '%s jellybeans'
+FishingJellybeanItem = '%s Jellybeans'
 FishingNewEntry = 'New Species!'
 FishingNewRecord = 'New Record!'
 FishPokerCashIn = 'Cash In\n%s\n%s'
@@ -5231,14 +5213,14 @@ GardenTutorialNext = 'Next Page'
 GardenTutorialPrev = 'Previous Page'
 GardenTutorialDone = 'Done'
 GardenTutorialPage1 = 'Toon up your Estate with a garden!  You can plant flowers, grow trees, harvest super-powerful gags, and decorate with statues!'
-GardenTutorialPage2 = 'Flowers are finicky and require unique jellybean recipes. Once grown, put them in the wheelbarrow to sell them and work toward Laff boosts!'
+GardenTutorialPage2 = 'Flowers are finicky and require unique Jellybean recipes. Once grown, put them in the wheelbarrow to sell them and work toward Laff boosts!'
 GardenTutorialPage3 = 'Use a gag from your inventory to plant a tree.  After a few days, that gag will do more damage!  Remember to keep it healthy or the damage boost will go away.'
 GardenTutorialPage4 = 'Walk up to these spots to plant, water, dig up or harvest your garden.'
 GardenTutorialPage5 = "Statues can be purchased in Clarabelle's Cattlelog. Increase your skill to unlock the more extravagant statues!"
 PlaygroundDeathAckMessage = TheCogs + ' took all your gags!\n\nYou are sad. You may not leave the playground until you are happy.'
 ForcedLeaveFactoryAckMsg = 'The ' + Foreman + ' was defeated before you could reach him. You did not recover any Cog parts.'
 ForcedLeaveMintAckMsg = 'The Mint Floor Supervisor was defeated before you could reach him. You did not recover any Cogbucks.'
-HeadingToFactoryTitle = 'Heading to %s...'
+HeadingToFactoryTitle = '%s'
 ForemanConfrontedMsg = '%s is battling the ' + Foreman + '!'
 MintBossConfrontedMsg = '%s is battling the Supervisor!'
 StageBossConfrontedMsg = '%s is battling the Clerk!'
@@ -5248,7 +5230,7 @@ MinigameWaitingForOtherPlayers = 'Waiting for other players to join...'
 MinigamePleaseWait = 'Please wait...'
 DefaultMinigameTitle = 'Minigame Title'
 DefaultMinigameInstructions = 'Minigame Instructions'
-HeadingToMinigameTitle = 'Heading to %s...'
+HeadingToMinigameTitle = '%s'
 MinigamePowerMeterLabel = 'Power Meter'
 MinigamePowerMeterTooSlow = 'Too\nslow'
 MinigamePowerMeterTooFast = 'Too\nfast'
@@ -5300,9 +5282,9 @@ RaceGameBackThreeSpaces = ' back 3 spaces'
 RaceGameOthersForwardThree = ' all others forward \n3 spaces'
 RaceGameOthersBackThree = 'all others back \n3 spaces'
 RaceGameInstantWinner = 'Instant Winner!'
-RaceGameJellybeans2 = '2 jellybeans'
-RaceGameJellybeans4 = '4 jellybeans'
-RaceGameJellybeans10 = '10 jellybeans!'
+RaceGameJellybeans2 = '2 Jellybeans'
+RaceGameJellybeans4 = '4 Jellybeans'
+RaceGameJellybeans10 = '10 Jellybeans!'
 RingGameTitle = 'Ring Game'
 RingGameInstructionsSinglePlayer = 'Try to swim through as many of the %s rings as you can.  Use the arrow keys to swim.'
 RingGameInstructionsMultiPlayer = 'Try to swim through the %s rings.  Other players will try for the other colored rings.  Use the arrow keys to swim.'
@@ -5322,8 +5304,8 @@ DivingInstructionsSinglePlayer = 'Treasures will appear at the bottom of the lak
 DivingInstructionsMultiPlayer = 'Treasures will appear at the bottom of the lake.  Use the arrow keys to swim.  Work together to get the treasures up to the boat!'
 DivingGameTreasuresRetrieved = 'Treasures Retrieved'
 TargetGameTitle = 'Toon Slingshot'
-TargetGameInstructionsSinglePlayer = 'Land on targets to score points'
-TargetGameInstructionsMultiPlayer = 'Land on targets to score points'
+TargetGameInstructionsSinglePlayer = 'Use your umbrella to land on the targets. The smaller the target, the more Jellybeans you get!'
+TargetGameInstructionsMultiPlayer = 'Use your umbrella to land on the targets. The smaller the target, the more Jellybeans you get!'
 TargetGameBoard = 'Round %s - Keeping Best Score'
 TargetGameCountdown = 'Forced launch in %s seconds'
 TargetGameCountHelp = 'Pound left and right arrows for power, stop to launch'
@@ -5356,8 +5338,8 @@ PhotoGameInstructions = 'Capture photos matching the toons shown at the bottom. 
 PhotoGameTitle = 'Photo Fun'
 PhotoGameFilm = 'FILM'
 PhotoGameScore = 'Team Score: %s\n\nBest Photos: %s\n\nTotal Score: %s'
-CogThiefGameTitle = Cog + ' Thief'
-CogThiefGameInstructions = 'Keep the ' + Cogs + ' from stealing our gag barrels! Press the Ctrl key to throw a pie. Use the arrow keys to move. Tip: you can move diagonally.'
+CogThiefGameTitle = 'Cog Thief'
+CogThiefGameInstructions = 'Stop these Cogs from stealing our Gags! Press the Control key to throw pies. But be careful... they have a tendancy to explode!'
 CogThiefBarrelsSaved = '%(num)d Barrels\nSaved!'
 CogThiefBarrelSaved = '%(num)d Barrel\nSaved!'
 CogThiefNoBarrelsSaved = 'No Barrels\nSaved'
@@ -5366,14 +5348,15 @@ MinigameRulesPanelPlay = 'PLAY'
 GagShopName = "Goofy's Gag Shop"
 GagShopPlayAgain = 'PLAY\nAGAIN'
 GagShopBackToPlayground = 'EXIT BACK TO\nPLAYGROUND'
-GagShopYouHave = 'You have %s jellybeans to spend'
-GagShopYouHaveOne = 'You have 1 jellybean to spend'
+GagShopYouHave = 'You have %s Jellybeans to spend'
+GagShopYouHaveOne = 'You have 1 Jellybean to spend'
 GagShopTooManyProps = 'Sorry, you have too many props'
 GagShopDoneShopping = 'DONE\nSHOPPING'
 GagShopTooManyOfThatGag = 'Sorry, you have enough %s already'
 GagShopInsufficientSkill = 'You do not have enough skill for that yet'
+GagShopNotEnoughJellybeans = 'You do not have enough Jellybeans for that gag'
 GagShopYouPurchased = 'You purchased %s'
-GagShopOutOfJellybeans = 'Sorry, you are all out of jellybeans!'
+GagShopOutOfJellybeans = 'Sorry, you are all out of Jellybeans!'
 GagShopWaitingOtherPlayers = 'Waiting for other players...'
 GagShopPlayerDisconnected = '%s has disconnected'
 GagShopPlayerExited = '%s has exited'
@@ -5392,7 +5375,6 @@ ColorShopToon = 'Toon Color'
 ColorShopHead = 'Head'
 ColorShopBody = 'Body'
 ColorShopLegs = 'Legs'
-ColorShopGlove = 'Gloves'
 ColorShopParts = 'Multi Color'
 ColorShopAll = 'Single Color'
 ClothesShopShorts = 'Shorts'
@@ -5439,14 +5421,14 @@ PetNameMaster = 'PetNameMasterEnglish.txt'
 PetNameIndexMAX = 2713
 PetshopUnknownName = 'Name: ???'
 PetshopDescGender = 'Gender:\t%s'
-PetshopDescCost = 'Cost:\t%s jellybeans'
+PetshopDescCost = 'Cost:\t%s Jellybeans'
 PetshopDescTrait = 'Traits:\t%s'
 PetshopDescStandard = 'Standard'
 PetshopCancel = lCancel
 PetshopSell = 'Sell Fish'
 PetshopAdoptAPet = 'Adopt a Doodle'
 PetshopReturnPet = 'Return your Doodle'
-PetshopAdoptConfirm = 'Adopt %s for %d jellybeans?'
+PetshopAdoptConfirm = 'Adopt %s for %d Jellybeans?'
 PetshopGoBack = 'Go Back'
 PetshopAdopt = 'Adopt'
 PetshopReturnConfirm = 'Return %s?'
@@ -5454,7 +5436,7 @@ PetshopReturn = 'Return'
 PetshopChooserTitle = "TODAY'S DOODLES"
 PetshopGoHomeText = 'Would you like to go to your estate to play with your new Doodle?'
 NameShopNameMaster = 'NameMasterEnglish.txt'
-NameShopPay = 'Appeal'
+NameShopPay = 'Subscribe'
 NameShopPlay = 'Free Trial'
 NameShopOnlyPaid = 'Only paid users\nmay name their Toons.\nUntil you subscribe\nyour name will be\n'
 NameShopContinueSubmission = 'Continue Submission'
@@ -5462,7 +5444,7 @@ NameShopChooseAnother = 'Choose Another Name'
 NameShopToonCouncil = 'The Toon Council\nwill review your\nname.  ' + 'Review may\ntake a few days.\nWhile you wait\nyour name will be\n '
 PleaseTypeName = 'Please type your name:'
 AllNewNames = 'All new names must be\napproved by the Toon Council.'
-NameMessages = 'Be creative!'
+NameMessages = 'Be creative, and remember:\nno NPC names, please.'
 NameShopNameRejected = 'The name you\nsubmitted has\nbeen rejected.'
 NameShopNameAccepted = 'Congratulations!\nThe name you\nsubmitted has\nbeen accepted!'
 NoPunctuation = "You can't use punctuation marks in your name!"
@@ -5507,21 +5489,7 @@ NumToColor = ['White',
  'Lavender',
  'Pink',
  'Plum',
- 'Black',
- 'Silver',
- 'Mountain Green',
- 'Icy Blue',
- 'Desert Sand',
- 'Mint',
- 'Charcoal',
- 'Hot Pink',
- 'Honey Mustard',
- 'Gray',
- 'Neon Orange',
- 'Sapphire' 
- 'MegaRed',
- 'MegaBlue',
- 'MegaGreen' ]
+ 'Black']
 AnimalToSpecies = {'dog': 'Dog',
  'cat': 'Cat',
  'mouse': 'Mouse',
@@ -5554,11 +5522,12 @@ NCApostrophes = 'That name has too many apostrophes.'
 RemoveTrophy = lToonHQ + ': ' + TheCogs + ' took over one of the buildings you rescued!'
 STOREOWNER_TOOKTOOLONG = 'Need more time to think?'
 STOREOWNER_GOODBYE = 'See you later!'
-STOREOWNER_NEEDJELLYBEANS = 'You need to ride the Trolley to get some jellybeans.'
+STOREOWNER_NEEDJELLYBEANS = 'You need to ride the Trolley to get some Jellybeans.'
 STOREOWNER_GREETING = 'Choose what you want to buy.'
 STOREOWNER_BROWSING = 'You can browse, but you need a clothing ticket to buy.'
+STOREOWNER_BROWSING_JBS = 'You can browse, but you need at least 200 Jellybeans to buy.'
 STOREOWNER_NOCLOTHINGTICKET = 'You need a clothing ticket to shop for clothes.'
-STOREOWNER_NOFISH = 'Come back here to sell fish to the Pet Shop for jellybeans.'
+STOREOWNER_NOFISH = 'Come back here to sell fish to the Pet Shop for Jellybeans.'
 STOREOWNER_THANKSFISH = 'Thanks! The Pet Shop will love these. Bye!'
 STOREOWNER_THANKSFISH_PETSHOP = 'These are some fine specimens! Thanks.'
 STOREOWNER_PETRETURNED = "Don't worry.  We'll find a good home for your Doodle."
@@ -5569,19 +5538,43 @@ STOREOWNER_CONFIRM_LOSS = 'Your closet is full.  You will lose the clothes you w
 STOREOWNER_OK = lOK
 STOREOWNER_CANCEL = lCancel
 STOREOWNER_TROPHY = 'Wow! You collected %s of %s fish. That deserves a trophy and a Laff boost!'
-SuitInvasionBegin1 = lToonHQ + ': A Cog Invasion has begun!!!'
+STOREOWNER_BANKING = 'Welcome to The Toontown Bank! How may I help you?'
+SuitInvasionBegin1 = lToonHQ + ': A Cog invasion has begun!!!'
 SuitInvasionBegin2 = lToonHQ + ': %s have taken over Toontown!!!'
-SuitInvasionEnd1 = lToonHQ + ': The %s Invasion has ended!!!'
+SuitInvasionEnd1 = lToonHQ + ': The %s invasion has ended!!!'
 SuitInvasionEnd2 = lToonHQ + ': The Toons have saved the day once again!!!'
-SuitInvasionUpdate1 = lToonHQ + ': The Cog Invasion is now at %s Cogs!!!'
-SuitInvasionUpdate2 = lToonHQ + ': We must defeat those %s!!!'
-SuitInvasionBulletin1 = lToonHQ + ': There is a Cog Invasion in progress!!!'
+SuitInvasionUpdate1 = lToonHQ + ': Keep it up, Toons!!!'
+SuitInvasionUpdate2 = lToonHQ + ': The Cogs appear to be decreasing in numbers!!!'
+SuitInvasionBulletin1 = lToonHQ + ': There is a Cog invasion in progress!!!'
 SuitInvasionBulletin2 = lToonHQ + ': %s have taken over Toontown!!!'
+SkelecogInvasionBegin1 = lToonHQ + ": Hmm... We're getting a strange reading over here..."
+SkelecogInvasionBegin2 = lToonHQ + ': The Cog factories are running out of parts to build new Cogs!'
+SkelecogInvasionBegin3 = lToonHQ + ': Skelecogs have taken over Toontown!!!'
+SkelecogInvasionEnd1 = lToonHQ + ': The Skelecog invasion has ended!!!'
+SkelecogInvasionEnd2 = lToonHQ + ': The Toons have saved the day once again!!!'
+SkelecogInvasionBulletin1 = lToonHQ + ': There is a Cog invasion in progress!!!'
+SkelecogInvasionBulletin2 = lToonHQ + ': The Cog factories are running out of parts to build new Cogs!'
+SkelecogInvasionBulletin3 = lToonHQ + ': Skelecogs have taken over Toontown!!!'
+WaiterInvasionBegin1 = lToonHQ + ': It appears that the C.E.O. has fired all his waiters...'
+WaiterInvasionBegin2 = lToonHQ + ': The unemployed waiters are invading Toontown!!!'
+WaiterInvasionEnd1 = lToonHQ + ': The unemployed waiters have been defeated!!!'
+WaiterInvasionEnd2 = lToonHQ + ': The Toons have saved the day once again!!!'
+WaiterInvasionBulletin1 = lToonHQ + ': There is a Cog invasion in progress!!!'
+WaiterInvasionBulletin2 = lToonHQ + ': The C.E.O. has fired all of his waiters!!!'
+WaiterInvasionBulletin3 = lToonHQ + ": The unemployed waiters are invading Toontown!!!"
+V2InvasionBegin1 = lToonHQ + ": Yikes!!! This isn't good, Toons!"
+V2InvasionBegin2 = lToonHQ + ': A major firmware update has been released to the Cogs!!!'
+V2InvasionBegin3 = lToonHQ + ': Version 2.0 Cogs have taken over Toontown!!!'
+V2InvasionEnd1 = lToonHQ + ': The version 2.0 Cog invasion has ended!!!'
+V2InvasionEnd2 = lToonHQ + ': The Toons have saved the day once again!!!'
+V2InvasionBulletin1 = lToonHQ + ': There is a Cog invasion in progress!!!'
+V2InvasionBulletin2 = lToonHQ + ': A major firmware update has been released to the Cogs!!!'
+V2InvasionBulletin3 = lToonHQ + ': Version 2.0 Cogs have taken over Toontown!!!'
 LeaderboardTitle = 'Toon Platoon'
 QuestScriptTutorialMickey_1 = 'Toontown has a new citizen! Do you have some extra gags?'
 QuestScriptTutorialMickey_2 = 'Sure, %s!'
 QuestScriptTutorialMickey_3 = 'Tutorial Tom will tell you all about the Cogs.\x07Gotta go!'
-QuestScriptTutorialMickey_4 = 'Come here! Use the arrow keys to move.'
+QuestScriptTutorialMickey_4 = "Hello, new citizen! Welcome to Toontown! Come over here so I can tell you what's been going on in town recently. Use the arrow keys to move."
 QuestScriptTutorialMinnie_1 = 'Toontown has a new citizen! Do you have some extra gags?'
 QuestScriptTutorialMinnie_2 = 'Sure, %s!'
 QuestScriptTutorialMinnie_3 = 'Tutorial Tom will tell you all about the Cogs.\x07Gotta go!'
@@ -5616,7 +5609,7 @@ QuestScriptTutorialBlocker_3 = "Oh! You don't know how to use SpeedChat!"
 QuestScriptTutorialBlocker_4 = 'Click on the button to say something.'
 QuestScriptTutorialBlocker_5 = 'Very good!\x07Where you are going there are many Toons to talk to.'
 QuestScriptTutorialBlocker_6 = "If you want to chat with other Toons using the keyboard, there's another button you can use."
-QuestScriptTutorialBlocker_7 = "It's called the Chat button. Try typing something in it."
+QuestScriptTutorialBlocker_7 = "It's called the SpeedChat Plus button. You need to turn on Speedchat Plus in your Account Manager on the Toontown Infinite Website to use it."
 QuestScriptTutorialBlocker_8 = 'Good luck! See you later!'
 QuestScriptGagShop_1 = 'Welcome to the Gag Shop!'
 QuestScriptGagShop_1a = 'This is where Toons come to buy gags to use against the Cogs.'
@@ -5663,8 +5656,9 @@ BossBattleHowToGetPies = 'Jump up to touch the cage to get pies.'
 BossBattleHowToThrowPies = 'Press the Delete key to throw pies!'
 CagedToonYippee = 'Yippee!'
 CagedToonThankYou = "It's great to be free!\x07Thanks for all your help!\x07I am in your debt.\x07Here's my card. If you ever need a hand in battle, give a shout!\x07Just click on your SOS button."
-CagedToonPromotion = "\x07Say--that V.P. Cog left behind your promotion papers.\x07I'll file them for you on the way out, so you'll get your promotion!"
-CagedToonLastPromotion = "\x07Wow, you've reached level %s on your Cog suit!\x07Cogs don't get promoted higher than that.\x07You can't upgrade your Cog suit anymore, but you can certainly keep rescuing Toons!"
+CagedToonLevelPromotion = "\x07Say--that V.P. Cog left behind your promotion papers.\x07I'll file them for you on the way out, so you'll get your promotion!"
+CagedToonSuitPromotion = "\x07It seems like you've reached the highest level you can for a %s.\x07You can continue upgrading your Cog suit through the disguise page in your Shticker Book.\x07Along with getting a new Cog suit, you will also get a 1 point Laff boost!"
+CagedToonLastPromotion = "\x07Wow, you've reached level %s on your Cog suit!\x07I'm pretty sure Cogs don't get promoted higher than that.\x07You can't upgrade your Cog suit anymore, but you can certainly keep rescuing Toons!"
 CagedToonHPBoost = "\x07You've rescued a lot of Toons from this HQ.\x07The Toon Council has decided to give you another Laff point. Congratulations!"
 CagedToonMaxed = '\x07I see that you have a level %s Cog suit. Very impressive!\x07On behalf of the Toon Council, thank you for coming back to rescue more Toons!'
 CagedToonGoodbye = 'See ya!'
@@ -5689,12 +5683,14 @@ ResistanceToonName = 'Mata Hairy'
 ResistanceToonCongratulations = "You did it!  Congratulations!\x07You're an asset to the Resistance!\x07Here's a special phrase you can use in a tight spot:\x07%s\x07When you say it, %s.\x07But you can only use it once, so choose that time well!"
 ResistanceToonToonupInstructions = 'all the Toons near you will gain %s Laff points'
 ResistanceToonToonupAllInstructions = 'all the Toons near you will gain full Laff points'
-ResistanceToonMoneyInstructions = 'all the Toons near you will gain %s jellybeans'
-ResistanceToonMoneyAllInstructions = 'all the Toons near you will fill their jellybean jars'
+ResistanceToonMoneyInstructions = 'all the Toons near you will gain %s Jellybeans'
+ResistanceToonMoneyAllInstructions = 'all the Toons near you will fill their Jellybean jars'
 ResistanceToonRestockInstructions = 'all the Toons near you will restock their "%s" gags'
 ResistanceToonRestockAllInstructions = 'all the Toons near you will restock all their gags'
-ResistanceToonLastPromotion = "\x07Wow, you've reached level %s on your Cog suit!\x07Cogs don't get promoted higher than that.\x07You can't upgrade your Cog suit anymore, but you can certainly keep working for the Resistance!"
 ResistanceToonHPBoost = "\x07You've done a lot of work for the Resistance.\x07The Toon Council has decided to give you another Laff point. Congratulations!"
+ResistanceToonLevelPromotion = "\x07Say--that C.F.O. Cog left behind your promotion papers.\x07I'll file them for you on the way out, so you'll get your promotion!"
+ResistanceToonSuitPromotion = "\x07It seems like you've reached the highest level you can for a %s.\x07You can continue upgrading your Cog suit through the disguise page in your Shticker Book.\x07Along with getting a new Cog suit, you will also get a 1 point Laff boost!"
+ResistanceToonLastPromotion = "\x07Wow, you've reached level %s on your Cog suit!\x07I'm pretty sure Cogs don't get promoted higher than that.\x07You can't upgrade your Cog suit anymore, but you can certainly keep working for the Resistance!!"
 ResistanceToonMaxed = '\x07I see that you have a level %s Cog suit. Very impressive!\x07On behalf of the Toon Council, thank you for coming back to rescue more Toons!'
 CashbotBossCogAttack = 'Get them!!!'
 ResistanceToonWelcome = 'Hey, you made it!  Follow me to the main vault before the C.F.O. finds us!'
@@ -5719,15 +5715,6 @@ NotYetAvailable = 'This elevator is not yet available.'
 SellbotRentalSuitMessage = "Wear this Rental Suit so you can get close enough to the VP to attack.\n\nYou won't earn merits or promotions, but you can rescue a Toon for an SOS reward!"
 SellbotCogSuitNoMeritsMessage = "Your Sellbot Disguise will get you in, but since you don't have enough merits, you won't earn a promotion.\n\nIf you rescue the trapped Toon, you will earn an SOS Toon reward!"
 SellbotCogSuitHasMeritsMessage = "It's Operation: Storm Sellbot!\n\nBring 5 or more Rental Suit Toons with you to defeat the VP and earn credit towards a reward!"
-CashbotRentalSuitMessage = "Wear this Rental Suit so you can get close enough to the CFO to attack.\n\nYou won't earn cogbucks or promotions, but you can rescue Mata for a unite!"
-CashbotCogSuitNoMeritsMessage = "Your Cashbot Disguise will get you in, but since you don't have enough cogbucks, you won't earn a promotion.\n\nIf you rescue Mata, you will earn a unite!"
-CashbotCogSuitHasMeritsMessage = "It's Operation: Crush Cashbot!\n\nBring 5 or more Rental Suit Toons with you to defeat the CFO and earn credit towards a reward!"
-LawbotRentalSuitMessage = "Wear this Rental Suit so you can get close enough to the CJ to attack.\n\nYou won't earn jury notices or promotions, but you can rescue a Toon for a cog summon reward!"
-LawbotCogSuitNoMeritsMessage = "Your Lawbot Disguise will get you in, but since you don't have enough jury notices, you won't earn a promotion.\n\nIf you rescue the trapped Toon, you will earn a cog summon reward!"
-LawbotCogSuitHasMeritsMessage = "It's Operation: Lawbots Lose!\n\nBring 5 or more Rental Suit Toons with you to defeat the CJ and earn credit towards a reward!"
-BossbotRentalSuitMessage = "Wear this Rental Suit so you can get close enough to the CEO to attack.\n\nYou won't earn stock options or promotions, but you can rescue a Toon for a fire reward!"
-BossbotCogSuitNoMeritsMessage = "Your Bossbot Disguise will get you in, but since you don't have enough stock options, you won't earn a promotion.\n\nIf you rescue the trapped Toon, you will earn a fire reward!"
-BossbotCogSuitHasMeritsMessage = "It's Operation: Battle Bossbot!\n\nBring 5 or more Rental Suit Toons with you to defeat the CEO and earn credit towards a reward!"
 FurnitureTypeName = 'Furniture'
 PaintingTypeName = 'Painting'
 ClothingTypeName = 'Clothing'
@@ -5763,6 +5750,7 @@ CatalogItemTypeNames = {0: 'INVALID_ITEM',
  18: 'ANIMATED FURNITURE',
  19: AccessoryTypeName}
 HatStylesDescriptions = {'hbb1': 'Green Baseball Cap',
+ 'kmh1': 'Mouskateer',
  'hbb2': 'Blue Baseball Cap',
  'hbb3': 'Orange Baseball Cap',
  'hsf1': 'Beige Safari Hat',
@@ -6274,9 +6262,7 @@ SpecialEventMailboxStrings = {1: 'A special item from the Toon Council just for 
  14: 'Here is your Most V.P.s Defeated Tournament prize! Congratulations!',
  15: 'Here is your Operation: Storm Sellbot prize! Congratulations!',
  16: 'Here is your Most C.J.s Defeated Tournament prize! Congratulations!',
- 17: 'Here is your Operation: Lawbots Lose prize! Congratulations!',
- 18: 'Here is your Operation: Crush Cashbot prize! Congratulations!',
- 19: 'Here is your Operation: Battle Bossbot prize! Congratulations!'}
+ 17: 'Here is your Operation: Lawbots Lose prize! Congratulations!'}
 RentalHours = 'Hours'
 RentalOf = 'Of'
 RentalCannon = 'Cannons!'
@@ -6804,9 +6790,7 @@ SpecialEventNames = {1: 'Generic Award',
  14: 'Most V.P.s Defeated',
  15: 'Operation Storm Sellbot Event',
  16: 'Most C.J.s Defeated',
- 17: 'Operation Lawbots Lose Event',
- 18: 'Operation Crush Cashbot Event',
- 19: 'Operation Battle Bossbot Event'}
+ 17: 'Operation Lawbots Lose Event'}
 NewCatalogNotify = 'There are new items available to order at your phone!'
 NewDeliveryNotify = 'A new delivery has just arrived at your mailbox!'
 CatalogNotifyFirstCatalog = 'Your first cattlelog has arrived!  You may use this to order new items for yourself or for your house.'
@@ -6824,6 +6808,7 @@ DistributedMailboxWaiting = 'Your mailbox is empty right now, but the package yo
 DistributedMailboxReady = 'Your order has arrived!'
 DistributedMailboxNotOwner = 'Sorry, this is not your mailbox.'
 DistributedPhoneEmpty = "You can use any phone to order special items for you and your house.  New items will become available to order over time.\n\nYou don't have any items available to order right now, but check back later!"
+DistributedPhoneNoHouse = 'You must have a house to use the catalog!'
 Clarabelle = 'Clarabelle'
 MailboxExitButton = 'Close Mailbox'
 MailboxAcceptButton = 'Take this item'
@@ -6969,21 +6954,22 @@ CatalogMembersOnly = 'Members\nOnly!'
 CatalogSndOnText = 'Snd On'
 CatalogSndOffText = 'Snd Off'
 CatalogPurchasedMaxText = 'Already\nPurchased Max'
-CatalogVerifyPurchase = 'Purchase %(item)s for %(price)s jellybeans?'
-CatalogVerifyPurchaseBeanSilverGold = 'Purchase %(item)s for %(price)s jellybeans, %(silver)s silver emblems and %(gold)s gold emblems?'
-CatalogVerifyPurchaseBeanGold = 'Purchase %(item)s for %(price)s jellybeans and %(gold)s gold emblems?'
-CatalogVerifyPurchaseBeanSilver = 'Purchase %(item)s for %(price)s jellybeans and %(silver)s silver emblems?'
+CatalogVerifyPurchase = 'Purchase %(item)s for %(price)s Jellybeans?'
+CatalogVerifyPurchaseBeanSilverGold = 'Purchase %(item)s for %(price)s Jellybeans, %(silver)s silver emblems and %(gold)s gold emblems?'
+CatalogVerifyPurchaseBeanGold = 'Purchase %(item)s for %(price)s Jellybeans and %(gold)s gold emblems?'
+CatalogVerifyPurchaseBeanSilver = 'Purchase %(item)s for %(price)s Jellybeans and %(silver)s silver emblems?'
 CatalogVerifyPurchaseSilverGold = 'Purchase %(item)s for %(silver)s silver emblems and %(gold)s gold emblems?'
 CatalogVerifyPurchaseSilver = 'Purchase %(item)s for %(silver)s silver emblems?'
 CatalogVerifyPurchaseGold = 'Purchase %(item)s for %(gold)s gold emblems?'
-CatalogVerifyRent = 'Rent %(item)s for %(price)s jellybeans?'
-CatalogVerifyGift = 'Purchase %(item)s for %(price)s jellybeans as a gift for %(friend)s?'
-CatalogOnlyOnePurchase = 'You may only have one of these items at a time.  If you purchase this one, it will replace %(old)s.\n\nAre you sure you want to purchase %(item)s for %(price)s jellybeans?'
+CatalogVerifyRent = 'Rent %(item)s for %(price)s Jellybeans?'
+CatalogVerifyGift = 'Purchase %(item)s for %(price)s Jellybeans as a gift for %(friend)s?'
+CatalogOnlyOnePurchase = 'You may only have one of these items at a time.  If you purchase this one, it will replace %(old)s.\n\nAre you sure you want to purchase %(item)s for %(price)s Jellybeans?'
 CatalogExitButtonText = 'Hang Up'
 CatalogCurrentButtonText = 'To Current Items'
 CatalogPastButtonText = 'To Past Items'
 TutorialHQOfficerName = 'HQ Harry'
 NPCToonNames = {20000: 'Tutorial Tom',
+ 998: 'Talkative Tyler',
  999: 'Toon Tailor',
  1000: lToonHQ,
  20001: Flippy,
@@ -7008,6 +6994,8 @@ NPCToonNames = {20000: 'Tutorial Tom',
  2018: 'Doctor Surlee',
  2019: 'Doctor Dimm',
  2020: 'Professor Prepostera',
+ 2021: 'Yin',
+ 2022: 'Yang',
  2101: 'Dentist Daniel',
  2102: 'Sheriff Sherry',
  2103: 'Sneezy Kitty',
@@ -7016,7 +7004,7 @@ NPCToonNames = {20000: 'Tutorial Tom',
  2106: lHQOfficerF,
  2107: lHQOfficerF,
  2108: 'Canary Coalmine',
- 2109: 'Babbles Blowhard',
+ 2109: 'Sir Babbles A Lot',
  2110: 'Bill Board',
  2111: 'Dancing Diego',
  2112: 'Dr. Tom',
@@ -7634,7 +7622,10 @@ NPCToonNames = {20000: 'Tutorial Tom',
  7006: 'Gimmy Ahand',
  7007: 'Dewin Tymme',
  7008: 'Ima Cagedtoon',
- 7009: 'Jimmy Thelock'}
+ 7009: 'Jimmy Thelock',
+# Start with 91913.
+91917: 'Magic Cat',
+91918: 'Trap Cat'}
 zone2TitleDict = {2513: ('Toon Hall', ''),
  2514: ('Toontown Bank', ''),
  2516: ('Toontown School House', ''),
@@ -8170,10 +8161,7 @@ zone2TitleDict = {2513: ('Toon Hall', ''),
  3827: ('Choral Wreaths', ''),
  3828: ("Snowman's Land", ''),
  3829: ('Pinecone Zone', ''),
- 3830: ('Wait and See Goggle Defogging', ''),
-#Lighthouse
- 3831: ("Lofty's Lighthouse", '')}
- 
+ 3830: ('Wait and See Goggle Defogging', '')}
 ClosetTimeoutMessage = 'Sorry, you ran out\n of time.'
 ClosetNotOwnerMessage = "This isn't your closet, but you may try on the clothes."
 ClosetPopupOK = lOK
@@ -8214,10 +8202,10 @@ DistributedBankNoOwner = 'Sorry, this is not your bank.'
 DistributedBankNotOwner = 'Sorry, this is not your bank.'
 FishGuiCancel = lCancel
 FishGuiOk = 'Sell All'
-FishTankValue = 'Hi, %(name)s! You have %(num)s fish in your bucket worth a total of %(value)s jellybeans. Do you want to sell them all?'
+FishTankValue = 'Hi, %(name)s! You have %(num)s fish in your bucket worth a total of %(value)s Jellybeans. Do you want to sell them all?'
 FlowerGuiCancel = lCancel
 FlowerGuiOk = 'Sell All'
-FlowerBasketValue = '%(name)s, you have %(num)s flowers in your basket worth a total of %(value)s jellybeans. Do you want to sell them all?'
+FlowerBasketValue = '%(name)s, you have %(num)s flowers in your basket worth a total of %(value)s Jellybeans. Do you want to sell them all?'
 
 def GetPossesive(name):
     if name[-1:] == 's':
@@ -8283,12 +8271,12 @@ FireworksInstructions = lToonHQ + ': Hit the "Page Up" key to see the show!'
 startFireworksResponse = "Usage: startFireworksShow ['num']\n                                         'num' = %s - New Years\n                                         %s - Party Summer \n                                         %s - 4th of July"
 FireworksJuly4Beginning = lToonHQ + ': Welcome to summer fireworks! Enjoy the show!'
 FireworksJuly4Ending = lToonHQ + ': Hope you enjoyed the show! Have a great summer!'
-FireworksNewYearsEveBeginning = lToonHQ + ': Happy New Year! Enjoy the fireworks show!'
-FireworksNewYearsEveEnding = lToonHQ + ': Hope you enjoyed the show! Happy New Year!'
+FireworksNewYearsEveBeginning = lToonHQ + ': Happy New Year! Enjoy the fireworks show, sponsored by Flippy!'
+FireworksNewYearsEveEnding = lToonHQ + ': Hope you enjoyed the show! Have a Toontastic New Year!'
 FireworksComboBeginning = lToonHQ + ': Enjoy lots of Laffs with Toon fireworks!'
 FireworksComboEnding = lToonHQ + ': Thank you, Toons! Hope you enjoyed the show!'
 BlockerTitle = 'LOADING TOONTOWN...'
-BlockerLoadingTexts = ['Scrubbing pie tins',
+BlockerLoadingTexts = ['Rewriting history',
  'Baking pie crusts',
  'Heating pie filling',
  'Loading Doodle chow',
@@ -8306,7 +8294,7 @@ BlockerLoadingTexts = ['Scrubbing pie tins',
  'Teaching new moves to dancing fire hydrants',
  'Binding Shticker Books',
  'Analyzing quacks',
- 'Harvesting jellybean pods',
+ 'Harvesting Jellybean pods',
  'Emptying fish buckets',
  'Corralling trashcan trash',
  'Spreading Cog grease',
@@ -8331,27 +8319,26 @@ TIP_GOLF = 7
 TipTitle = 'TOON TIP:'
 TipDict = {TIP_NONE: ('',),
  TIP_GENERAL: ('Quickly check your ToonTask progress by holding down the "End" key.',
- 			   "If you find a bug make sure to report it to our issue tracker on our site!",
                'Quickly check your Gag page by holding down the "Home" key.',
                'Open your Friends List by pressing the "F7" key.',
                'Open or close your Shticker Book by pressing the "F8" key.',
                'You can look up by pressing the "Page Up" key and look down by pressing the "Page Down" key.',
                'Press the "Control" key to jump.',
-               'Press the "F9" key to take a screenshot, which will be saved in your Toontown folder on your computer.',
+               'Press the "F9" key to take a screenshot, which will be saved in your Toontown Infinite folder on your computer.',
                'You can change your screen resolution, adjust audio, and control other options on the Options Page in the Shticker Book.',
                "Try on your friend's clothing at the closet in their house.",
                'You can go to your house using the "Go Home" button on your map.',
                'Every time you turn in a completed ToonTask your Laff points are automatically refilled.',
                'You can browse the selection at Clothing Stores even without a clothing ticket.',
-               'Rewards for some ToonTasks allow you to carry more gags and jellybeans.',
-               'You can have up to 200 friends on your Friends List.',
+               'Rewards for some ToonTasks allow you to carry more gags and Jellybeans.',
+               'You can have up to 50 friends on your Friends List.',
                'Some ToonTask rewards let you teleport to playgrounds in Toontown by using the Map Page in the Shticker Book.',
                'Increase your Laff points in the Playgrounds by collecting treasures like stars and ice cream cones.',
                'To heal quickly after a battle, go to your estate and play with your Doodle.',
                'Change to different views of your Toon by pressing the Tab Key.',
                'Sometimes you can find several different ToonTasks offered for the same reward. Shop around!',
                'Finding friends with similar ToonTasks is a fun way to progress through the game.',
-               'You never need to save your Toontown progress. The Toontown servers continually save all the necessary information.',
+               'You never need to save your Toontown progress. The Toontown Infinite servers continually save all the necessary information.',
                'You can whisper to other Toons either by clicking on them or by selecting them from your Friends List.',
                'Some SpeedChat phrases play emotion animations on your Toon.',
                'If the area you are in is crowded, try changing Districts. Go to the District Page in the Shticker Book and select a different one.',
@@ -8363,11 +8350,11 @@ TipDict = {TIP_NONE: ('',),
                'Different ponds hold different fish. Try them all!',
                'When your fishing bucket is full sell your fish to the Fishermen in the Playgrounds.',
                'You can sell your fish to the Fishermen or inside Pet Shops.',
-               'Stronger fishing rods catch heavier fish but cost more jellybeans to use.',
+               'Stronger fishing rods catch heavier fish but cost more Jellybeans to use.',
                'You can purchase stronger fishing rods in the Cattlelog.',
-               'Heavier fish are worth more jellybeans to the Pet Shop.',
-               'Rare fish are worth more jellybeans to the Pet Shop.',
-               'You can sometimes find bags of jellybeans while fishing.',
+               'Heavier fish are worth more Jellybeans to the Pet Shop.',
+               'Rare fish are worth more Jellybeans to the Pet Shop.',
+               'You can sometimes find bags of Jellybeans while fishing.',
                'Some ToonTasks require fishing items out of the ponds.',
                'Fishing ponds in the Playgrounds have different fish than ponds on the streets.',
                'Some fish are really rare. Keep fishing until you collect them all!',
@@ -8375,7 +8362,7 @@ TipDict = {TIP_NONE: ('',),
                'For every 10 species you catch, you will get a fishing trophy!',
                'You can see what fish you have collected in your Shticker Book.',
                'Some fishing trophies reward you with a Laff boost.',
-               'Fishing is a good way to earn more jellybeans.',
+               'Fishing is a good way to earn more Jellybeans.',
                'Adopt a Doodle at the Pet Shop!',
                'Pet Shops get new Doodles to sell every day.',
                'Visit the Pet Shops every day to see what new Doodles they have.',
@@ -8421,12 +8408,12 @@ TipDict = {TIP_NONE: ('',),
               'Sound gags do not get bonus damage against lured Cogs.',
               'If you wait too long to attack a lured Cog, it will wake up. Higher level lures last longer.',
               'There are fishing ponds on every street in Toontown. Some streets have unique fish.'),
- TIP_MINIGAME: ('After you fill up your jellybean jar, any jellybeans you get from Trolley Games automatically spill over into your bank.',
+ TIP_MINIGAME: ('After you fill up your Jellybean jar, any Jellybeans you get from Trolley Games automatically spill over into your bank.',
                 'You can use the arrow keys instead of the mouse in the "Match Minnie" Trolley Game.',
                 'In the Cannon Game you can use the arrow keys to move your cannon and press the "Control" key to fire.',
                 'In the Ring Game, bonus points are awarded when the entire group successfully swims through its rings.',
                 'A perfect game of Match Minnie will double your points.',
-                'In the Tug-of-War you are awarded more jellybeans if you play against a tougher Cog.',
+                'In the Tug-of-War you are awarded more Jellybeans if you play against a tougher Cog.',
                 'Trolley Game difficulty varies by neighborhood; ' + lToontownCentral + ' has the easiest and ' + lDonaldsDreamland + ' has the hardest.',
                 'Certain Trolley Games can only be played in a group.'),
  TIP_COGHQ: ('You must complete your Sellbot Disguise before visiting the V.P.',
@@ -8464,7 +8451,7 @@ TipDict = {TIP_NONE: ('',),
               "You can teach Doodles tricks with training lessons from Clarabelle's Cattlelog.",
               'Reward your Doodle for doing tricks.',
               "If you visit a friend's estate, your Doodle will come too.",
-              'Feed your Doodle a jellybean when it is hungry.',
+              'Feed your Doodle a Jellybean when it is hungry.',
               'Click on a Doodle to get a menu where you can Feed, Scratch, and Call him.',
               'Doodles love company. Invite your friends over to play!',
               'All Doodles have unique personalities.',
@@ -8475,7 +8462,7 @@ TipDict = {TIP_NONE: ('',),
               'Experienced Doodles can perform more tricks before getting tired.',
               'You can see a list of nearby Doodles in your Friends List.',
               "Purchase furniture from Clarabelle's Cattlelog to decorate your house.",
-              'The bank inside your house holds extra jellybeans.',
+              'The bank inside your house holds extra Jellybeans.',
               'The closet inside your house holds extra clothes.',
               "Go to your friend's house and try on his clothes.",
               "Purchase better fishing rods from Clarabelle's Cattlelog.",
@@ -8605,11 +8592,7 @@ CogPartNames = ('Upper Left Leg',
  'Left Hand',
  'Upper Right Arm',
  'Lower Right Arm',
- 'Right Hand',
- #Cog Nation Parts
- 'Propeller Piece',
- 'Voice Translator',
- 'Head')
+ 'Right Hand')
 CogPartNamesSimple = ('Upper Torso',)
 SellbotLegFactorySpecMainEntrance = 'Front Entrance'
 SellbotLegFactorySpecLobby = 'Lobby'
@@ -8664,17 +8647,20 @@ FishBingoHelpThreeway = "Three-way.  Mark both diagonals and the middle row to w
 FishBingoHelpBingo = 'Bingo!'
 FishBingoHelpBlockout = 'Blockout!.  Mark the entire card to win.  You are competing against all the other ponds for a huge jackpot!'
 FishBingoOfferToSellFish = 'Your fish bucket is full. Would you like to sell your fish?'
-FishBingoJackpotWin = 'Win %s jellybeans!'
+FishBingoJackpotWin = 'Win %s Jellybeans!'
 ResistanceToonupMenu = 'Toon-up'
 ResistanceToonupItem = '%s Toon-up'
 ResistanceToonupItemMax = 'Max'
 ResistanceToonupChat = 'Toons of the World, Toon-up!'
+ResistanceDanceMenu = 'Dance'
+ResistanceDanceItem = 'Make them %s'
+ResistanceDanceChat = 'Toons of the World, Dance with me!'
 ResistanceRestockMenu = 'Gag-up'
 ResistanceRestockItem = 'Gag-up %s'
 ResistanceRestockItemAll = 'All'
 ResistanceRestockChat = 'Toons of the World, Gag-up!'
-ResistanceMoneyMenu = 'jellybeans'
-ResistanceMoneyItem = '%s jellybeans'
+ResistanceMoneyMenu = 'Jellybeans'
+ResistanceMoneyItem = '%s Jellybeans'
 ResistanceMoneyChat = 'Toons of the World, Spend Wisely!'
 ResistanceEmote1 = NPCToonNames[9228] + ': Welcome to the Resistance!'
 ResistanceEmote2 = NPCToonNames[9228] + ': Use your new emote to identify yourself to other members.'
@@ -8703,7 +8689,7 @@ StartingBlock_EnterPractice = 'Would you like to enter a practice race?'
 StartingBlock_EnterNonPractice = 'Would you like to enter a %s race for %s tickets?'
 StartingBlock_EnterShowPad = 'Would you like to park your car here?'
 StartingBlock_KickSoloRacer = 'Toon Battle and Grand Prix races require two or more racers.'
-StartingBlock_Loading = 'Going to the Race!'
+StartingBlock_Loading = 'Goofy Speedway'
 LeaderBoard_Time = 'Time'
 LeaderBoard_Name = 'Racer Name'
 LeaderBoard_Daily = 'Daily Scores'
@@ -8976,9 +8962,11 @@ WitnessToonSomeJurors = 'Cool! There are %d Toons in the jury!'
 WitnessToonAllJurors = 'Awesome! All the jurors are Toons!'
 WitnessToonPrepareBattleThree = 'Hurry, touch the witness stand to get evidence.\x07Press the Delete key to throw the evidence at the lawyers, or at the defense pan.'
 WitnessToonCongratulations = "You did it!  Thank you for a spectacular defense!\x07Here, take these papers the Chief Justice left behind.\x07With it you'll be able to summon Cogs from your Cog Gallery page."
-WitnessToonLastPromotion = "\x07Wow, you've reached level %s on your Cog Suit!\x07Cogs don't get promoted higher than that.\x07You can't upgrade your Cog Suit anymore, but you can certainly keep working for the Resistance!"
 WitnessToonHPBoost = "\x07You've done a lot of work for the Resistance.\x07The Toon Council has decided to give you another Laff point. Congratulations!"
-WitnessToonMaxed = '\x07I see that you have a level %s Cog Suit. Very impressive!\x07On behalf of the Toon Council, thank you for coming back to defend more Toons!'
+WitnessToonLevelPromotion = "\x07Say--that C.J. Cog left behind your promotion papers.\x07I'll file them for you on the way out, so you'll get your promotion!"
+WitnessToonSuitPromotion = "\x07It seems like you've reached the highest level you can for a %s.\x07You can continue upgrading your Cog suit through the disguise page in your Shticker Book.\x07Along with getting a new Cog suit, you will also get a 1 point Laff boost!"
+WitnessToonLastPromotion = "\x07Wow, you've reached level %s on your Cog suit!\x07I'm pretty sure Cogs don't get promoted higher than that.\x07You can't upgrade your Cog suit anymore, but you can certainly keep working for the Resistance!!"
+WitnessToonMaxed = '\x07I see that you have a level %s Cog suit. Very impressive!\x07On behalf of the Toon Council, thank you for coming back to rescue more Toons!'
 WitnessToonBonus = 'Wonderful! All the lawyers are stunned. Your evidence weight is %s times heavier for %s seconds'
 WitnessToonJuryWeightBonusSingular = {6: 'This is a tough case. You seated %d Toon juror, so your evidence has a bonus weight of %d.',
  7: 'This is a very tough case. You seated %d Toon juror, so your evidence has a bonus weight of %d.',
@@ -9114,8 +9102,8 @@ GardeningPlantItem = 'Plant\nItem'
 PlantingGuiOk = 'Plant'
 PlantingGuiCancel = 'Cancel'
 PlantingGuiReset = 'Reset'
-GardeningChooseBeans = 'Choose the jellybeans you want to plant.'
-GardeningChooseBeansItem = 'Choose the jellybeans / item you want to plant.'
+GardeningChooseBeans = 'Choose the Jellybeans you want to plant.'
+GardeningChooseBeansItem = 'Choose the Jellybeans / item you want to plant.'
 GardeningChooseToonStatue = 'Choose the toon you want to create a statue of.'
 GardenShovelLevelUp = "Congratulations you've earned a %(shovel)s! You've mastered the %(oldbeans)d bean flower! To progress you should pick %(newbeans)d bean flowers."
 GardenShovelSkillLevelUp = "Congratulations! You've mastered the %(oldbeans)d bean flower! To progress you should pick %(newbeans)d bean flowers."
@@ -9156,7 +9144,7 @@ ConfirmWontBeAbleToHarvest = " If you remove this tree, you won't be able to har
 ConfirmRemoveStatuary = 'Are you sure you want to permanently delete the %(item)s?'
 ResultPlantedSomething = 'Congratulations! You just planted a %s.'
 ResultPlantedSomethingAn = 'Congratulations! You just planted an %s.'
-ResultPlantedNothing = "That didn't work.  Please try a different combination of jellybeans."
+ResultPlantedNothing = "That didn't work.  Please try a different combination of Jellybeans."
 GardenGagTree = ' Gag Tree'
 GardenUberGag = 'Uber Gag'
 
@@ -9165,7 +9153,7 @@ def getRecipeBeanText(beanTuple):
     if not beanTuple:
         return retval
     allTheSame = True
-    for index in range(len(beanTuple)):
+    for index in xrange(len(beanTuple)):
         if index + 1 < len(beanTuple):
             if not beanTuple[index] == beanTuple[index + 1]:
                 allTheSame = False
@@ -9173,15 +9161,15 @@ def getRecipeBeanText(beanTuple):
 
     if allTheSame:
         if len(beanTuple) > 1:
-            retval = '%d %s jellybeans' % (len(beanTuple), BeanColorWords[beanTuple[0]])
+            retval = '%d %s Jellybeans' % (len(beanTuple), BeanColorWords[beanTuple[0]])
         else:
-            retval = 'a %s jellybean' % BeanColorWords[beanTuple[0]]
+            retval = 'a %s Jellybean' % BeanColorWords[beanTuple[0]]
     else:
         retval += 'a'
         maxBeans = len(beanTuple)
-        for index in range(maxBeans):
+        for index in xrange(maxBeans):
             if index == maxBeans - 1:
-                retval += ' and %s jellybean' % BeanColorWords[beanTuple[index]]
+                retval += ' and %s Jellybean' % BeanColorWords[beanTuple[index]]
             elif index == 0:
                 retval += ' %s' % BeanColorWords[beanTuple[index]]
             else:
@@ -9248,9 +9236,9 @@ TravelGameReasonRandom = 'The trolley is randomly moving %(dir)s.'
 TravelGameOneToonVote = '%(name)s used %(numVotes)s votes to go %(dir)s\n'
 TravelGameBonusBeans = '%(numBeans)d Beans'
 TravelGamePlaying = 'Up next, the %(game)s trolley game.'
-TravelGameGotBonus = '%(name)s got a bonus of %(numBeans)s jellybeans!'
-TravelGameNoOneGotBonus = 'No one reached their secret goal.  Everyone gets 1 jellybean.'
-TravelGameConvertingVotesToBeans = 'Converting some votes to jellybeans...'
+TravelGameGotBonus = '%(name)s got a bonus of %(numBeans)s Jellybeans!'
+TravelGameNoOneGotBonus = 'No one reached their secret goal.  Everyone gets 1 Jellybean.'
+TravelGameConvertingVotesToBeans = 'Converting some votes to Jellybeans...'
 TravelGameGoingBackToShop = "Only 1 player left. Going to Goofy's Gag Shop."
 PairingGameTitle = 'Toon Memory Game'
 PairingGameInstructions = 'Press Delete to open a card. Match 2 cards to score a point.  Make a match with the bonus glow and earn an extra point.  Earn more points by keeping the flips low.'
@@ -9263,8 +9251,6 @@ TrolleyHolidayOngoing = 'Welcome! Trolley Tracks is currently in progress.'
 TrolleyHolidayEnd = "That's all for today's Trolley Tracks.  See you next week!"
 TrolleyWeekendStart = 'Trolley Tracks Weekend is about to begin!  Board any trolley with 2 or more toons to play.'
 TrolleyWeekendEnd = "That's all for Trolley Tracks Weekend."
-dylanbirthdaystart = "Ollie's birthday is starting now."
-dylanbirthdayend = "Ollie's birthday is ending now."
 VineGameTitle = 'Jungle Vines'
 VineGameInstructions = 'Get to the rightmost vine in time. Press Up or Down to climb the vine.  Press Left or Right to change facing and jump.  The lower you are on the vine, the faster you jump off.  Collect the bananas if you can, but avoid the bats and spiders.'
 ValentinesDayStart = "Happy ValenToon's Day!"
@@ -9425,12 +9411,6 @@ GrandPrixWeekendHolidayEnd = "That's all for Grand Prix Weekend. See you next ye
 KartRace_DoubleTickets = 'Double Tickets'
 SellbotNerfHolidayStart = 'Operation: Storm Sellbot is happening now! Battle the VP today!'
 SellbotNerfHolidayEnd = 'Operation: Storm Sellbot has ended. Great work, Toons!'
-CashbotNerfHolidayStart = 'Operation: Crush Cashbot is happening now! Battle the CFO today!'
-CashbotNerfHolidayEnd = 'Operation: Crush Cashbot has ended. Great work, Toons!'
-LawbotNerfHolidayStart = 'Operation: Lawbots Lose is happening now! Battle the CJ today!'
-LawbotNerfHolidayEnd = 'Operation: Lawbots Lose has ended. Great work, Toons!'
-BossbotNerfHolidayStart = 'Operation: Battle Bossbot is happening now! Battle the CEO today!'
-BossbotNerfHolidayEnd = 'Operation: Battle Bossbot has ended. Great work, Toons!'
 JellybeanTrolleyHolidayStart = 'Double Bean Days for Trolley Games have begun!'
 JellybeanTrolleyHolidayEnd = 'Double Bean Days for Trolley Games have ended!'
 JellybeanFishingHolidayStart = 'Double Bean Days for Fishing have begun!'
@@ -9450,15 +9430,10 @@ TopToonsMarathonEnd = "The Top Toons New Year's Day Marathon has ended."
 WinterDecorationsStart = "It's Winter Holiday time in Toontown!"
 WinterDecorationsEnd = 'Winter Holiday is over - Happy New Year!'
 WackyWinterDecorationsStart = 'Brrr! Silly Meter goes from silly to chilly!'
-WinterCarolingStart = 'Caroling has come to Toontown. Sing for your Snowman Head - see the Blog for details!'
-ExpandedClosetsStart = 'Attention Toons: For a limited time, Members can purchase the new 50 item Closet from the Cattlelog for the low price of 50 jellybeans!'
+WinterCarolingStart = 'Caroling has come to Toontown. Sing for your Snowman Head - see the News Post for details!'
+ExpandedClosetsStart = 'Attention Toons: For a limited time, Members can purchase the new 50 item Closet from the Cattlelog for the low price of 50 Jellybeans!'
 KartingTicketsHolidayStart = 'Get double tickets from Practice races at Goofy Speedway today!'
 IdesOfMarchStart = 'Toons go GREEN!'
-#CogNation Events
-CogNationHint1Start = 'Someone suspicious is happening over in Tenor Terace...'
-CogNationHint2Start = 'Lofty Seafare has set up shop in his Lighthouse in Lighthouse Lane! You should see what he is up to...'
-CogNationHint3Start = 'Tenor Terace has been taken over by the Cogs! Stop them!'
-CogNationHint4Start = 'Calling all high Toons, Flippy needs YOUR help! Go meet him in Toon Hall!'  #OMG COGNATION 
 LogoutForced = 'You have done something wrong\n and are being logged out automatically,\n additionally your account may be frozen.\n Try going on a walk outside, it is fun.'
 CountryClubToonEnterElevator = '%s \nhas jumped in the golf kart.'
 CountryClubBossConfrontedMsg = '%s is battling the Club President!'
@@ -9490,6 +9465,7 @@ BoardingGroupHide = 'Hide'
 BoardingGroupShow = 'Show Boarding Group'
 BoardingPartyInform = 'Create an elevator Boarding Group by clicking on another Toon and Inviting them.\nIn this area Boarding Groups cannot have more than %s Toons.'
 BoardingPartyTitle = 'Boarding Group'
+BoardingPartyTitleMerge = 'Merge Group'
 QuitBoardingPartyLeader = 'Disband'
 QuitBoardingPartyNonLeader = 'Leave'
 QuitBoardingPartyConfirm = 'Are you sure you want to quit this Boarding Group?'
@@ -9514,12 +9490,14 @@ BoardingInviteeInKickOutList = '%s had been removed by your leader. Only the lea
 BoardingInviteePendingIvite = '%s has a pending invite; try again later.'
 BoardingInviteeInElevator = '%s is currently busy; try again later.'
 BoardingInviteGroupFull = 'Your Boarding Group is already full.'
+BoardingGroupsToLarge = '%s is already in a different Boarding Group that is too large to merge.'
 BoardingAlreadyInGroup = 'You cannot accept this invitation because you are part of another Boarding Group.'
 BoardingGroupAlreadyFull = 'You cannot accept this invitation because the group is already full.'
 BoardingKickOutConfirm = 'Are you sure you want to remove %s?'
 BoardingPendingInvite = 'You need to deal with the\n pending invitation first.'
 BoardingCannotLeaveZone = 'You cannot leave this area because you are part of a Boarding Group.'
 BoardingInviteeMessage = '%s would like you to join their Boarding Group.'
+BoardingInviteeMergeMessage = '%s would like you merge with their Boarding Group.'
 BoardingInvitingMessage = 'Inviting %s to your Boarding Group.'
 BoardingInvitationRejected = '%s has rejected to join your Boarding Group.'
 BoardingMessageKickedOut = 'You have been removed from the Boarding Group.'
@@ -9537,7 +9515,7 @@ BoardingTimeWarning = 'Boarding the elevator in '
 BoardingMore = 'more'
 BoardingGoShow = 'Going to\n%s in '
 BoardingGoPreShow = 'Confirming...'
-BossbotBossName = 'C. E. O.'
+BossbotBossName = 'C.E.O.'
 BossbotRTWelcome = 'You toons will need different disguises.'
 BossbotRTRemoveSuit = 'First take off your cog suits...'
 BossbotRTFightWaiter = 'and then fight these waiters.'
@@ -9563,23 +9541,25 @@ BossbotGolfSpotAdvice = 'Use the left and right keys to rotate.\nCtrl to fire.'
 BossbotRewardSpeech1 = "No! The Chairman won't like this."
 BossbotRewardSpeech2 = 'Arrrggghhh!!!!'
 BossbotRTCongratulations = "You did it!  You've demoted the C.E.O.!\x07Here, take these pink slips the C.E.O. left behind.\x07With it you'll be able to fire Cogs in a battle."
-BossbotRTLastPromotion = "\x07Wow, you've reached level %s on your Cog Suit!\x07Cogs don't get promoted higher than that.\x07You can't upgrade your Cog Suit anymore, but you can certainly keep working for the Resistance!"
 BossbotRTHPBoost = "\x07You've done a lot of work for the Resistance.\x07The Toon Council has decided to give you another Laff point. Congratulations!"
-BossbotRTMaxed = '\x07I see that you have a level %s Cog Suit. Very impressive!\x07On behalf of the Toon Council, thank you for coming back to defend more Toons!'
+BossbotRTLevelPromotion = "\x07Say--that C.E.O. Cog left behind your promotion papers.\x07I'll file them for you on the way out, so you'll get your promotion!"
+BossbotRTSuitPromotion = "\x07It seems like you've reached the highest level you can for a %s.\x07You can continue upgrading your Cog suit through the disguise page in your Shticker Book.\x07Along with getting a new Cog suit, you will also get a 1 point Laff boost!"
+BossbotRTLastPromotion = "\x07Wow, you've reached level %s on your Cog suit!\x07I'm pretty sure Cogs don't get promoted higher than that.\x07You can't upgrade your Cog suit anymore, but you can certainly keep working for the Resistance!!"
+BossbotRTMaxed = '\x07I see that you have a level %s Cog suit. Very impressive!\x07On behalf of the Toon Council, thank you for coming back to rescue more Toons!'
 GolfAreaAttackTaunt = 'Fore!'
 OvertimeAttackTaunts = ["It's time to reorganize.", "Now let's downsize."]
-ElevatorBossBotBoss = 'C.E.O Battle'
+ElevatorBossBotBoss = 'Bossbot Clubhouse'
 ElevatorBossBotCourse0 = 'The Front Three'
 ElevatorBossBotCourse1 = 'The Middle Six'
 ElevatorBossBotCourse2 = 'The Back Nine'
-ElevatorCashBotBoss = 'C.F.O Battle'
+ElevatorCashBotBoss = 'Cashbot Vault'
 ElevatorCashBotMint0 = 'Coin Mint'
 ElevatorCashBotMint1 = 'Dollar Mint'
 ElevatorCashBotMint2 = 'Bullion Mint'
-ElevatorSellBotBoss = 'Senior V.P Battle'
+ElevatorSellBotBoss = 'Sellbot Towers'
 ElevatorSellBotFactory0 = 'Front Entrance'
 ElevatorSellBotFactory1 = 'Side Entrance'
-ElevatorLawBotBoss = 'Chief Justice Battle'
+ElevatorLawBotBoss = 'Lawbot Courthouse'
 ElevatorLawBotCourse0 = 'Office A'
 ElevatorLawBotCourse1 = 'Office B'
 ElevatorLawBotCourse2 = 'Office C'
@@ -9719,7 +9699,7 @@ HolidayNamesInCalendar = {1: ('Summer Fireworks', 'Celebrate Summer with a firew
  54: ('Bean Counter Invasion', 'Stop the Bean Counter Cogs from invading Toontown!'),
  55: ('Double Talker Invasion', 'Stop the Double Talker Cogs from invading Toontown!'),
  56: ('Downsizer Invasion', 'Stop the Downsizer Cogs from invading Toontown!'),
- 57: ('Caroling', 'Sing for your Snowman Head! See the Blog for details!'),
+ 57: ('Caroling', 'Sing for your Snowman Head! See the News Post for details!'),
  59: ("ValenToon's Day", "Celebrate ValenToon's Day from Feb 09 to Feb 16!"),
  72: ('Yes Men Invasion', 'Stop the Yes Men Cogs from invading Toontown!'),
  73: ('Tightwad Invasion', 'Stop the Tightwad Cogs from invading Toontown!'),
@@ -9749,14 +9729,9 @@ HolidayNamesInCalendar = {1: ('Summer Fireworks', 'Celebrate Summer with a firew
  98: ('Double Bean Days - Fishing', ''),
  99: ('Jellybean Week', 'Celebrate Jellybean Week with double Jellybean rewards!'),
  101: ("Top Toons New Year's Day Marathon", "Chances to win every hour! See the What's New Blog for details!"),
- 105: ('Toons go GREEN!', 'Toons make a green scene at Green Bean Jeans on Oak Street in Daisy Gardens!'),
- 106: ('Operation: Crush Cashbot', "Cashbot HQ is open to everyone. Let's go fight the CFO!"),
- 107: ('Operation: Lawbots Lose', "Lawbot HQ is open to everyone. Let's go fight the CJ!"),
- 108: ('Operation: Battle Bossbot', "Bossbot HQ is open to everyone. Let's go fight the CEO!"),
- 109: ("Ollie's birthday is here, have fun with double exp and double jellybeans.")}
+ 105: ('Toons go GREEN!', 'Toons make a green scene at Green Bean Jeans on Oak Street in Daisy Gardens!')}
 UnknownHoliday = 'Unknown Holiday %d'
 HolidayFormat = '%b %d '
-TimeZone = 'US/Pacific'
 HourFormat = '12'
 CogdoMemoGuiTitle = 'Memos:'
 CogdoMemoNames = 'Barrel-Destruction Memos'
@@ -9821,5 +9796,34 @@ InteractivePropTrackBonusTerms = {0: 'Super Toon-Up!',
  5: 'Super Squirt!',
  6: ''}
 PlayingCardUnknown = 'Card Name is unknown'
+YinTitle = 'Are you absolutely sure?'
+YinNotCat = 'Sorry, I only make cats black.'
+YinAlreadyBlack = "You're already black!"
+YinPickColor = 'Are you sure you want to be a black cat?'
+YinEnjoy = 'Enjoy! You are now permanently a black cat.'
+YinGoodbye = 'Okay, then. See you later!'
+YangTitle = 'Are you absolutely sure?'
+YangNotBear = 'Sorry, I only make bears white.'
+YangAlreadyWhite = "You're already white!"
+YangPickColor = 'Are you sure you want to be a polar bear?'
+YangEnjoy = 'Enjoy! You are now permanently a polar bear.'
+YangGoodbye = 'Okay, then. See you later!'
 
-releaseNotes = "VERSION #.#.#\n -New Pick-A-Toon screen!"
+# Buffs
+
+buffIdStrings = {
+  0: ('Your movement speed will be slightly increased for the next %d %s.',
+      'Reward: Increased movement speed'),
+  1: ('Your gag accuracy will be slight increased for the next %d %s.',
+      'Reward: Increased gag accuracy')
+}
+
+def getBuffString(buffId, buffTime):
+    if buffTime < 60:
+        return buffIdStrings[buffId][0] % (buffTime, 'minutes')
+    else:
+        return buffIdStrings[buffId][0] % (buffTime / 60, 'hours')
+
+
+def getBuffPosterString(buffId):
+    return buffIdStrings[buffId][1]

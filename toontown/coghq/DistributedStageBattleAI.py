@@ -1,12 +1,13 @@
-from toontown.toonbase import ToontownGlobals
-from toontown.coghq import DistributedLevelBattleAI
-from direct.directnotify import DirectNotifyGlobal
-from direct.fsm import State
-from direct.fsm import ClassicFSM, State
-from toontown.battle.BattleBase import *
 import CogDisguiseGlobals
-from toontown.toonbase.ToontownBattleGlobals import getStageCreditMultiplier
+from direct.directnotify import DirectNotifyGlobal
+from direct.fsm import ClassicFSM, State
+from direct.fsm import State
 from direct.showbase.PythonUtil import addListsByValue
+from toontown.battle.BattleBase import *
+from toontown.coghq import DistributedLevelBattleAI
+from toontown.toonbase import ToontownGlobals
+from toontown.toonbase.ToontownBattleGlobals import getStageCreditMultiplier
+
 
 class DistributedStageBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedStageBattleAI')
@@ -31,36 +32,24 @@ class DistributedStageBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI
             self.suitsKilledPerFloor[floor].extend(self.suitsKilledThisBattle)
 
     def handleToonsWon(self, toons):
-        extraMerits = [0,
-         0,
-         0,
-         0]
+        extraMerits = [0, 0, 0, 0]
         amount = ToontownGlobals.StageNoticeRewards[self.level.stageId]
         index = ToontownGlobals.cogHQZoneId2deptIndex(self.level.stageId)
         extraMerits[index] = amount
         for toon in toons:
-            mult = 1.0
-            meritArray = self.air.promotionMgr.recoverMerits(toon, [], self.getTaskZoneId(), mult, extraMerits=extraMerits)
+            recovered, notRecovered = self.air.questManager.recoverItems(toon, self.suitsKilled, self.getTaskZoneId())
+            self.toonItems[toon.doId][0].extend(recovered)
+            self.toonItems[toon.doId][1].extend(notRecovered)
+            meritArray = self.air.promotionMgr.recoverMerits(toon, self.suitsKilled, self.getTaskZoneId(), getStageCreditMultiplier(self.level.getFloorNum()), extraMerits=extraMerits)
             if toon.doId in self.helpfulToons:
                 self.toonMerits[toon.doId] = addListsByValue(self.toonMerits[toon.doId], meritArray)
             else:
                 self.notify.debug('toon %d not helpful list, skipping merits' % toon.doId)
             if self.bossBattle:
-                self.toonParts[toon.doId] = self.air.cogSuitMgr.recoverPart(toon, self.level.factoryType, self.suitTrack, self.getTaskZoneId(), toons)
+                self.toonParts[toon.doId] = self.air.cogSuitMgr.recoverPart(
+                                            toon, 'fullSuit', self.suitTrack,
+                                            self.getTaskZoneId(), toons)
                 self.notify.debug('toonParts = %s' % self.toonParts)
-
-        for floorNum, cogsThisFloor in enumerate(self.suitsKilledPerFloor):
-            self.notify.info('merits for floor %s' % floorNum)
-            for toon in toons:
-                recovered, notRecovered = self.air.questManager.recoverItems(toon, cogsThisFloor, self.getTaskZoneId())
-                self.toonItems[toon.doId][0].extend(recovered)
-                self.toonItems[toon.doId][1].extend(notRecovered)
-                meritArray = self.air.promotionMgr.recoverMerits(toon, cogsThisFloor, self.getTaskZoneId(), getStageCreditMultiplier(floorNum))
-                self.notify.info('toon %s: %s' % (toon.doId, meritArray))
-                if toon.doId in self.helpfulToons:
-                    self.toonMerits[toon.doId] = addListsByValue(self.toonMerits[toon.doId], meritArray)
-                else:
-                    self.notify.debug('toon %d not helpful list, skipping merits' % toon.doId)
 
     def enterStageReward(self):
         self.joinableFsm.request('Unjoinable')
@@ -70,10 +59,9 @@ class DistributedStageBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI
         self.bossDefeated = 1
         self.level.setVictors(self.activeToons[:])
         self.timer.startCallback(BUILDING_REWARD_TIMEOUT, self.serverRewardDone)
-        return None
 
     def exitStageReward(self):
-        return None
+        pass
 
     def enterResume(self):
         DistributedLevelBattleAI.DistributedLevelBattleAI.enterResume(self)

@@ -142,13 +142,6 @@ class LauncherBase(DirectObject):
         else:
             Configrc_args = ''
             print 'generating standard configrc'
-        if os.environ.has_key('PRC_EXECUTABLE_ARGS'):
-            print 'PRC_EXECUTABLE_ARGS is set to: ' + os.environ['PRC_EXECUTABLE_ARGS']
-            print 'Resetting PRC_EXECUTABLE_ARGS'
-        ExecutionEnvironment.setEnvironmentVariable('PRC_EXECUTABLE_ARGS', '-stdout ' + Configrc_args)
-        if os.environ.has_key('CONFIG_CONFIG'):
-            print 'CONFIG_CONFIG is set to: ' + os.environ['CONFIG_CONFIG']
-            print 'Resetting CONFIG_CONFIG'
         os.environ['CONFIG_CONFIG'] = ':_:configdir_.:configpath_:configname_Configrc.exe:configexe_1:configargs_-stdout ' + Configrc_args
         cpMgr = ConfigPageManager.getGlobalPtr()
         cpMgr.reloadImplicitPages()
@@ -802,7 +795,7 @@ class LauncherBase(DirectObject):
             self.notify.info('extract: Unable to open multifile %s' % task.localFilename.cStr())
             sys.exit()
         numFiles = self.dldb.getServerNumFiles(mfname)
-        for i in range(numFiles):
+        for i in xrange(numFiles):
             subfile = self.dldb.getServerFileName(mfname, i)
             if not task.extractor.requestSubfile(Filename(subfile)):
                 self.setPandaErrorCode(6)
@@ -1110,7 +1103,7 @@ class LauncherBase(DirectObject):
         self.setPercentPhaseComplete(self.currentPhase, 0)
         self.phaseMultifileNames = []
         numfiles = self.dldb.getServerNumMultifiles()
-        for i in range(self.dldb.getServerNumMultifiles()):
+        for i in xrange(self.dldb.getServerNumMultifiles()):
             mfname = self.dldb.getServerMultifileName(i)
             if self.dldb.getServerMultifilePhase(mfname) == phase:
                 self.phaseMultifileNames.append(mfname)
@@ -1125,7 +1118,7 @@ class LauncherBase(DirectObject):
         else:
             if self.currentMfname is None:
                 self.notify.warning('no multifile found! See below for debug info:')
-                for i in range(self.dldb.getServerNumMultifiles()):
+                for i in xrange(self.dldb.getServerNumMultifiles()):
                     mfname = self.dldb.getServerMultifileName(i)
                     phase = self.dldb.getServerMultifilePhase(mfname)
                     print i, mfname, phase
@@ -1194,7 +1187,7 @@ class LauncherBase(DirectObject):
                 compressedFilename.unlink()
                 extractedOk = True
                 numFiles = self.dldb.getServerNumFiles(mfname)
-                for i in range(numFiles):
+                for i in xrange(numFiles):
                     subfile = self.dldb.getServerFileName(mfname, i)
                     fn = Filename(self.mfDir, Filename(subfile))
                     if fn.compareTimestamps(decompressedFilename) <= 0:
@@ -1277,7 +1270,7 @@ class LauncherBase(DirectObject):
                     compressedFilename.unlink()
                     extractedOk = True
                     numFiles = self.dldb.getServerNumFiles(mfname)
-                    for i in range(numFiles):
+                    for i in xrange(numFiles):
                         subfile = self.dldb.getServerFileName(mfname, i)
                         fn = Filename(self.mfDir, Filename(subfile))
                         if fn.compareTimestamps(decompressedFilename) <= 0:
@@ -1465,7 +1458,7 @@ class LauncherBase(DirectObject):
             self.maybeStartGame()
             self.totalPatchDownload = 0
             self.patchDownloadSoFar = 0
-            for ver in range(1, clientVer):
+            for ver in xrange(1, clientVer):
                 patch = self.getPatchFilename(decompressedMfname, ver + 1)
                 patchee = decompressedMfname
                 patchVersion = ver + 1
@@ -1578,7 +1571,7 @@ class LauncherBase(DirectObject):
 
     def getIsNewInstallation(self):
         result = self.getValue(self.NewInstallationKey, 1)
-        result = config.GetBool('new-installation', result)
+        result = base.config.GetBool('new-installation', result)
         return result
 
     def setIsNotNewInstallation(self):
@@ -1846,7 +1839,7 @@ class LauncherBase(DirectObject):
             try:
                 for p in procapi.getProcessList():
                     pname = p.name
-                    if knownHacksExe.has_key(pname):
+                    if pname in knownHacksExe:
                         hacksRunning[knownHacksExe[pname]] = 1
             except:
                 pass

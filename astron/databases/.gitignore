@@ -1,6 +1,1 @@
 *.db
-air_cache/
-dev-accounts.db.dir
-dev-accounts.db.dat
-dev-accounts.db.bak
-

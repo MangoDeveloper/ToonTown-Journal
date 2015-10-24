@@ -76,8 +76,8 @@ class DistributedTargetGameAI(DistributedMinigameAI):
         self.placeValue = highestValue * 0.5
         self.targetsPlaced = []
         placeList = []
-        for typeIndex in range(len(self.targetList)):
-            for targetIndex in range(self.targetList[typeIndex]):
+        for typeIndex in xrange(len(self.targetList)):
+            for targetIndex in xrange(self.targetList[typeIndex]):
                 goodPlacement = 0
                 while not goodPlacement:
                     placeX = random.random() * (fieldWidth * 0.6) - fieldWidth * 0.6 * 0.5
@@ -103,7 +103,7 @@ class DistributedTargetGameAI(DistributedMinigameAI):
     def setScore(self, scoreX, scoreY, other = None):
         avId = self.air.getAvatarIdFromSender()
         if avId not in self.avIdList:
-            self.air.writeServerEvent('suspicious', avId=avId, issue='RingGameAI.setScore: invalid avId')
+            self.air.writeServerEvent('suspicious', avId, 'RingGameAI.setScore: invalid avId')
             return
         topValue = 0
         hitTarget = None

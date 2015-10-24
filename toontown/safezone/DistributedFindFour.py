@@ -1,21 +1,23 @@
-from pandac.PandaModules import *
-from direct.distributed.ClockDelta import *
-from direct.task.Task import Task
-from direct.interval.IntervalGlobal import *
-from TrolleyConstants import *
-from direct.gui.DirectGui import *
-from toontown.toonbase import TTLocalizer
 from direct.distributed import DistributedNode
+from direct.distributed.ClockDelta import *
+from direct.distributed.ClockDelta import *
 from direct.distributed.ClockDelta import globalClockDelta
-from ChineseCheckersBoard import ChineseCheckersBoard
 from direct.fsm import ClassicFSM, State
 from direct.fsm import StateData
-from toontown.toonbase.ToontownTimer import ToontownTimer
-from toontown.toonbase import ToontownGlobals
-from direct.distributed.ClockDelta import *
-from otp.otpbase import OTPGlobals
-from random import *
+from direct.gui.DirectGui import *
+from direct.interval.IntervalGlobal import *
 from direct.showbase import PythonUtil
+from direct.task.Task import Task
+from pandac.PandaModules import *
+from random import *
+
+from ChineseCheckersBoard import ChineseCheckersBoard
+from TrolleyConstants import *
+from otp.otpbase import OTPGlobals
+from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
+from toontown.toonbase.ToontownTimer import ToontownTimer
+
 
 class DistributedFindFour(DistributedNode.DistributedNode):
 
@@ -26,8 +28,48 @@ class DistributedFindFour(DistributedNode.DistributedNode):
         self.reparentTo(render)
         self.boardNode = loader.loadModel('phase_6/models/golf/findfour_game.bam')
         self.boardNode.reparentTo(self)
-        self.board = [[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]]
+        self.board = [[0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0],
+         [0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0],
+         [0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0],
+         [0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0],
+         [0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0],
+         [0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0]]
         self.exitButton = None
         self.inGame = False
         self.waiting = True
@@ -77,7 +119,7 @@ class DistributedFindFour(DistributedNode.DistributedNode):
         from direct.fsm import ClassicFSM, State
         self.fsm = ClassicFSM.ClassicFSM('ChineseCheckers', [State.State('waitingToBegin', self.enterWaitingToBegin, self.exitWaitingToBegin, ['playing', 'gameOver']), State.State('playing', self.enterPlaying, self.exitPlaying, ['gameOver']), State.State('gameOver', self.enterGameOver, self.exitGameOver, ['waitingToBegin'])], 'waitingToBegin', 'waitingToBegin')
         startLoc = self.boardNode.find('**/locators')
-        self.locatorList = list(startLoc.getChildren())
+        self.locatorList = startLoc.getChildren()
         self.startingPositions = self.locatorList.pop(0)
         self.startingPositions = self.startingPositions.getChildren()
         instancePiece = self.boardNode.find('**/pieces')
@@ -524,7 +566,7 @@ class DistributedFindFour(DistributedNode.DistributedNode):
         for x in xrange(41):
             self.tieSequence.append(Parallel(LerpColorInterval(self.locatorList[x], 0.15, Vec4(0.5, 0.5, 0.5, 0.5), Vec4(1, 1, 1, 1)), LerpColorInterval(self.locatorList[x], 0.15, Vec4(1, 1, 1, 1), Vec4(0.5, 0.5, 0.5, 0.5))))
 
-        whisper = WhisperPopup('This Find Four game has resulted in a Tie!', OTPGlobals.getInterfaceFont(), WhisperPopup.WTNormal)
+        whisper = WhisperPopup('This Find Four game has resulted in a Tie!', OTPGlobals.getInterfaceFont(), WTNormal)
         whisper.manage(base.marginManager)
         self.tieSequence.start()
 

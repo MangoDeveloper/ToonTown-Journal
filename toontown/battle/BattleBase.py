@@ -57,7 +57,10 @@ TOON_FIRE_SUIT_DELAY = 1.0
 REWARD_TIMEOUT = 120
 FLOOR_REWARD_TIMEOUT = 4
 BUILDING_REWARD_TIMEOUT = 300
-CLIENT_INPUT_TIMEOUT = config.GetFloat('battle-input-timeout', TTLocalizer.BBbattleInputTimeout)
+try:
+    CLIENT_INPUT_TIMEOUT = base.config.GetFloat('battle-input-timeout', TTLocalizer.BBbattleInputTimeout)
+except:
+    CLIENT_INPUT_TIMEOUT = simbase.config.GetFloat('battle-input-timeout', TTLocalizer.BBbattleInputTimeout)
 
 def levelAffectsGroup(track, level):
     return attackAffectsGroup(track, level)
@@ -130,7 +133,7 @@ def getDefaultSuitAttack():
 def findToonAttack(toons, attacks, track):
     foundAttacks = []
     for t in toons:
-        if attacks.has_key(t):
+        if t in attacks:
             attack = attacks[t]
             local_track = attack[TOON_TRACK_COL]
             if track != NPCSOS and attack[TOON_TRACK_COL] == NPCSOS:

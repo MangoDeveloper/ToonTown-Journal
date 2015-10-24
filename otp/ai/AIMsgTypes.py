@@ -73,4 +73,5 @@ AIMsgName2Id = {'STATESERVER_OBJECT_GENERATE_WITH_REQUIRED': 2001,
  'SERVER_PING': 5002}
 AIMsgId2Names = invertDictLossless(AIMsgName2Id)
 globals().update(AIMsgName2Id)
+
 DBSERVER_ID = 4003

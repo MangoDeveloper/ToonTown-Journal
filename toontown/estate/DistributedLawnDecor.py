@@ -176,7 +176,7 @@ class DistributedLawnDecor(DistributedNode.DistributedNode, NodePath, ShadowCast
             picker.traverse(render)
             if queue.getNumEntries() > 0:
                 queue.sortEntries()
-                for index in range(queue.getNumEntries()):
+                for index in xrange(queue.getNumEntries()):
                     entry = queue.getEntry(index)
                     if recurseParent(entry.getIntoNode(), 'terrain_DNARoot'):
                         self.movieNode.setZ(entry.getSurfacePoint(self)[2])
@@ -185,7 +185,7 @@ class DistributedLawnDecor(DistributedNode.DistributedNode, NodePath, ShadowCast
         picker.traverse(render)
         if queue.getNumEntries() > 0:
             queue.sortEntries()
-            for index in range(queue.getNumEntries()):
+            for index in xrange(queue.getNumEntries()):
                 entry = queue.getEntry(index)
                 if recurseParent(entry.getIntoNode(), 'terrain_DNARoot'):
                     self.setZ(entry.getSurfacePoint(render)[2] + self.stickUp + 0.1)
@@ -264,6 +264,9 @@ class DistributedLawnDecor(DistributedNode.DistributedNode, NodePath, ShadowCast
         node.removeNode()
         toonTrack = Sequence(Parallel(ActorInterval(toon, 'walk', loop=True, duration=1), Parallel(LerpPosInterval(toon, 1.0, Point3(finalX, finalY, toon.getZ(render)), fluid=True, bakeInStart=False)), LerpHprInterval(toon, 1.0, hpr=hpr)), Func(toon.loop, 'neutral'))
         return toonTrack
+
+    def unprint(self, string):
+        print string
 
     def startInteraction(self):
         place = base.cr.playGame.getPlace()

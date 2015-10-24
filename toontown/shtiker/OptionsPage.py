@@ -13,47 +13,111 @@ from toontown.toonbase import TTLocalizer
 from toontown.toontowngui import TTDialog
 
 
-speedChatStyles = ((2000,
-  (200 / 255.0, 60 / 255.0, 229 / 255.0),
-  (200 / 255.0, 135 / 255.0, 255 / 255.0),
-  (220 / 255.0, 195 / 255.0, 229 / 255.0)),
- (2001,
-  (0 / 255.0, 0 / 255.0, 255 / 255.0),
-  (140 / 255.0, 150 / 255.0, 235 / 255.0),
-  (201 / 255.0, 215 / 255.0, 255 / 255.0)),
- (2002,
-  (90 / 255.0, 175 / 255.0, 225 / 255.0),
-  (120 / 255.0, 215 / 255.0, 255 / 255.0),
-  (208 / 255.0, 230 / 255.0, 250 / 255.0)),
- (2003,
-  (130 / 255.0, 235 / 255.0, 235 / 255.0),
-  (120 / 255.0, 225 / 255.0, 225 / 255.0),
-  (234 / 255.0, 255 / 255.0, 255 / 255.0)),
- (2004,
-  (0 / 255.0, 200 / 255.0, 70 / 255.0),
-  (0 / 255.0, 200 / 255.0, 80 / 255.0),
-  (204 / 255.0, 255 / 255.0, 204 / 255.0)),
- (2005,
-  (235 / 255.0, 230 / 255.0, 0 / 255.0),
-  (255 / 255.0, 250 / 255.0, 100 / 255.0),
-  (255 / 255.0, 250 / 255.0, 204 / 255.0)),
- (2006,
-  (255 / 255.0, 153 / 255.0, 0 / 255.0),
-  (229 / 255.0, 147 / 255.0, 0 / 255.0),
-  (255 / 255.0, 234 / 255.0, 204 / 255.0)),
- (2007,
-  (255 / 255.0, 0 / 255.0, 50 / 255.0),
-  (229 / 255.0, 0 / 255.0, 50 / 255.0),
-  (255 / 255.0, 204 / 255.0, 204 / 255.0)),
- (2008,
-  (255 / 255.0, 153 / 255.0, 193 / 255.0),
-  (240 / 255.0, 157 / 255.0, 192 / 255.0),
-  (255 / 255.0, 215 / 255.0, 238 / 255.0)),
- (2009,
-  (170 / 255.0, 120 / 255.0, 20 / 255.0),
-  (165 / 255.0, 120 / 255.0, 50 / 255.0),
-  (210 / 255.0, 200 / 255.0, 180 / 255.0)))
-PageMode = PythonUtil.Enum('Options, Codes, advancedOptions')
+speedChatStyles = (
+    (
+        2000,
+        (200 / 255.0, 60 / 255.0, 229 / 255.0),
+        (200 / 255.0, 135 / 255.0, 255 / 255.0),
+        (220 / 255.0, 195 / 255.0, 229 / 255.0)
+    ),
+    (
+        2012,
+        (142 / 255.0, 151 / 255.0, 230 / 255.0),
+        (173 / 255.0, 180 / 255.0, 237 / 255.0),
+        (220 / 255.0, 195 / 255.0, 229 / 255.0)
+    ),
+    (
+        2001,
+        (0 / 255.0, 0 / 255.0, 255 / 255.0),
+        (140 / 255.0, 150 / 255.0, 235 / 255.0),
+        (201 / 255.0, 215 / 255.0, 255 / 255.0)
+    ),
+    (
+        2010,
+        (0 / 255.0, 119 / 255.0, 190 / 255.0),
+        (53 / 255.0, 180 / 255.0, 255 / 255.0),
+        (201 / 255.0, 215 / 255.0, 255 / 255.0)
+    ),
+    (
+        2014,
+        (0 / 255.0, 64 / 255.0, 128 / 255.0),
+        (0 / 255.0, 64 / 255.0, 128 / 255.0),
+        (201 / 255.0, 215 / 255.0, 255 / 255.0)
+    ),
+    (
+        2002,
+        (90 / 255.0, 175 / 255.0, 225 / 255.0),
+        (120 / 255.0, 215 / 255.0, 255 / 255.0),
+        (208 / 255.0, 230 / 255.0, 250 / 255.0)
+    ),
+    (
+        2003,
+        (130 / 255.0, 235 / 255.0, 235 / 255.0),
+        (120 / 255.0, 225 / 255.0, 225 / 255.0),
+        (234 / 255.0, 255 / 255.0, 255 / 255.0)
+    ),
+    (
+        2004,
+        (0 / 255.0, 200 / 255.0, 70 / 255.0),
+        (0 / 255.0, 200 / 255.0, 80 / 255.0),
+        (204 / 255.0, 255 / 255.0, 204 / 255.0)
+    ),
+    (
+        2015,
+        (13 / 255.0, 255 / 255.0, 100 / 255.0),
+        (64 / 255.0, 255 / 255.0, 131 / 255.0),
+        (204 / 255.0, 255 / 255.0, 204 / 255.0)
+    ),
+    (
+        2005,
+        (235 / 255.0, 230 / 255.0, 0 / 255.0),
+        (255 / 255.0, 250 / 255.0, 100 / 255.0),
+        (255 / 255.0, 250 / 255.0, 204 / 255.0)
+    ),
+    (
+        2006,
+        (255 / 255.0, 153 / 255.0, 0 / 255.0),
+        (229 / 255.0, 147 / 255.0, 0 / 255.0),
+        (255 / 255.0, 234 / 255.0, 204 / 255.0)
+    ),
+    (
+        2011,
+        (255 / 255.0, 177 / 255.0, 62 / 255.0),
+        (255 / 255.0, 200 / 255.0, 117 / 255.0),
+        (255 / 255.0, 234 / 255.0, 204 / 255.0)
+    ),
+    (
+        2007,
+        (255 / 255.0, 0 / 255.0, 50 / 255.0),
+        (229 / 255.0, 0 / 255.0, 50 / 255.0),
+        (255 / 255.0, 204 / 255.0, 204 / 255.0)
+    ),
+    (
+        2013,
+        (130 / 255.0, 0 / 255.0, 26 / 255.0),
+        (179 / 255.0, 0 / 255.0, 50 / 255.0),
+        (255 / 255.0, 204 / 255.0, 204 / 255.0)
+    ),
+    (
+        2016,
+        (176 / 255.0, 35 / 255.0, 0 / 255.0),
+        (240 / 255.0, 48 / 255.0, 0 / 255.0),
+        (255 / 255.0, 204 / 255.0, 204 / 255.0)
+    ),
+    (
+        2008,
+        (255 / 255.0, 153 / 255.0, 193 / 255.0),
+        (240 / 255.0, 157 / 255.0, 192 / 255.0),
+        (255 / 255.0, 215 / 255.0, 238 / 255.0)
+    ),
+    (
+        2009,
+        (170 / 255.0, 120 / 255.0, 20 / 255.0),
+        (165 / 255.0, 120 / 255.0, 50 / 255.0),
+        (210 / 255.0, 200 / 255.0, 180 / 255.0)
+    )
+)
+PageMode = PythonUtil.Enum('Options, Codes')
 
 
 class OptionsPage(ShtikerPage.ShtikerPage):
@@ -64,11 +128,9 @@ class OptionsPage(ShtikerPage.ShtikerPage):
 
         self.optionsTabPage = None
         self.codesTabPage = None
-        self.advancedOptionsTabPage = None
         self.title = None
         self.optionsTab = None
         self.codesTab = None
-        self.advancedOptionsTab = None
 
     def load(self):
         ShtikerPage.ShtikerPage.load(self)
@@ -77,8 +139,6 @@ class OptionsPage(ShtikerPage.ShtikerPage):
         self.optionsTabPage.hide()
         self.codesTabPage = CodesTabPage(self)
         self.codesTabPage.hide()
-        self.advancedOptionsTabPage = AdvancedOptionsTabPage(self)
-        self.advancedOptionsTabPage.hide()
 
         self.title = DirectLabel(
             parent=self, relief=None, text=TTLocalizer.OptionsPageTitle,
@@ -98,7 +158,7 @@ class OptionsPage(ShtikerPage.ShtikerPage):
             image1_color=clickColor, image2_color=rolloverColor,
             image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1),
             command=self.setMode, extraArgs=[PageMode.Options],
-            pos=(-0.64, 0, 0.77))
+            pos=(-0.36, 0, 0.77))
         self.codesTab = DirectButton(
             parent=self, relief=None, text=TTLocalizer.OptionsPageCodesTab,
             text_scale=TTLocalizer.OPoptionsTab, text_align=TextNode.ALeft,
@@ -108,17 +168,7 @@ class OptionsPage(ShtikerPage.ShtikerPage):
             image_color=normalColor, image1_color=clickColor,
             image2_color=rolloverColor, image3_color=diabledColor,
             text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode,
-            extraArgs=[PageMode.Codes], pos=(-0.12, 0, 0.77))
-        self.advancedOptionsTab = DirectButton(
-            parent=self, relief=None, text='Advanced',
-            text_scale=TTLocalizer.OPoptionsTab, text_align=TextNode.ALeft,
-            text_pos=(-0.035, 0.0, 0.0),
-            image=gui.find('**/tabs/polySurface2'), image_pos=(0.12, 1, -0.91),
-            image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035),
-            image_color=normalColor, image1_color=clickColor,
-            image2_color=rolloverColor, image3_color=diabledColor,
-            text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode,
-            extraArgs=[PageMode.advancedOptions], pos=(0.42, 0, 0.77))     
+            extraArgs=[PageMode.Codes], pos=(0.11, 0, 0.77))
         gui.removeNode()
 
     def enter(self):
@@ -170,25 +220,12 @@ class OptionsPage(ShtikerPage.ShtikerPage):
             self.optionsTabPage.enter()
             self.codesTab['state'] = DGG.NORMAL
             self.codesTabPage.exit()
-            self.advancedOptionsTab['state'] = DGG.NORMAL
-            self.advancedOptionsTabPage.exit()
         elif mode == PageMode.Codes:
             self.title['text'] = TTLocalizer.CdrPageTitle
             self.optionsTab['state'] = DGG.NORMAL
             self.optionsTabPage.exit()
-            self.advancedOptionsTab['state'] = DGG.NORMAL
-            self.advancedOptionsTabPage.exit()            
             self.codesTab['state'] = DGG.DISABLED
             self.codesTabPage.enter()
-
-        elif mode == PageMode.advancedOptions:
-            self.title['text'] = 'Advanced'
-            self.optionsTab['state'] = DGG.NORMAL
-            self.optionsTabPage.exit()
-            self.codesTab['state'] = DGG.NORMAL
-            self.codesTabPage.exit()
-            self.advancedOptionsTab['state'] = DGG.DISABLED
-            self.advancedOptionsTabPage.enter()            
 
 
 class OptionsTabPage(DirectFrame):
@@ -656,91 +693,3 @@ class CodesTabPage(DirectFrame):
         self.codeInput['state'] = DGG.NORMAL
         self.codeInput['focus'] = 1
         self.submitButton['state'] = DGG.NORMAL
-
-class AdvancedOptionsTabPage(DirectFrame):
-    notify = directNotify.newCategory('AdvancedOptionsTabPage')
-
-    def __init__(self, parent = aspect2d):
-        self.parent = parent
-        self.currentSizeIndex = None
-
-        DirectFrame.__init__(self, parent=self.parent, relief=None, pos=(0.0, 0.0, 0.0), scale=(1.0, 1.0, 1.0))
-
-        self.load()
-
-    def destroy(self):
-        self.parent = None
-
-        DirectFrame.destroy(self)
-        
-    def load(self):
-        guiButton = loader.loadModel('phase_3/models/gui/quit_button')
-        gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
-        titleHeight = 0.61
-        textStartHeight = 0.45
-        textRowHeight = 0.145
-        leftMargin = -0.72
-        buttonbase_xcoord = 0.35
-        buttonbase_ycoord = 0.45
-        button_image_scale = (0.7, 1, 1)
-        button_textpos = (0, -0.02)
-        options_text_scale = 0.052
-        disabled_arrow_color = Vec4(0.6, 0.6, 0.6, 1.0)
-        self.speed_chat_scale = 0.055    
-        self.WASD_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=16, pos=(leftMargin, 0, textStartHeight - textRowHeight))
-        self.WASD_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight), command=self.__doToggleWASD)
-        gui.removeNode()
-        guiButton.removeNode()
-        
-    def enter(self):
-        self.show()
-        self.settingsChanged = 0
-        self.__setWASDButton()
-
-    def exit(self):
-        self.ignore('confirmDone')
-        self.hide()
-        
-    def unload(self):
-        self.WASD_Label.destroy()
-        del self.WASD_Label
-        self.WASD_toggleButton.destroy()
-        del self.WASD_toggleButton
-
-
-    def __doToggleWASD(self):
-        messenger.send('wakeup')
-        if base.wantWASD:
-            base.wantWASD = False
-            base.Move_Up = 'arrow_up'
-            base.Move_Down = 'arrow_down'
-            base.Move_Left = 'arrow_left'
-            base.Move_Right = 'arrow_right'
-            base.JUMP = 'control'
-            settings['want-WASD'] = False
-            base.localAvatar.controlManager.reload()
-            base.localAvatar.chatMgr.reloadWASD()
-            base.localAvatar.setSystemMessage(0, 'Controls: Arrow Keys')            
-        else:
-            base.wantWASD = True
-            base.Move_Up = 'w'
-            base.Move_Down = 's'
-            base.Move_Left = 'a'
-            base.Move_Right = 'd'
-            base.JUMP = 'shift'
-            settings['want-WASD'] = True
-            base.localAvatar.controlManager.reload()
-            base.localAvatar.chatMgr.reloadWASD()            
-            base.localAvatar.setSystemMessage(0, 'Controls: WASD, Space to jump, T to chat')
-        self.settingsChanged = 1
-        self.__setWASDButton()
-
-    def __setWASDButton(self):
-        self.WASD_Label['text'] = 'controlStyle'        
-        if base.wantWASD:
-            self.WASD_toggleButton['text'] = 'WASD'
-        else:
-            self.WASD_toggleButton['text'] = 'ARROWKEYS'
-
-            
-

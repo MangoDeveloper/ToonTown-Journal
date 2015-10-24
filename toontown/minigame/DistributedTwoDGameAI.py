@@ -70,7 +70,7 @@ class DistributedTwoDGameAI(DistributedMinigameAI):
                 enemyType = enemiesPool[enemyIndex][0]
                 self.enemyHealthTable[i] += [ToonBlitzGlobals.EnemyBaseHealth]
                 self.enemyHealthTable[i][j] *= self.numPlayers
-                if ToonBlitzGlobals.EnemyHealthMultiplier.has_key(enemyType):
+                if enemyType in ToonBlitzGlobals.EnemyHealthMultiplier:
                     self.enemyHealthTable[i][j] *= ToonBlitzGlobals.EnemyHealthMultiplier[enemyType]
 
             self.treasureTakenTable += [[]]
@@ -219,11 +219,11 @@ class DistributedTwoDGameAI(DistributedMinigameAI):
         if self.gameFSM.getCurrentState() == None or self.gameFSM.getCurrentState().getName() != 'play':
             msg = 'TwoDGameAI.toonVictory not in play state!'
             self.notify.warning('suspicious: ' + str(avId) + ' ' + msg)
-            self.air.writeServerEvent('suspicious', avId=avId, issue=msg)
+            self.air.writeServerEvent('suspicious: ', avId, msg)
             return
         if avId not in self.scoreDict.keys():
             self.notify.warning('Avatar %s not in list.' % avId)
-            self.air.writeServerEvent('suspicious', avId=avId, issue='TwoDGameAI.toonVictory toon not in list.')
+            self.air.writeServerEvent('suspicious: ', avId, 'TwoDGameAI.toonVictory toon not in list.')
             return
         curTime = self.getCurrentGameTime()
         timeLeft = ToonBlitzGlobals.GameDuration[self.getSafezoneId()] - curTime
@@ -243,7 +243,7 @@ class DistributedTwoDGameAI(DistributedMinigameAI):
     def toonFellDown(self, avId, timestamp):
         if avId not in self.scoreDict.keys():
             self.notify.warning('Avatar %s not in list.' % avId)
-            self.air.writeServerEvent('warning', avId=avId, issue='TwoDGameAI.toonFellDown toon not in list.')
+            self.air.writeServerEvent('warning', avId, 'TwoDGameAI.toonFellDown toon not in list.')
             return
         self.numFallDownDict[avId] += 1
         self.scoreDict[avId] += ToonBlitzGlobals.ScoreLossPerFallDown[self.getSafezoneId()]
@@ -251,7 +251,7 @@ class DistributedTwoDGameAI(DistributedMinigameAI):
     def toonHitByEnemy(self, avId, timestamp):
         if avId not in self.scoreDict.keys():
             self.notify.warning('Avatar %s not in list.' % avId)
-            self.air.writeServerEvent('warning', avId=avId, issue='TwoDGameAI.toonHitByEnemy toon not in list.')
+            self.air.writeServerEvent('warning', avId, 'TwoDGameAI.toonHitByEnemy toon not in list.')
             return
         self.numHitByEnemyDict[avId] += 1
         self.scoreDict[avId] += ToonBlitzGlobals.ScoreLossPerEnemyCollision[self.getSafezoneId()]
@@ -259,7 +259,7 @@ class DistributedTwoDGameAI(DistributedMinigameAI):
     def toonSquished(self, avId, timestamp):
         if avId not in self.scoreDict.keys():
             self.notify.warning('Avatar %s not in list.' % avId)
-            self.air.writeServerEvent('warning', avId=avId, issue='TwoDGameAI.toonSquished toon not in list.')
+            self.air.writeServerEvent('warning', avId, 'TwoDGameAI.toonSquished toon not in list.')
             return
         self.numSquishDict[avId] += 1
         self.scoreDict[avId] += ToonBlitzGlobals.ScoreLossPerStomperSquish[self.getSafezoneId()]
@@ -350,7 +350,7 @@ class DistributedTwoDGameAI(DistributedMinigameAI):
                 enemyIndicesSelected.sort()
             treasureIndicesPool = []
             treasureValuePool = []
-            for value in range(1, 5):
+            for value in xrange(1, 5):
                 treasureValuePool += [value] * ToonBlitzGlobals.TreasureValueProbability[value]
 
             treasureIndicesSelected = []

@@ -1,41 +1,62 @@
-import toontown.minigame.MinigameCreatorAI
-from toontown.distributed.ToontownInternalRepository import ToontownInternalRepository
 from direct.distributed.PyDatagram import *
+import urlparse
+
 from otp.distributed.DistributedDirectoryAI import DistributedDirectoryAI
 from otp.distributed.OtpDoGlobals import *
+from toontown.distributed.ToontownInternalRepository import ToontownInternalRepository
+import toontown.minigame.MinigameCreatorAI
+
+
+if config.GetBool('want-rpc-server', False):
+    from toontown.rpc.ToontownRPCServer import ToontownRPCServer
+    from toontown.rpc.ToontownRPCHandler import ToontownRPCHandler
+
+if config.GetBool('want-mongo-client', False):
+    import pymongo
+
 
 class ToontownUberRepository(ToontownInternalRepository):
     def __init__(self, baseChannel, serverId):
         ToontownInternalRepository.__init__(self, baseChannel, serverId, dcSuffix='UD')
-        self.wantUD = config.GetBool('want-ud', True)
+
+        if config.GetBool('want-mongo-client', False):
+            url = config.GetString('mongodb-url', 'mongodb://localhost')
+            replicaset = config.GetString('mongodb-replicaset', '')
+            if replicaset:
+                self.mongo = pymongo.MongoClient(url, replicaset=replicaset)
+            else:
+                self.mongo = pymongo.MongoClient(url)
+            db = (urlparse.urlparse(url).path or '/test')[1:]
+            self.mongodb = self.mongo[db]
+
+        self.notify.setInfo(True)
 
     def handleConnected(self):
-        ToontownInternalRepository.handleConnected(self)
-        if config.GetBool('want-ClientServicesManagerUD', self.wantUD):
-            rootObj = DistributedDirectoryAI(self)
-            rootObj.generateWithRequiredAndId(self.getGameDoId(), 0, 0)
+        rootObj = DistributedDirectoryAI(self)
+        rootObj.generateWithRequiredAndId(self.getGameDoId(), 0, 0)
+
+        if config.GetBool('want-rpc-server', False):
+            endpoint = config.GetString('rpc-server-endpoint', 'http://localhost:8080/')
+            self.rpcServer = ToontownRPCServer(endpoint, ToontownRPCHandler(self))
+            self.rpcServer.start(useTaskChain=True)
+
         self.createGlobals()
+        self.notify.info('Done.')
 
     def createGlobals(self):
         """
         Create "global" objects.
         """
-        self.csm = self.generateGlobalIfWanted(OTP_DO_ID_CLIENT_SERVICES_MANAGER, 'ClientServicesManager')
-        self.centralLogger = self.generateGlobalIfWanted(OTP_DO_ID_CENTRAL_LOGGER, 'CentralLogger')
-        self.chatAgent = self.generateGlobalIfWanted(OTP_DO_ID_CHAT_MANAGER, 'ChatAgent')
-        self.friendsManager = self.generateGlobalIfWanted(OTP_DO_ID_TOONTOWN_FRIENDS_MANAGER, 'TTFriendsManager')
-        if config.GetBool('want-parties', True):
-            self.globalPartyMgr = self.generateGlobalIfWanted(OTP_DO_ID_GLOBAL_PARTY_MANAGER, 'GlobalPartyManager')
-        else:
-            self.globalPartyMgr = None
 
-    def generateGlobalIfWanted(self, doId, name):
-        """
-        We only create the "global" objects if we explicitly want them, or if
-        the config file doesn't define it, we resort to the value of self.wantUD.
-        If we don't want the object, we return None.
-        """
-        if config.GetBool('want-%sUD' % name, self.wantUD):
-            return self.generateGlobalObject(doId, name)
-        else:
-            return None
+        self.csm = simbase.air.generateGlobalObject(OTP_DO_ID_CLIENT_SERVICES_MANAGER,
+                                                    'ClientServicesManager')
+
+        self.chatAgent = simbase.air.generateGlobalObject(OTP_DO_ID_CHAT_MANAGER,
+                                                          'ChatAgent')
+
+        self.friendsManager = simbase.air.generateGlobalObject(OTP_DO_ID_TTI_FRIENDS_MANAGER,
+                                                               'TTIFriendsManager')
+
+        self.globalPartyMgr = simbase.air.generateGlobalObject(OTP_DO_ID_GLOBAL_PARTY_MANAGER, 'GlobalPartyManager')
+
+        self.deliveryManager = simbase.air.generateGlobalObject(OTP_DO_ID_TOONTOWN_DELIVERY_MANAGER, 'DistributedDeliveryManager')

@@ -17,7 +17,24 @@ from toontown.shtiker.OptionsPage import speedChatStyles
 from toontown.toonbase import TTLocalizer
 from toontown.parties.PartyGlobals import ActivityIds, DecorationIds
 from toontown.toonbase import ToontownGlobals
-scStructure = [[OTPLocalizer.SCMenuHello,
+scStructure = [
+ [OTPLocalizer.SCMenuTesting,
+  [OTPLocalizer.SCMenuBugs,
+   30506,
+   30507,
+   30508,
+   30509,
+   30510,
+   30511
+  ],
+  30500,
+  30501,
+  30502,
+  30503,
+  30504,
+  30505
+ ],
+ [OTPLocalizer.SCMenuHello,
   {100: 0},
   {101: 0},
   {102: 0},
@@ -265,8 +282,8 @@ scStructure = [[OTPLocalizer.SCMenuHello,
  {1: 17},
  {2: 18},
  3]
-if hasattr(base, 'wantPets') and base.wantPets:
-    scPetMenuStructure = [[OTPLocalizer.SCMenuPets,
+if hasattr(base, 'wantPets'):
+    scPetMenuStructure = base.wantPets and [[OTPLocalizer.SCMenuPets,
       [TTSCPetTrickMenu, OTPLocalizer.SCMenuPetTricks],
       21000,
       21001,
@@ -335,7 +352,7 @@ class TTChatInputSpeedChat(DirectObject.DirectObject):
 
     def __init__(self, chatMgr):
         self.chatMgr = chatMgr
-        self.firstInit = 0
+        self.firstTime = 0
         self.whisperAvatarId = None
         self.toPlayer = 0
         buttons = loader.loadModel('phase_3/models/gui/dialog_box_buttons_gui')
@@ -345,7 +362,7 @@ class TTChatInputSpeedChat(DirectObject.DirectObject):
         self.insidePartiesMenu = None
         self.createSpeedChat()
         self.whiteList = None
-        self.allowWhiteListSpeedChat = config.GetBool('white-list-speed-chat', 0)
+        self.allowWhiteListSpeedChat = base.config.GetBool('white-list-speed-chat', 0)
         if self.allowWhiteListSpeedChat:
             self.addWhiteList()
         self.factoryMenu = None
@@ -428,6 +445,7 @@ class TTChatInputSpeedChat(DirectObject.DirectObject):
     def exitOff(self):
         pass
 
+
     def enterActive(self):
 
         def handleCancel(self = self):
@@ -439,14 +457,14 @@ class TTChatInputSpeedChat(DirectObject.DirectObject):
             self.chatMgr.fsm.request('mainMenu')
 
         self.terminalSelectedEvent = self.speedChat.getEventName(SpeedChatGlobals.SCTerminalSelectedEvent)
-        if config.GetBool('want-sc-auto-hide', 1):
+        if base.config.GetBool('want-sc-auto-hide', 1):
             self.accept(self.terminalSelectedEvent, selectionMade)
         self.speedChat.reparentTo(base.a2dpTopLeft, DGG.FOREGROUND_SORT_INDEX)
         scZ = -0.04
         self.speedChat.setPos(0.283, 0, scZ)
-        if not self.firstInit:
-            self.speedChat.setPos(-99, -99, -99)
-            self.firstInit = 1
+        if not self.firstTime:
+			self.speedChat.setPos(-99, -99, -99)
+			self.firstTime = 1
         self.speedChat.setWhisperMode(self.whisperAvatarId != None)
         self.speedChat.enter()
         return

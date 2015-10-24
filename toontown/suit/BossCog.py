@@ -1,21 +1,24 @@
-from pandac.PandaModules import *
-from direct.interval.IntervalGlobal import *
 from direct.actor import Actor
-from otp.avatar import Avatar
-from otp.nametag.NametagGroup import NametagGroup
 from direct.directnotify import DirectNotifyGlobal
-from toontown.toonbase import ToontownGlobals
 from direct.fsm import FSM
 from direct.fsm import State
-from toontown.toonbase import TTLocalizer
-from toontown.battle import BattleParticles
-import Suit
-from direct.task.Task import Task
-import SuitDNA
-from toontown.battle import BattleProps
+from direct.interval.IntervalGlobal import *
 from direct.showbase.PythonUtil import Functor
+from direct.task.Task import Task
+from pandac.PandaModules import *
 import string
 import types
+
+import Suit
+import SuitDNA
+from otp.avatar import Avatar
+from toontown.battle import BattleParticles
+from toontown.battle import BattleProps
+from toontown.nametag import NametagGlobals
+from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
+
+
 GenericModel = 'phase_9/models/char/bossCog'
 ModelDict = {'s': 'phase_9/models/char/sellbotBoss',
  'm': 'phase_10/models/char/cashbotBoss',
@@ -31,8 +34,7 @@ class BossCog(Avatar.Avatar):
     def __init__(self):
         Avatar.Avatar.__init__(self)
         self.setFont(ToontownGlobals.getSuitFont())
-        self.setSpeechFont(ToontownGlobals.getSuitFont())
-        self.setPlayerType(NametagGroup.CCSuit)
+        self.setPlayerType(NametagGlobals.CCSuit)
         self.setPickable(0)
         self.doorA = None
         self.doorB = None
@@ -179,32 +181,22 @@ class BossCog(Avatar.Avatar):
         health = 1.0 - float(self.bossDamage) / float(self.bossMaxDamage)
         if health > 0.95:
             condition = 0
-        elif health > 0.9:
-            condition = 1
-        elif health > 0.8:
-            condition = 2
         elif health > 0.7:
-            condition = 3#Yellow
-        elif health > 0.6:
-            condition = 4            
-        elif health > 0.5:
-            condition = 5           
+            condition = 1
         elif health > 0.3:
-            condition = 6#Orange
-        elif health > 0.15:
-            condition = 7            
+            condition = 2
         elif health > 0.05:
-            condition = 8
+            condition = 3
         elif health > 0.0:
-            condition = 9
+            condition = 4
         else:
-            condition = 10
+            condition = 5
         if self.healthCondition != condition:
-            if condition == 9:
+            if condition == 4:
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.uniqueName('blink-task'))
-            elif condition == 10:
-                if self.healthCondition == 9:
+            elif condition == 5:
+                if self.healthCondition == 4:
                     taskMgr.remove(self.uniqueName('blink-task'))
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.25), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.uniqueName('blink-task'))
@@ -212,23 +204,19 @@ class BossCog(Avatar.Avatar):
                 self.healthBar.setColor(self.healthColors[condition], 1)
                 self.healthBarGlow.setColor(self.healthGlowColors[condition], 1)
             self.healthCondition = condition
-        
+        return
 
     def __blinkRed(self, task):
-        if not self.healthBar:
-            return    
-        self.healthBar.setColor(self.healthColors[8], 1)
-        self.healthBarGlow.setColor(self.healthGlowColors[8], 1)
-        if self.healthCondition == 10:
+        self.healthBar.setColor(self.healthColors[3], 1)
+        self.healthBarGlow.setColor(self.healthGlowColors[3], 1)
+        if self.healthCondition == 5:
             self.healthBar.setScale(1.17)
         return Task.done
 
     def __blinkGray(self, task):
-        if not self.healthBar:
-            return
-        self.healthBar.setColor(self.healthColors[9], 1)
-        self.healthBarGlow.setColor(self.healthGlowColors[9], 1)
-        if self.healthCondition == 10:
+        self.healthBar.setColor(self.healthColors[4], 1)
+        self.healthBarGlow.setColor(self.healthGlowColors[4], 1)
+        if self.healthCondition == 5:
             self.healthBar.setScale(1.0)
         return Task.done
 
@@ -236,7 +224,7 @@ class BossCog(Avatar.Avatar):
         if self.healthBar:
             self.healthBar.removeNode()
             self.healthBar = None
-        if self.healthCondition == 9 or self.healthCondition == 10:
+        if self.healthCondition == 4 or self.healthCondition == 5:
             taskMgr.remove(self.uniqueName('blink-task'))
         self.healthCondition = 0
         return
@@ -550,7 +538,7 @@ class BossCog(Avatar.Avatar):
                 self.happy = 1
             self.raised = 1
         elif anim == 'Fb_fall':
-            ival = Parallel(ActorInterval(self, 'Fb_fall'), Sequence(SoundInterval(self.reelSfx, node=self), Wait(1.2), SoundInterval(self.deathSfx)))
+            ival = Parallel(ActorInterval(self, 'Fb_fall'), Sequence(SoundInterval(self.reelSfx, node=self), SoundInterval(self.deathSfx)))
         elif isinstance(anim, types.StringType):
             ival = ActorInterval(self, anim)
         else:

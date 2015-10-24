@@ -91,7 +91,7 @@ class TownBattleSOSPanel(DirectFrame, StateData.StateData):
         return DirectButton(relief=None, text=friendName, text_scale=0.04, text_align=TextNode.ALeft, text_fg=fg, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, command=com, extraArgs=[friendId, friendName])
 
     def makeNPCFriendButton(self, NPCFriendId, numCalls):
-        if not TTLocalizer.NPCToonNames.has_key(NPCFriendId):
+        if NPCFriendId not in TTLocalizer.NPCToonNames:
             return None
         friendName = TTLocalizer.NPCToonNames[NPCFriendId]
         friendName += ' %d' % numCalls
@@ -160,7 +160,7 @@ class TownBattleSOSPanel(DirectFrame, StateData.StateData):
 
     def __updateScrollList(self):
         newFriends = []
-        battlePets = config.GetBool('want-pets-in-battle', 1)
+        battlePets = base.config.GetBool('want-pets-in-battle', 1)
         if base.wantPets and battlePets == 1 and base.localAvatar.hasPet():
             newFriends.append((base.localAvatar.getPetId(), 0))
         if not self.bldg or self.factoryToonIdList is not None:
@@ -183,7 +183,7 @@ class TownBattleSOSPanel(DirectFrame, StateData.StateData):
                 del self.friends[friendPair]
 
         for friendPair in newFriends:
-            if not self.friends.has_key(friendPair):
+            if friendPair not in self.friends:
                 friendButton = self.makeFriendButton(friendPair)
                 if friendButton:
                     self.scrollList.addItem(friendButton)

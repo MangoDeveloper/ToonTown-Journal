@@ -1,14 +1,15 @@
-from pandac.PandaModules import *
-from toontown.toonbase import ToontownGlobals
-from direct.showbase import DirectObject
+from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import StateData
 from direct.gui.DirectGui import *
+from direct.showbase import DirectObject
 from pandac.PandaModules import *
-from toontown.toonbase import TTLocalizer
+
 from toontown.effects import DistributedFireworkShow
+from toontown.nametag import NametagGlobals
 from toontown.parties import DistributedPartyFireworksActivity
-from direct.directnotify import DirectNotifyGlobal
-from otp.nametag import NametagGlobals
+from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
+
 
 class ShtikerBook(DirectFrame, StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('ShtikerBook')
@@ -24,8 +25,6 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         self.pageTabFrame.hide()
         self.currPageIndex = None
         self.pageBeforeNews = None
-        self.tempLeft = None
-        self.tempRight = None
         self.entered = 0
         self.safeMode = 0
         self.__obscured = 0
@@ -46,8 +45,8 @@ class ShtikerBook(DirectFrame, StateData.StateData):
          TTLocalizer.NPCFriendPageTitle,
          TTLocalizer.GardenPageTitle,
          TTLocalizer.GolfPageTitle,
-         #TTLocalizer.PhotoPageTitle,
          TTLocalizer.EventsPageName,
+         TTLocalizer.AchievementsPageTitle,
          TTLocalizer.NewsPageName]
         return
 
@@ -55,7 +54,7 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         self.safeMode = setting
 
     def enter(self):
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: SHTICKERBOOK: Open')
         if self.entered:
             return
@@ -66,17 +65,13 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         base.disableMouse()
         base.render.hide()
         base.setBackgroundColor(0.05, 0.15, 0.4)
-        base.setCellsAvailable([base.rightCells[0]], 0)
-        self.oldMin2dAlpha = NametagGlobals.getMin2dAlpha()
-        self.oldMax2dAlpha = NametagGlobals.getMax2dAlpha()
-        NametagGlobals.setMin2dAlpha(0.8)
-        NametagGlobals.setMax2dAlpha(1.0)
+        base.setCellsActive([base.rightCells[0]], 0)
+        NametagGlobals.setForce2dNametags(True)
+        NametagGlobals.setForceOnscreenChat(True)
         self.__isOpen = 1
         self.__setButtonVisibility()
         self.show()
         self.showPageArrows()
-        self.tempLeft = 'arrow_left' #base.Move_Left
-        self.tempRight = 'arrow_right'#base.Move_Right
         if not self.safeMode:
             self.accept('shtiker-page-done', self.__pageDone)
             self.accept(ToontownGlobals.StickerBookHotkey, self.__close)
@@ -106,9 +101,9 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         gsg = base.win.getGsg()
         if gsg:
             base.render.prepareScene(gsg)
-        NametagGlobals.setMin2dAlpha(self.oldMin2dAlpha)
-        NametagGlobals.setMax2dAlpha(self.oldMax2dAlpha)
-        base.setCellsAvailable([base.rightCells[0]], 1)
+        base.setCellsActive([base.rightCells[0]], 1)
+        NametagGlobals.setForce2dNametags(False)
+        NametagGlobals.setForceOnscreenChat(False)
         self.__isOpen = 0
         self.hide()
         self.hideButton()
@@ -117,9 +112,9 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         self.ignore('shtiker-page-done')
         self.ignore(ToontownGlobals.StickerBookHotkey)
         self.ignore(ToontownGlobals.OptionsPageHotkey)
-        self.ignore(self.tempRight)
-        self.ignore(self.tempLeft)
-        if config.GetBool('want-qa-regression', 0):
+        self.ignore('arrow_right')
+        self.ignore('arrow_left')
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: SHTICKERBOOK: Close')
 
     def load(self):
@@ -128,8 +123,8 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         self['image'] = bookModel.find('**/big_book')
         self['image_scale'] = (2, 1, 1.5)
         self.resetFrameSize()
-        self.bookOpenButton = DirectButton(image=(bookModel.find('**/BookIcon_CLSD'), bookModel.find('**/BookIcon_OPEN'), bookModel.find('**/BookIcon_RLVR')), relief=None, pos=(-0.1575, 0, 0.168), parent=base.a2dBottomRight, scale=0.305, command=self.__open)
-        self.bookCloseButton = DirectButton(image=(bookModel.find('**/BookIcon_OPEN'), bookModel.find('**/BookIcon_CLSD'), bookModel.find('**/BookIcon_RLVR2')), relief=None, pos=(-0.1575, 0, 0.168), parent=base.a2dBottomRight, scale=0.305, command=self.__close)
+        self.bookOpenButton = DirectButton(image=(bookModel.find('**/BookIcon_CLSD'), bookModel.find('**/BookIcon_OPEN'), bookModel.find('**/BookIcon_RLVR')), relief=None, pos=(-0.158, 0, 0.17), parent=base.a2dBottomRight, scale=0.305, command=self.__open)
+        self.bookCloseButton = DirectButton(image=(bookModel.find('**/BookIcon_OPEN'), bookModel.find('**/BookIcon_CLSD'), bookModel.find('**/BookIcon_RLVR2')), relief=None, pos=(-0.158, 0, 0.17), parent=base.a2dBottomRight, scale=0.305, command=self.__close)
         self.bookOpenButton.hide()
         self.bookCloseButton.hide()
         self.nextArrow = DirectButton(parent=self, relief=None, image=(bookModel.find('**/arrow_button'), bookModel.find('**/arrow_down'), bookModel.find('**/arrow_rollover')), scale=(0.1, 0.1, 0.1), pos=(0.838, 0, -0.661), command=self.__pageChange, extraArgs=[1])
@@ -198,7 +193,7 @@ class ShtikerBook(DirectFrame, StateData.StateData):
             messenger.send('wakeup')
             base.playSfx(self.pageSound)
             self.setPage(page)
-            if config.GetBool('want-qa-regression', 0):
+            if base.config.GetBool('want-qa-regression', 0):
                 self.notify.info('QA-REGRESSION: SHTICKERBOOK: Browse tabs %s' % page.pageName)
             localAvatar.newsButtonMgr.setGoingToNewsPageFromStickerBook(False)
             localAvatar.newsButtonMgr.showAppropriateButton()
@@ -423,14 +418,14 @@ class ShtikerBook(DirectFrame, StateData.StateData):
 
     def __checkForNewsPage(self):
         from toontown.shtiker import NewsPage
-        self.ignore(self.tempLeft)
-        self.ignore(self.tempRight)
+        self.ignore('arrow_left')
+        self.ignore('arrow_right')
         if isinstance(self.pages[self.currPageIndex], NewsPage.NewsPage):
-            self.ignore(self.tempLeft)
-            self.ignore(self.tempRight)
+            self.ignore('arrow_left')
+            self.ignore('arrow_right')
         else:
-            self.accept(self.tempRight, self.__pageChange, [1])
-            self.accept(self.tempLeft, self.__pageChange, [-1])
+            self.accept('arrow_right', self.__pageChange, [1])
+            self.accept('arrow_left', self.__pageChange, [-1])
 
     def goToNewsPage(self, page):
         messenger.send('wakeup')
@@ -438,7 +433,7 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         localAvatar.newsButtonMgr.setGoingToNewsPageFromStickerBook(True)
         localAvatar.newsButtonMgr.showAppropriateButton()
         self.setPage(page)
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: SHTICKERBOOK: Browse tabs %s' % page.pageName)
         self.ignore(ToontownGlobals.StickerBookHotkey)
         self.ignore(ToontownGlobals.OptionsPageHotkey)

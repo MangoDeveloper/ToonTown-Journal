@@ -25,7 +25,7 @@ from toontown.hood import EstateHood
 from toontown.hood import PartyHood
 from toontown.toonbase import TTLocalizer
 from toontown.parties.PartyGlobals import GoToPartyStatus
-from toontown.dna.DNAStorage import DNAStorage
+from toontown.dna.DNAParser import *
 
 class PlayGame(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('PlayGame')
@@ -105,7 +105,6 @@ class PlayGame(StateData.StateData):
         self.hood = None
         self.quietZoneDoneEvent = uniqueName('quietZoneDone')
         self.quietZoneStateData = None
-        self.dnaData = None
         return
 
     def enter(self, hoodId, zoneId, avId):
@@ -143,27 +142,23 @@ class PlayGame(StateData.StateData):
 
     def loadDnaStoreTutorial(self):
         self.dnaStore = DNAStorage()
-
-        tree = loader.loadDNA('phase_3.5/dna/storage_tutorial.xml').store(self.dnaStore)
-
-        tree = loader.loadDNA('phase_3.5/dna/storage_interior.xml').store(self.dnaStore)
+        files = ('phase_3.5/dna/storage_tutorial.pdna', 'phase_3.5/dna/storage_interior.pdna')
+        dnaBulk = DNABulkLoader(self.dnaStore, files)
+        dnaBulk.loadDNAFiles()
 
     def loadDnaStore(self):
         if not hasattr(self, 'dnaStore'):
             self.dnaStore = DNAStorage()
-
-            loader.loadDNA('phase_4/dna/storage.xml').store(self.dnaStore)
-
-            self.dnaStore.storeFont(ToontownGlobals.getInterfaceFont(), 'humanist')
-            self.dnaStore.storeFont(ToontownGlobals.getSignFont(), 'mickey')
-            self.dnaStore.storeFont(ToontownGlobals.getSuitFont(), 'suit')
-
-            loader.loadDNA('phase_3.5/dna/storage_interior.xml').store(self.dnaStore)
+            files = ('phase_4/dna/storage.pdna', 'phase_3.5/dna/storage_interior.pdna')
+            dnaBulk = DNABulkLoader(self.dnaStore, files)
+            dnaBulk.loadDNAFiles()
+            self.dnaStore.storeFont('humanist', ToontownGlobals.getInterfaceFont())
+            self.dnaStore.storeFont('mickey', ToontownGlobals.getSignFont())
+            self.dnaStore.storeFont('suit', ToontownGlobals.getSuitFont())
 
     def unloadDnaStore(self):
         if hasattr(self, 'dnaStore'):
-            #self.dnaStore.resetNodes()
-            #self.dnaStore.resetTextures()
+            self.dnaStore.cleanup()
             del self.dnaStore
             ModelPool.garbageCollect()
             TexturePool.garbageCollect()
@@ -175,7 +170,7 @@ class PlayGame(StateData.StateData):
             self.hood.exit()
             self.hood.unload()
             self.hood = None
-        return
+        base.cr.cache.flush()
 
     def enterStart(self):
         pass
@@ -198,20 +193,14 @@ class PlayGame(StateData.StateData):
         if how in ['tunnelIn',
          'teleportIn',
          'doorIn',
-         'elevatorIn',
-         'walk']:
+         'elevatorIn']:
             self.fsm.request('quietZone', [doneStatus])
         else:
             self.notify.error('Exited hood with unexpected mode %s' % how)
         return
 
     def _destroyHood(self):
-        self.ignore(self.hoodDoneEvent)
-        self.hood.exit()
-        self.hood.unload()
-        self.hood = None
-        base.cr.cache.flush()
-        return
+        self.unload()
 
     def enterQuietZone(self, requestStatus):
         self.acceptOnce(self.quietZoneDoneEvent, self.handleQuietZoneDone)
@@ -240,11 +229,10 @@ class PlayGame(StateData.StateData):
         toHoodPhrase = ToontownGlobals.hoodNameMap[canonicalHoodId][0]
         hoodName = ToontownGlobals.hoodNameMap[canonicalHoodId][-1]
         zoneId = requestStatus['zoneId']
-        requestStatus['loader'] = 'cogHQLoader' if ZoneUtil.isCogHQZone(hoodId) else requestStatus['loader']
         loaderName = requestStatus['loader']
         avId = requestStatus.get('avId', -1)
         ownerId = requestStatus.get('ownerId', avId)
-        if config.GetBool('want-qa-regression', 0):
+        if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: NEIGHBORHOODS: Visit %s' % hoodName)
         count = ToontownGlobals.hoodCountMap[canonicalHoodId]
         if loaderName == 'safeZoneLoader':
@@ -254,33 +242,34 @@ class PlayGame(StateData.StateData):
         if not loader.inBulkBlock:
             if hoodId == ToontownGlobals.MyEstate:
                 if avId == -1:
-                    loader.beginBulkLoad('hood', TTLocalizer.HeadingToYourEstate, count, 1, TTLocalizer.TIP_ESTATE)
+                    loader.beginBulkLoad('hood', TTLocalizer.HeadingToYourEstate, count, 1, TTLocalizer.TIP_ESTATE, zoneId)
                 else:
                     owner = base.cr.identifyAvatar(ownerId)
                     if owner == None:
                         friend = base.cr.identifyAvatar(avId)
                         if friend != None:
                             avName = friend.getName()
-                            loader.beginBulkLoad('hood', TTLocalizer.HeadingToFriend % avName, count, 1, TTLocalizer.TIP_ESTATE)
+                            loader.beginBulkLoad('hood', TTLocalizer.HeadingToFriend % avName, count, 1, TTLocalizer.TIP_ESTATE, zoneId)
                         else:
                             self.notify.warning("we can't perform this teleport")
                             return
                     else:
                         avName = owner.getName()
-                        loader.beginBulkLoad('hood', TTLocalizer.HeadingToEstate % avName, count, 1, TTLocalizer.TIP_ESTATE)
+                        loader.beginBulkLoad('hood', TTLocalizer.HeadingToEstate % avName, count, 1, TTLocalizer.TIP_ESTATE, zoneId)
             elif ZoneUtil.isCogHQZone(zoneId):
                 loader.beginBulkLoad('hood', TTLocalizer.HeadingToHood % {'to': toHoodPhrase,
-                 'hood': hoodName}, count, 1, TTLocalizer.TIP_COGHQ)
+                 'hood': hoodName}, count, 1, TTLocalizer.TIP_COGHQ, zoneId)
             elif ZoneUtil.isGoofySpeedwayZone(zoneId):
                 loader.beginBulkLoad('hood', TTLocalizer.HeadingToHood % {'to': toHoodPhrase,
-                 'hood': hoodName}, count, 1, TTLocalizer.TIP_KARTING)
+                 'hood': hoodName}, count, 1, TTLocalizer.TIP_KARTING, zoneId)
             else:
                 loader.beginBulkLoad('hood', TTLocalizer.HeadingToHood % {'to': toHoodPhrase,
-                 'hood': hoodName}, count, 1, TTLocalizer.TIP_GENERAL)
+                 'hood': hoodName}, count, 1, TTLocalizer.TIP_GENERAL, zoneId)
         if hoodId == ToontownGlobals.Tutorial:
             self.loadDnaStoreTutorial()
         else:
-            self.loadDnaStore()
+            if not hasattr(self, 'dnaStore'):
+                self.loadDnaStore()
         hoodClass = self.getHoodClassByNumber(canonicalHoodId)
         self.hood = hoodClass(self.fsm, self.hoodDoneEvent, self.dnaStore, hoodId)
         self.hood.load()
@@ -405,8 +394,8 @@ class PlayGame(StateData.StateData):
         base.localAvatar.chatMgr.obscure(1, 1)
         base.localAvatar.obscureFriendsListButton(1)
         requestStatus['how'] = 'tutorial'
-        if config.GetString('language', 'english') == 'japanese':
-            musicVolume = config.GetFloat('tutorial-music-volume', 0.5)
+        if base.config.GetString('language', 'english') == 'japanese':
+            musicVolume = base.config.GetFloat('tutorial-music-volume', 0.5)
             requestStatus['musicVolume'] = musicVolume
         self.hood.enter(requestStatus)
 
@@ -531,7 +520,7 @@ class PlayGame(StateData.StateData):
     def getCatalogCodes(self, category):
         numCodes = self.dnaStore.getNumCatalogCodes(category)
         codes = []
-        for i in range(numCodes):
+        for i in xrange(numCodes):
             codes.append(self.dnaStore.getCatalogCode(category, i))
 
         return codes

@@ -50,6 +50,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
         self.isSetup = 0
         self.__preSetupState = None
         self.bigElevator = 0
+        self.offsetNp = None
         return
 
     def generate(self):
@@ -63,7 +64,6 @@ class DistributedElevator(DistributedObject.DistributedObject):
         self.elevatorSphereNode.setIntoCollideMask(ToontownGlobals.WallBitmask)
         self.elevatorSphereNode.addSolid(self.elevatorSphere)
         self.elevatorSphereNodePath = self.getElevatorModel().attachNewNode(self.elevatorSphereNode)
-        self.elevatorSphereNodePath.hide()
         self.elevatorSphereNodePath.reparentTo(self.getElevatorModel())
         self.elevatorSphereNodePath.stash()
         self.boardedAvIds = {}
@@ -116,12 +116,14 @@ class DistributedElevator(DistributedObject.DistributedObject):
                 del self.openDoors
             if hasattr(self, 'closeDoors'):
                 del self.closeDoors
-            self.offsetNP.removeNode()
         del self.fsm
         del self.openSfx
         del self.closeSfx
         self.isSetup = 0
         self.fillSlotTrack = None
+        if not self.offsetNp:
+            return
+        self.offsetNP.removeNode()
         if hasattr(base.localAvatar, 'elevatorNotifier'):
             base.localAvatar.elevatorNotifier.cleanup()
         DistributedObject.DistributedObject.delete(self)
@@ -129,7 +131,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
 
     def setBldgDoId(self, bldgDoId):
         self.bldgDoId = bldgDoId
-        self.bldgRequest = self.cr.relatedObjectMgr.requestObjects([bldgDoId], allCallback=self.gotBldg, timeout=10)
+        self.bldgRequest = self.cr.relatedObjectMgr.requestObjects([bldgDoId], allCallback=self.gotBldg, timeout=2)
 
     def gotBldg(self, buildingList):
         self.bldgRequest = None
@@ -186,7 +188,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
             del self.toonRequests[index]
         if avId == 0:
             pass
-        elif not self.cr.doId2do.has_key(avId):
+        elif avId not in self.cr.doId2do:
             func = PythonUtil.Functor(self.gotToon, index, avId)
             self.toonRequests[index] = self.cr.relatedObjectMgr.requestObjects([avId], allCallback=func)
         elif not self.isSetup:
@@ -301,7 +303,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
             timeToSet = self.countdownTime
             if timeSent > 0:
                 timeToSet = timeSent
-            if self.cr.doId2do.has_key(avId):
+            if avId in self.cr.doId2do:
                 if bailFlag == 1 and hasattr(self, 'clockNode'):
                     if timestamp < timeToSet and timestamp >= 0:
                         self.countdown(timeToSet - timestamp)
@@ -362,7 +364,6 @@ class DistributedElevator(DistributedObject.DistributedObject):
             place.fsm.request('walk')
 
     def rejectBoard(self, avId, reason = 0):
-        print 'rejectBoard %s' % reason
         if hasattr(base.localAvatar, 'elevatorNotifier'):
             if reason == REJECT_SHUFFLE:
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.ElevatorHoppedOff)
@@ -490,6 +491,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
             elevator = self.elevatorFSM
             del self.elevatorFSM
             elevator.signalDone(doneStatus)
+            base.camLens.setMinFov(ToontownGlobals.CBElevatorFov/(4./3.))
         return
 
     def getElevatorModel(self):
@@ -543,7 +545,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
             keyList.append(key)
 
         for key in keyList:
-            if self.__toonTracks.has_key(key):
+            if key in self.__toonTracks:
                 self.clearToonTrack(key)
 
     def getDestName(self):
