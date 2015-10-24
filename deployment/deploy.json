@@ -1,6 +1,6 @@
 {
   "ftp-address": "167.114.18.121",
-  "ftp-username": "ttidownload",
+  "ftp-username": "ttjdownload",
   "ftp-password": "",
   "platform": "win32",
   "distribution": "test",
@@ -9,11 +9,11 @@
   "version": "1.0.0",
   "version-prefix": "test-v",
   "launcher-version": "1.0.0",
-  "account-server": "gameserver.toontowninfinite.com",
+  "account-server": "gameserver.toontownjourney.com",
   "client-agent": "167.114.28.238",
   "patcher-includes": [
-    "GameData.bin", 
-    "infinite.exe", 
+    "GameData.pyd", 
+    "journey.py", 
     "_ctypes.pyd", 
     "_hashlib.pyd", 
     "_socket.pyd",
