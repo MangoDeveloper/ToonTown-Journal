@@ -11,6 +11,7 @@ from toontown.battle import BattleBase
 from pandac.PandaModules import *
 import SuitDNA
 import random
+import math
 AllBossCogs = []
 
 class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
@@ -114,6 +115,9 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.ignore(event)
         if not self.hasToons():
             taskMgr.doMethodLater(10, self.__bossDone, self.uniqueName('BossDone'))
+
+    def getBossDoneFunc(self):
+        return self.__bossDone
 
     def __bossDone(self, task):
         self.b_setState('Off')
@@ -553,15 +557,18 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             if damage == None:
                 self.notify.warning('No damage listed for attack code %s' % attackCode)
                 damage = 5
+            if self.attackCode == ToontownGlobals.BossCogDizzyNow:
+                damage = 7
             damage *= self.getDamageMultiplier()
             self.damageToon(toon, damage)
             currState = self.getCurrentOrNextState()
-            if attackCode == ToontownGlobals.BossCogElectricFence and (currState == 'RollToBattleTwo' or currState == 'BattleThree'):
-                if bpy < 0 and abs(bpx / bpy) > 0.5:
-                    if bpx < 0:
-                        self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
-                    else:
-                        self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
+            if self.attackCode != ToontownGlobals.BossCogDizzyNow and self.attackCode != ToontownGlobals.BossCogAreaAttack:
+                if attackCode == ToontownGlobals.BossCogElectricFence and (currState == 'RollToBattleTwo' or currState == 'BattleThree'):
+                    if bpy < 0 and abs(bpx / bpy) > 0.5:
+                        if bpx < 0:
+                            self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
+                        else:
+                            self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
         return
 
     def d_showZapToon(self, avId, x, y, z, h, p, r, attackCode, timestamp):
@@ -611,3 +618,16 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def doNextAttack(self, task):
         self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+
+    def getToonDifficulty(self):
+        totalCogSuitTier = 0
+        totalToons = 0
+
+        for toonId in self.involvedToons:
+            toon = simbase.air.doId2do.get(toonId)
+            if toon:
+                totalToons += 1
+                totalCogSuitTier += toon.cogTypes[1]
+
+        averageTier = math.floor(totalCogSuitTier / totalToons) + 1
+        return int(averageTier)

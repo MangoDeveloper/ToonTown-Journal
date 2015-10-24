@@ -7,6 +7,7 @@ model-path ../resources
 # Server:
 server-version TTJ-1.0
 min-access-level 100
+want-mega-invasions #t
 accountdb-type local
 shard-low-pop 50
 shard-mid-pop 100
@@ -23,8 +24,9 @@ dc-file astron/dclass/otp.dc
 want-pets #f
 want-parties #f
 want-cogdominiums #f
+want-mega-invasions #t
 want-achievements #f
-
+safe-harbours Toon Valley
 # Chat:
 want-whitelist #f
 
@@ -40,3 +42,6 @@ want-yin-yang #f
 show-population #t
 force-skip-tutorial #t
 want-instant-parties #t
+
+
+estate-day-night #t
