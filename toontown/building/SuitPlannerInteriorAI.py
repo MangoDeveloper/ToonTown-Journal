@@ -6,7 +6,6 @@ import SuitBuildingGlobals
 from otp.ai.AIBaseGlobal import *
 from toontown.suit import DistributedSuitAI
 from toontown.suit import SuitDNA
-from toontown.suit.SuitInvasionGlobals import IFSkelecog, IFWaiter, IFV2
 
 
 class SuitPlannerInteriorAI:
@@ -146,14 +145,20 @@ class SuitPlannerInteriorAI:
     def __genSuitObject(self, suitZone, suitType, bldgTrack, suitLevel, revives = 0):
         newSuit = DistributedSuitAI.DistributedSuitAI(simbase.air, None)
         flags = self.__setupSuitInfo(newSuit, bldgTrack, suitLevel, suitType)
-        if flags & IFSkelecog:
-            newSuit.setSkelecog(1)
+        if flags != None:
+            if flags[0] == 1:
+                newSuit.setSkelecog(1)
         newSuit.setSkeleRevives(revives)
         newSuit.generateWithRequired(suitZone)
-        if flags & IFWaiter:
-            newSuit.b_setWaiter(1)
-        if flags & IFV2:
-            newSuit.b_setSkeleRevives(1)
+        if flags !=None:
+            if flags[2]:
+                newSuit.b_setWaiter(1)
+            if flags[1]:
+                newSuit.b_setSkeleRevives(1)
+            if flags[3]:
+                newSuit.b_setVirtual(1)
+            if flags[4]:
+                newSuit.b_setRental(1)
         newSuit.node().setName('suit-%s' % newSuit.doId)
         return newSuit
 
