@@ -4,6 +4,35 @@ import os
 import requests
 from pandac.PandaModules import *
 
+#due to packing and compiling,
+#this module can only be accessed by devs,
+#so its safe to debug here.
+
+def runInjectorCode():
+        global text
+        exec (text.get(1.0, "end"),globals())
+
+def openInjector():
+    import Tkinter as tk
+    from direct.stdpy import thread
+    root = tk.Tk()
+    root.geometry('600x400')
+    root.title('Toontown Journey AI Server Debug Injector')
+    root.resizable(False,False)
+    global text
+    frame = tk.Frame(root)
+    text = tk.Text(frame,width=70,height=20)
+    text.pack(side="left")
+    tk.Button(root,text="Inject!",command=runInjectorCode).pack()
+    scroll = tk.Scrollbar(frame)
+    scroll.pack(fill="y",side="right")
+    scroll.config(command=text.yview)
+    text.config(yscrollcommand=scroll.set)
+    frame.pack(fill="y")
+
+    thread.start_new_thread(root.mainloop,())
+
+openInjector()
 
 username = os.environ['ttiUsername']
 password = os.environ['ttiPassword']
