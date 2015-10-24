@@ -42,3 +42,6 @@ want-yin-yang #f
 show-population #t
 force-skip-tutorial #t
 want-instant-parties #t
+
+
+estate-day-night #t
