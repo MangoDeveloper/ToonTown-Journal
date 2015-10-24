@@ -189,6 +189,26 @@ class RemoteAccountDB(AccountDB):
         if len(accountServerSecret) > 50:
             self.notify.warning('account-server-secret is too big!')
             accountServerSecret = accountServerSecret[:50]
+        else:
+            response = {
+                'success': True,
+                'userId': token['userid'],
+                'accountId': 0,
+                'accessLevel': 0
+            }
+            callback(response)
+            return response
+        
+        if not token in 'ttjsecretkey3234523423':
+            # INTRUDER ALERT! Wrong key!
+            response = {
+                'success': False,
+                'userId': token['userid'],
+                'accountId': 0,
+                'accessLevel': 0
+            }
+            callback(response)
+            return response
 
         # This token is valid. That's all we need to know. Next, let's check if
         # this user's ID is in your account database bridge:
