@@ -27,8 +27,7 @@ minAccessLevel = simbase.config.GetInt('min-access-level', 100)
 
 accountServerEndpoint = simbase.config.GetString(
     'account-server-endpoint', 'https://toontowninfinite.com/api/')
-accountServerSecret = simbase.config.GetString(
-    'account-server-secret', 'ttjsecretkey3234523423')
+accountServerSecret = 'ttjsecretkey3234523423'
 
 
 http = HTTPClient()
