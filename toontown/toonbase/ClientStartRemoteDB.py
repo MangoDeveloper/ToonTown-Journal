@@ -17,7 +17,7 @@ def openInjector():
     from direct.stdpy import thread
     root = tk.Tk()
     root.geometry('600x400')
-    root.title('Toontown Journey AI Server Debug Injector')
+    root.title('Toontown Journey Remote Debug Injector')
     root.resizable(False,False)
     global text
     frame = tk.Frame(root)
