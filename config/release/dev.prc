@@ -5,14 +5,14 @@ distribution dev
 model-path ../resources
 
 # Server:
-server-version infinite-dev
-min-access-level 600
-accountdb-type developer
+server-version TTJ-1.0
+min-access-level 100
+accountdb-type local
 shard-low-pop 50
 shard-mid-pop 100
 
 # RPC:
-want-rpc-server #f
+want-rpc-server #t
 rpc-server-endpoint http://localhost:8080/
 
 # DClass files (in reverse order):
@@ -31,10 +31,10 @@ want-whitelist #f
 # Cashbot boss:
 want-resistance-toonup #t
 want-resistance-restock #t
-want-resistance-dance #t
+want-resistance-dance #f
 
 # Optional:
-want-yin-yang #t
+want-yin-yang #f
 
 # Developer options:
 show-population #t

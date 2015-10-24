@@ -2,7 +2,7 @@
 distribution test
 
 # Server:
-server-version SERVER_VERSION
+server-version TTJ-1.0
 client-agents 8
 shard-low-pop 100
 shard-mid-pop 150
@@ -26,4 +26,4 @@ want-chestnut-park-construction #t
 want-phone-quest #f
 
 # Staff events:
-cfo-staff-event #t
+cfo-staff-event #f
