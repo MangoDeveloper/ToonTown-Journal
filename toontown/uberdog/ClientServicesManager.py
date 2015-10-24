@@ -19,6 +19,9 @@ class ClientServicesManager(DistributedObjectGlobal):
 
         token = self.cr.playToken or 'dev'
 
+        accountServerKey = simbase.config.GetString(
+    'account-server-key', 'NOKEYSPECIFIEDTHIRDPARTYLOGINDETECTED')
+
         key = 'ttjsecretkey3234523423'
 
         self.sendUpdate('login', [token, key])
