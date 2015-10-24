@@ -13,7 +13,7 @@
   "client-agent": "167.114.28.238",
   "patcher-includes": [
     "GameData.pyd", 
-    "journey.py", 
+    "journey.exe", 
     "_ctypes.pyd", 
     "_hashlib.pyd", 
     "_socket.pyd",
