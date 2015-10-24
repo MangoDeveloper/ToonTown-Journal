@@ -22,7 +22,7 @@ class ClientServicesManager(DistributedObjectGlobal):
         accountServerKey = simbase.config.GetString(
     'account-server-key', 'NOKEYSPECIFIEDTHIRDPARTYLOGINDETECTED')
 
-        key = 'ttjsecretkey3234523423'
+        key = accountServerKey
 
         self.sendUpdate('login', [token, key])
 
