@@ -29,10 +29,18 @@ accountServerEndpoint = simbase.config.GetString(
     'account-server-endpoint', 'https://toontowninfinite.com/api/')
 accountServerSecret = 'ttjsecretkey3234523423'
 
+def rejectConfig(issue, securityIssue=True, dumb=True):
+    print
+    print
+    print "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '.'
+    if securityIssue:
+        print 'ClientServicesManagerUD: This appears to be an accidential security issue while connecting.'
+    if dumb:
+        print 'ClientServicesManagerUD: This may be a faulty security bypass attempt due to the issue.'
+    print 'ClientServicesManagerUD: You will need to fix the issue.'
 
 http = HTTPClient()
 http.setVerifySsl(0)
-
 
 def executeHttpRequest(url, **extras):
     timestamp = str(int(time.time()))
@@ -186,25 +194,39 @@ class RemoteAccountDB(AccountDB):
 
     def lookup(self, token, callback):
         # Ensure that our secret is the correct size:
-        if len(accountServerSecret) > 50:
-            self.notify.warning('account-server-secret is too big!')
-            accountServerSecret = accountServerSecret[:50]
-        
-        if not token in 'ttjsecretkey3234523423':
-            # INTRUDER ALERT! Wrong key!
-            response = {
-                'success': False,
-                'userId': token['userid'],
-                'accountId': 0,
-                'accessLevel': 0
-            }
-            callback(response)
-            return response
+        if len(accountServerSecret) > 22:
+            rejectConfig('the specified account-server-secret was too big')
+            accountServerSecret = accountServerSecret[:22]
+        elif len(accountServerSecret) < 22:
+            rejectConfig('the specified account-server-secret was too small')
+            accountServerSecret = accountServerSecret[:22]
+    
+        if not token in ['ttjsecretkey3234523423', '3243254323yektercesjtt']:
+            if not token in 'ttjsecretkey3234523423':
+                # INTRUDER ALERT! Wrong key!
+                rejectConfig("the specified account-server-secret did not match up to the server's set key", dumb=False)
+                response = {
+                    'success': False,
+                    'userId': token['userid'],
+                    'accountId': 0,
+                    'accessLevel': 0
+                }
+                callback(response)
+                return response
+            else:
+                rejectConfig("you reversed the set key", securityIssue=False, dumb=False)
+                response = {
+                    'success': False,
+                    'userId': token['userid'],
+                    'accountId': 0,
+                    'accessLevel': 0
+                }
+                callback(response)
+                return response
 
         # This token is valid. That's all we need to know. Next, let's check if
         # this user's ID is in your account database bridge:
         if str(token['userid']) not in self.dbm:
-
             # Nope. Let's associate them with a brand new Account object!
             response = {
                 'success': True,
@@ -216,7 +238,6 @@ class RemoteAccountDB(AccountDB):
             return response
 
         else:
-
             # Yep. Let's return their account ID and access level!
             response = {
                 'success': True,
