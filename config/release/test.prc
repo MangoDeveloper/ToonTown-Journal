@@ -14,6 +14,8 @@ want-parties #f
 want-cogdominiums #f
 want-achievements #f
 boarding-group-merges #t
+want-mega-invasions #t
+safe-harbours Toon Valley
 
 # Sellbot boss:
 disable-sos-card 91917
@@ -24,6 +26,8 @@ want-chestnut-park-construction #t
 
 # Temporary:
 want-phone-quest #f
-
 # Staff events:
 cfo-staff-event #f
+
+
+estate-day-night #t

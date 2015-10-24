@@ -1539,6 +1539,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                  'isCFO': 0,
                  'isSupervisor': suit.isSupervisor(),
                  'isVirtual': suit.isVirtual(),
+                 'isRental': suit.getRental(),
                  'hasRevives': suit.getMaxSkeleRevives(),
                  'activeToons': self.activeToons[:]}
                 self.suitsKilled.append(encounter)
@@ -1832,7 +1833,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
     def getFireCount(self):
         return self.fireCount
 
-@magicWord(category=CATEGORY_PROGRAMMER)
+@magicWord(category=CATEGORY_MODERATOR)
 def skipMovie():
     invoker = spellbook.getInvoker()
     battleId = invoker.getBattleId()
