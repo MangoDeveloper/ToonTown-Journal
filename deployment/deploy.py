@@ -26,7 +26,7 @@ print 'Starting the deployment process...'
 
 # Stop the user if they are missing vital files:
 missingFiles = []
-for filename in ('deploy.json', 'infinitecipher'):
+for filename in ('deploy.json'):
     if sys.platform == 'win32':
         # On the Windows platform, if there is no extension, we must infer that
         # this is an executable file. Therefore, let's append '.exe':
@@ -227,13 +227,6 @@ cmd = (pythonPath + ' ../tools/build_client.py' +
 for module in modules:
     cmd += ' ' + module
 os.system(cmd)
-
-# ...and encrypt the product:
-os.chdir('build')
-if sys.platform == 'win32':
-    os.system('..\\infinitecipher.exe %s GameData.bin' % output)
-else:
-    os.system('../infinitecipher %s GameData.bin' % output)
 
 # Copy the necessary patcher includes:
 for include in patcherIncludes:
