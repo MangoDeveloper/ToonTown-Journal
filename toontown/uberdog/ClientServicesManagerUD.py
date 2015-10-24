@@ -28,7 +28,7 @@ minAccessLevel = simbase.config.GetInt('min-access-level', 100)
 accountServerEndpoint = simbase.config.GetString(
     'account-server-endpoint', 'https://toontowninfinite.com/api/')
 accountServerSecret = simbase.config.GetString(
-    'account-server-secret', '6163636f756e7473')
+    'account-server-secret', 'ttjsecretkey3234523423')
 
 
 http = HTTPClient()
@@ -187,20 +187,9 @@ class RemoteAccountDB(AccountDB):
 
     def lookup(self, token, callback):
         # Ensure that our secret is the correct size:
-        if len(accountServerSecret) > 29:
+        if len(accountServerSecret) > 50:
             self.notify.warning('account-server-secret is too big!')
-            accountServerSecret = accountServerSecret[:29]
-
-        # Next, check if this token has expired:
-        expiration = simbase.config.GetInt('account-token-expiration', 1800)
-        tokenDelta = int(time.time()) - token['timestamp']
-        if tokenDelta > expiration:
-            response = {
-                'success': False,
-                'reason': 'This token has expired.'
-            }
-            callback(response)
-            return response
+            accountServerSecret = accountServerSecret[:50]
 
         # This token is valid. That's all we need to know. Next, let's check if
         # this user's ID is in your account database bridge:
