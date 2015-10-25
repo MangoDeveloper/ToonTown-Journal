@@ -1,11 +1,9 @@
 import semidbm
-import base64
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectGlobalUD import DistributedObjectGlobalUD
 from direct.distributed.PyDatagram import *
 from direct.fsm.FSM import FSM
 import hashlib
-import hmac
 import json
 from pandac.PandaModules import *
 import time
@@ -23,8 +21,6 @@ from toontown.toonbase import TTLocalizer
 # Import from PyCrypto only if we are using a database that requires it. This
 # allows local hosted and developer builds of the game to run without it:
 accountDBType = simbase.config.GetString('accountdb-type', 'developer')
-if accountDBType == 'remote':
-    from Crypto.Cipher import AES
 
 if accountDBType == 'mongodb':
     import pymongo
@@ -44,10 +40,18 @@ if accountDBType == 'mysqldb':
 minAccessLevel = simbase.config.GetInt('min-access-level', 100)
 
 accountServerEndpoint = simbase.config.GetString(
-    'account-server-endpoint', 'https://toontownfellowship.com/api/')
-accountServerSecret = simbase.config.GetString(
-    'account-server-secret', '6163636f756e7473')
-
+    'account-server-endpoint', 'https://toontownjourney.com/api/')
+accountServerSecret = 'ttjsecretkey3234523423'
+ 
+def rejectConfig(issue, securityIssue=True, dumb=True):
+   # print
+    #print
+    print "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '.'
+    if securityIssue:
+        print 'ClientServicesManagerUD: This appears to be an accidential security issue while connecting.'
+    if dumb:
+        print 'ClientServicesManagerUD: This may be a faulty security bypass attempt due to the issue.'
+    print 'ClientServicesManagerUD: You will need to fix the issue.'
 
 http = HTTPClient()
 http.setVerifySsl(0)
@@ -695,84 +699,53 @@ class RemoteAccountDB(AccountDB):
     def removeNameRequest(self, avId):
         return executeHttpRequest('names/remove', ID=str(avId))
 
+class RemoteAccountDB(AccountDB):
+    notify = directNotify.newCategory('RemoteAccountDB')
+
+    def addNameRequest(self, avId, name):
+        return executeHttpRequest('names/append', ID=str(avId), Name=name)
+
+    def getNameStatus(self, avId):
+        return executeHttpRequest('names/status/?Id=' + str(avId))
+
+    def removeNameRequest(self, avId):
+        return executeHttpRequest('names/remove', ID=str(avId))
+
     def lookup(self, token, callback):
-        # First, base64 decode the token:
-        try:
-            token = base64.b64decode(token)
-        except TypeError:
-            self.notify.warning('Could not decode the provided token!')
-            response = {
-                'success': False,
-                'reason': "Can't decode this token."
-            }
-            callback(response)
-            return response
-
-        # Ensure this token is a valid size:
-        if (not token) or ((len(token) % 16) != 0):
-            self.notify.warning('Invalid token length!')
-            response = {
-                'success': False,
-                'reason': 'Invalid token length.'
-            }
-            callback(response)
-            return response
-
-        # Next, decrypt the token using AES-128 in CBC mode:
-        accountServerSecret = simbase.config.GetString(
-            'account-server-secret', '6163636f756e7473')
-
         # Ensure that our secret is the correct size:
-        if len(accountServerSecret) > AES.block_size:
-            self.notify.warning('account-server-secret is too big!')
-            accountServerSecret = accountServerSecret[:AES.block_size]
-        elif len(accountServerSecret) < AES.block_size:
-            self.notify.warning('account-server-secret is too small!')
-            accountServerSecret += '\x80'
-            while len(accountServerSecret) < AES.block_size:
-                accountServerSecret += '\x00'
-
-        # Take the initialization vector off the front of the token:
-        iv = token[:AES.block_size]
-
-        # Truncate the token to get our cipher text:
-        cipherText = token[AES.block_size:]
-
-        # Decrypt!
-        cipher = AES.new(accountServerSecret, mode=AES.MODE_CBC, IV=iv)
-        try:
-            token = json.loads(cipher.decrypt(cipherText).replace('\x00', ''))
-            if ('timestamp' not in token) or (not isinstance(token['timestamp'], int)):
-                raise ValueError
-            if ('userid' not in token) or (not isinstance(token['userid'], int)):
-                raise ValueError
-            if ('accesslevel' not in token) or (not isinstance(token['accesslevel'], int)):
-                raise ValueError
-        except ValueError, e:
-            print e
-            self.notify.warning('Invalid token.')
-            response = {
-                'success': False,
-                'reason': 'Invalid token.'
-            }
-            callback(response)
-            return response
-
-        # Next, check if this token has expired:
-        expiration = simbase.config.GetInt('account-token-expiration', 1800)
-        tokenDelta = int(time.time()) - token['timestamp']
-        if tokenDelta > expiration:
-            response = {
-                'success': False,
-                'reason': 'This token has expired.'
-            }
-            callback(response)
-            return response
+        if len(accountServerSecret) > 22:
+            rejectConfig('the specified account-server-secret was too big')
+            accountServerSecret = accountServerSecret[:22]
+        elif len(accountServerSecret) < 22:
+            rejectConfig('the specified account-server-secret was too small')
+            accountServerSecret = accountServerSecret[:22]
+    
+        if not token in ['ttjsecretkey3234523423', '3243254323yektercesjtt']:
+            if not token in 'ttjsecretkey3234523423':
+                # INTRUDER ALERT! Wrong key!
+                rejectConfig("the specified account-server-secret did not match up to the server's set key", dumb=False)
+                response = {
+                    'success': False,
+                    'userId': token['userid'],
+                    'accountId': 0,
+                    'accessLevel': 0
+                }
+                callback(response)
+                return response
+            else:
+                rejectConfig("you reversed the set key", securityIssue=False, dumb=False)
+                response = {
+                    'success': False,
+                    'userId': token['userid'],
+                    'accountId': 0,
+                    'accessLevel': 0
+                }
+                callback(response)
+                return response
 
         # This token is valid. That's all we need to know. Next, let's check if
         # this user's ID is in your account database bridge:
         if str(token['userid']) not in self.dbm:
-
             # Nope. Let's associate them with a brand new Account object!
             response = {
                 'success': True,
@@ -784,7 +757,6 @@ class RemoteAccountDB(AccountDB):
             return response
 
         else:
-
             # Yep. Let's return their account ID and access level!
             response = {
                 'success': True,
@@ -1554,7 +1526,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.nameGenerator = NameGenerator()
 
         # Temporary HMAC key:
-        self.key = 'bG9sLndlLmNoYW5nZS50aGlzLnRvby5tdWNo'
+       self.key = 'ttjsecretkey3234523423'
 
         # Instantiate our account DB interface:
         if accountDBType == 'developer':
@@ -1622,15 +1594,6 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         sender = self.air.getMsgSender()
 
         # Time to check this login to see if its authentic
-        digest_maker = hmac.new(self.key)
-        digest_maker.update(cookie)
-        serverKey = digest_maker.hexdigest()
-        if serverKey == authKey:
-            # This login is authentic!
-            pass
-        else:
-            # This login is not authentic.
-            self.killConnection(sender, ' ')
 
         if sender >> 32:
             self.killConnection(sender, 'Client is already logged in.')
