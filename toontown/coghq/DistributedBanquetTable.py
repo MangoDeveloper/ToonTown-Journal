@@ -31,7 +31,7 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
     rotateSpeed = 30
     waterPowerSpeed = base.config.GetDouble('water-power-speed', 15)
     waterPowerExponent = base.config.GetDouble('water-power-exponent', 0.75)
-    useNewAnimations = True
+    useNewAnimations = False
     TugOfWarControls = False
     OnlyUpArrow = True
     if OnlyUpArrow:
@@ -197,7 +197,7 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         if self.useNewAnimations:
             diner.loop('sit', fromFrame=i)
         else:
-            diner.pose('landing', 0)
+            diner.pose('sit', 0)
         locator = self.tableGroup.find('**/chair_%d' % (i + 1))
         locatorScale = locator.getNetTransform().getScale()[0]
         correctHeadingNp = locator.attachNewNode('correctHeading')
@@ -403,19 +403,19 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         self.activeIntervals = {}
 
     def clearInterval(self, name, finish = 1):
-        if self.activeIntervals.has_key(name):
+        if name in self.activeIntervals:
             ival = self.activeIntervals[name]
             if finish:
                 ival.finish()
             else:
                 ival.pause()
-            if self.activeIntervals.has_key(name):
+            if name in self.activeIntervals:
                 del self.activeIntervals[name]
         else:
             self.notify.debug('interval: %s already cleared' % name)
 
     def finishInterval(self, name):
-        if self.activeIntervals.has_key(name):
+        if name in self.activeIntervals:
             interval = self.activeIntervals[name]
             interval.finish()
 

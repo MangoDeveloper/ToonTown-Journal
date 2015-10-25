@@ -134,9 +134,9 @@ class OZSafeZoneLoader(SafeZoneLoader):
             self.ladder.setPosHpr(-36.460, -130.828, 0.30, 61, -90, 0)
             self.ladder.find('**/shadow').removeNode()
 
-            self.paintersWantedSign = loader.loadModel('phase_6/models/props/tti_painters_wanted_sign.bam')
-            self.paintersWantedSign.reparentTo(self.constructionSite)
-            self.paintersWantedSign.setPosHpr(-57, -129.613, 0.025, 160, 0, 0)
+            #self.paintersWantedSign = loader.loadModel('phase_6/models/props/tti_painters_wanted_sign.bam')
+            #self.paintersWantedSign.reparentTo(self.constructionSite)
+            #self.paintersWantedSign.setPosHpr(-57, -129.613, 0.025, 160, 0, 0)
 
             self.constructionSign = loader.loadModel('phase_4/models/props/construction_sign.bam')
             self.constructionSign.reparentTo(self.constructionSite)
@@ -376,14 +376,14 @@ class OZSafeZoneLoader(SafeZoneLoader):
             if hasattr(self, 'painterPete'):
                 self.painterPeteSpeech.pause()
                 self.painterPete.delete()
-            self.paintersWantedSign.removeNode()
+           # self.paintersWantedSign.removeNode()
             self.ladder.removeNode()
             self.cone0.cleanup()
             self.cone1.cleanup()
             self.coneModel.removeNode()
             self.constructionSiteBlocker.removeNode()
             self.constructionSite.removeNode()
-            del self.paintersWantedSign
+            #del self.paintersWantedSign
             del self.ladder
             del self.cone0
             del self.cone1

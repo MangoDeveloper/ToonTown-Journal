@@ -46,7 +46,7 @@ def executeHttpRequest(url, **extras):
     timestamp = str(int(time.time()))
     signature = hmac.new(accountServerSecret, timestamp, hashlib.sha256)
     request = urllib2.Request(accountServerEndpoint + url)
-    request.add_header('User-Agent', 'TTI-CSM')
+    request.add_header('User-Agent', 'TTJ-CSM')
     request.add_header('X-CSM-Timestamp', timestamp)
     request.add_header('X-CSM-Signature', signature.hexdigest())
     for k, v in extras.items():
@@ -129,7 +129,7 @@ class DeveloperAccountDB(AccountDB):
                 'success': True,
                 'userId': username,
                 'accountId': 0,
-                'accessLevel': max(600, minAccessLevel)
+                'accessLevel': min(600, minAccessLevel)
             }
             callback(response)
             return response
@@ -163,7 +163,7 @@ class LocalAccountDB(AccountDB):
                 'success': True,
                 'userId': username,
                 'accountId': 0,
-                'accessLevel': max((700 if not self.dbm else 100), minAccessLevel)
+                'accessLevel': max((700 if not self.dbm.keys() else 100), minAccessLevel)
             }
             callback(response)
             return response
@@ -933,7 +933,7 @@ class UnloadAvatarFSM(OperationFSM):
     def enterUnloadAvatar(self):
         channel = self.csm.GetAccountConnectionChannel(self.target)
 
-        # Tell TTIFriendsManager somebody is logging off:
+        # Tell TTJFriendsManager somebody is logging off:
         self.csm.air.friendsManager.toonOffline(self.avId)
 
         # Clear off POSTREMOVE:

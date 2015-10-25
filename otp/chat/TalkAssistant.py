@@ -606,7 +606,7 @@ class TalkAssistant(DirectObject.DirectObject):
 
         message, scrubbed = base.localAvatar.scrubTalk(cleanMessage, modifications)
 
-        base.cr.ttiFriendsManager.sendUpdate('sendTalkWhisper', [receiverAvId, message])
+        base.cr.ttjFriendsManager.sendUpdate('sendTalkWhisper', [receiverAvId, message])
 
     def sendAccountTalk(self, message, receiverAccount):
         error = None

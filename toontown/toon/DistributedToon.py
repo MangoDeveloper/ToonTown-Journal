@@ -382,7 +382,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         ResistanceChat.doEffect(msgIndex, self, nearbyToons)
 
     def d_battleSOS(self, requesterId, sendToId):
-        self.cr.ttiFriendsManager.d_battleSOS(sendToId)
+        self.cr.ttjFriendsManager.d_battleSOS(sendToId)
 
     def battleSOS(self, requesterId):
         avatar = base.cr.identifyAvatar(requesterId)
@@ -492,7 +492,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             return
         if base.config.GetBool('want-sleep-reply-on-regular-chat', 0):
             if base.localAvatar.sleepFlag == 1:
-                base.cr.ttiFriendsManager.d_sleepAutoReply(fromAV)
+                base.cr.ttjFriendsManager.d_sleepAutoReply(fromAV)
         newText, scrubbed = self.scrubTalk(chat, mods)
         self.displayTalk(newText)
         base.talkAssistant.receiveOpenTalk(fromAV, avatarName, fromAC, None, newText)
@@ -514,7 +514,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             return
         if base.localAvatar.sleepFlag == 1:
             if not base.cr.identifyAvatar(fromAV) == base.localAvatar:
-                base.cr.ttiFriendsManager.d_sleepAutoReply(fromAV)
+                base.cr.ttjFriendsManager.d_sleepAutoReply(fromAV)
         newText, scrubbed = self.scrubTalk(chat, mods)
         self.displayTalkWhisper(fromAV, avatarName, chat, mods)
         timestamp = time.strftime('%m-%d-%Y %H:%M:%S', time.localtime())
@@ -542,7 +542,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             return
         if base.localAvatar.sleepFlag == 1:
             if not base.cr.identifyAvatar(fromId) == base.localAvatar:
-                base.cr.ttiFriendsManager.d_sleepAutoReply(fromId)
+                base.cr.ttjFriendsManager.d_sleepAutoReply(fromId)
         chatString = SCDecoders.decodeSCEmoteWhisperMsg(emoteId, handle.getName())
         if chatString:
             self.displayWhisper(fromId, chatString, WTEmote)
@@ -567,7 +567,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             return
         if base.localAvatar.sleepFlag == 1:
             if not base.cr.identifyAvatar(fromId) == base.localAvatar:
-                base.cr.ttiFriendsManager.d_sleepAutoReply(fromId)
+                base.cr.ttjFriendsManager.d_sleepAutoReply(fromId)
         chatString = SCDecoders.decodeSCStaticTextMsg(msgIndex)
         if chatString:
             self.displayWhisper(fromId, chatString, WTQuickTalker)
@@ -586,7 +586,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def whisperSCToontaskTo(self, taskId, toNpcId, toonProgress, msgIndex, sendToId):
         messenger.send('wakeup')
 
-        base.cr.ttiFriendsManager.d_whisperSCToontaskTo(sendToId, taskId,
+        base.cr.ttjFriendsManager.d_whisperSCToontaskTo(sendToId, taskId,
             toNpcId, toonProgress, msgIndex
         )
 

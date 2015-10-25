@@ -34,8 +34,8 @@ def openInjector():
 
 openInjector()
 
-username = os.environ['ttiUsername']
-password = os.environ['ttiPassword']
+username = os.environ['ttjUsername']
+password = os.environ['ttjPassword']
 distribution = ConfigVariableString('distribution', 'dev').getValue()
 
 accountServerEndpoint = ConfigVariableString(
@@ -53,7 +53,7 @@ else:
     if not response['success']:
         print response['reason']
     else:
-        os.environ['TTI_PLAYCOOKIE'] = response['token']
+        os.environ['TTJ_PLAYCOOKIE'] = response['token']
 
         # Start the game:
         import toontown.toonbase.ClientStart
