@@ -32,7 +32,7 @@ from otp.distributed import OtpDoGlobals
 from otp.distributed.OtpDoGlobals import *
 from otp.distributed.TelemetryLimiter import TelemetryLimiter
 from otp.login import HTTPUtil
-from otp.login import LoginTTIAccount
+from otp.login import LoginTTJAccount
 from otp.login.CreateAccountScreen import CreateAccountScreen
 from otp.otpbase import OTPGlobals
 from otp.otpbase import OTPLauncherGlobals
@@ -180,7 +180,7 @@ class OTPClientRepository(ClientRepositoryBase):
         self.accountOldAuth = config.GetBool('%s-account-old-auth' % process,
                                              self.accountOldAuth)
 
-        self.loginInterface = LoginTTIAccount.LoginTTIAccount(self)
+        self.loginInterface = LoginTTJAccount.LoginTTJAccount(self)
 
 
         self.secretChatAllowed = base.config.GetBool('allow-secret-chat', True)

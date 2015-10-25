@@ -65,7 +65,7 @@ class ToontownLauncher(LauncherBase):
             sys.exit()
 
         self.toontownBlueKey = 'TOONTOWN_BLUE'
-        self.toontownPlayTokenKey = 'TTI_PLAYCOOKIE'
+        self.toontownPlayTokenKey = 'TTJ_PLAYCOOKIE'
         self.launcherMessageKey = 'LAUNCHER_MESSAGE'
         self.game1DoneKey = 'GAME1_DONE'
         self.game2DoneKey = 'GAME2_DONE'
