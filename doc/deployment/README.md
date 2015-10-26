@@ -11,3 +11,4 @@ and server to the latest version. The client's files will then be collected, pac
 3. [Patching the client](02-patching.md)
 4. [Writing the files](03-writing.md)
 5. [Uploading the files](04-uploading.md)
+6. [Running the client](05-running.md)
