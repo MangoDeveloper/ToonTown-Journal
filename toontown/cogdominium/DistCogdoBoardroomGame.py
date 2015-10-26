@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.DistCogdoBoardroomGame
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from toontown.cogdominium.DistCogdoLevelGame import DistCogdoLevelGame
 from toontown.cogdominium.CogdoBoardroomGameBase import CogdoBoardroomGameBase

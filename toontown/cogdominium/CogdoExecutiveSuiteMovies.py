@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoExecutiveSuiteMovies
 from pandac.PandaModules import NodePath, Point3, PlaneNode, TextNode
 from direct.interval.IntervalGlobal import *
 from direct.showbase.ShowBase import Plane
@@ -50,8 +51,6 @@ class CogdoExecutiveSuiteIntro(CogdoGameMovie):
         for part in suit.getHeadParts():
             part.hide()
 
-        suit.loop('neutral')
-
     def load(self):
         self.notify.debug('load()')
         CogdoGameMovie.load(self)
@@ -74,7 +73,6 @@ class CogdoExecutiveSuiteIntro(CogdoGameMovie):
         self.toonDNA.newToonFromProperties('dss', 'ss', 'm', 'm', 2, 0, 2, 2, 1, 8, 1, 8, 1, 14)
         self.toonHead = Toon.Toon()
         self.toonHead.setDNA(self.toonDNA)
-        self.makeSuit('sc')
         self.toonHead.getGeomNode().setDepthWrite(1)
         self.toonHead.getGeomNode().setDepthTest(1)
         self.toonHead.loop('neutral')

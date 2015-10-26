@@ -1,9 +1,11 @@
+# Embedded file name: toontown.cogdominium.CogdoMazeGame
 from pandac.PandaModules import Point3, CollisionSphere, CollisionNode
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.PythonUtil import Functor
 from direct.showbase.RandomNumGen import RandomNumGen
 from direct.task.Task import Task
 from toontown.minigame.MazeSuit import MazeSuit
+from toontown.toonbase import ToontownGlobals
 from CogdoGameGatherable import CogdoMemo
 from CogdoMazePlayer import CogdoMazePlayer
 from CogdoMazeLocalPlayer import CogdoMazeLocalPlayer
@@ -49,20 +51,20 @@ class CogdoMazeGame(DirectObject):
         self.lastBalloonTimestamp = None
         difficulty = self.distGame.getDifficulty()
         serialNum = 0
-        for i in xrange(numSuits[0]):
+        for i in range(numSuits[0]):
             suitRng = RandomNumGen(self.distGame.doId + serialNum * 10)
             suit = CogdoMazeBossSuit(serialNum, self.maze, suitRng, difficulty, startTile=suitSpawnSpot[0][i])
             self.addSuit(suit)
             self.guiMgr.mazeMapGui.addSuit(suit.suit)
             serialNum += 1
 
-        for i in xrange(numSuits[1]):
+        for i in range(numSuits[1]):
             suitRng = RandomNumGen(self.distGame.doId + serialNum * 10)
             suit = CogdoMazeFastMinionSuit(serialNum, self.maze, suitRng, difficulty, startTile=suitSpawnSpot[1][i])
             self.addSuit(suit)
             serialNum += 1
 
-        for i in xrange(numSuits[2]):
+        for i in range(numSuits[2]):
             suitRng = RandomNumGen(self.distGame.doId + serialNum * 10)
             suit = CogdoMazeSlowMinionSuit(serialNum, self.maze, suitRng, difficulty, startTile=suitSpawnSpot[2][i])
             self.addSuit(suit)
@@ -169,6 +171,7 @@ class CogdoMazeGame(DirectObject):
         self._movie.end()
         self._movie.unload()
         del self._movie
+        base.camLens.setMinFov(ToontownGlobals.CogdoFov / (4.0 / 3.0))
         for player in self.players:
             self.placePlayer(player)
             if player.toon is localAvatar:
@@ -269,7 +272,7 @@ class CogdoMazeGame(DirectObject):
                     self.players.remove(cPlayer)
                     break
 
-        if player.toon.doId in self.toonId2Player:
+        if self.toonId2Player.has_key(player.toon.doId):
             del self.toonId2Player[player.toon.doId]
         self.guiMgr.mazeMapGui.removeToon(player.toon)
 
@@ -302,7 +305,7 @@ class CogdoMazeGame(DirectObject):
 
     def __updateGags(self):
         remove = []
-        for i in xrange(len(self.gags)):
+        for i in range(len(self.gags)):
             balloon = self.gags[i]
             if balloon.isSingleton():
                 remove.append(i)
@@ -353,7 +356,7 @@ class CogdoMazeGame(DirectObject):
             start = math.radians(random.randint(0, 360))
             step = math.radians(360.0 / numDrops)
             radius = 2.0
-            for i in xrange(numDrops):
+            for i in range(numDrops):
                 angle = start + i * step
                 x = radius * math.cos(angle) + suit.suit.getX()
                 y = radius * math.sin(angle) + suit.suit.getY()
@@ -432,11 +435,12 @@ class CogdoMazeGame(DirectObject):
     def handleLocalToonMeetsGagPickup(self, collEntry):
         if self.localPlayer.equippedGag != None:
             return
-        into = collEntry.getIntoNodePath()
-        if into.hasPythonTag('id'):
-            id = into.getPythonTag('id')
-            self.distGame.d_sendRequestGagPickUp(id)
-        return
+        else:
+            into = collEntry.getIntoNodePath()
+            if into.hasPythonTag('id'):
+                id = into.getPythonTag('id')
+                self.distGame.d_sendRequestGagPickUp(id)
+            return
 
     def hasGag(self, toonId, elapsedTime = 0.0):
         player = self.toonId2Player[toonId]
@@ -445,13 +449,14 @@ class CogdoMazeGame(DirectObject):
     def handleLocalToonMeetsWaterCooler(self, collEntry):
         if self.localPlayer.equippedGag != None:
             return
-        if self.lastBalloonTimestamp and globalClock.getFrameTime() - self.lastBalloonTimestamp < Globals.BalloonDelay:
+        elif self.lastBalloonTimestamp and globalClock.getFrameTime() - self.lastBalloonTimestamp < Globals.BalloonDelay:
             return
-        collNode = collEntry.getIntoNode()
-        waterCooler = self._collNode2waterCooler[collNode]
-        self.lastBalloonTimestamp = globalClock.getFrameTime()
-        self.distGame.d_sendRequestGag(waterCooler.serialNum)
-        return
+        else:
+            collNode = collEntry.getIntoNode()
+            waterCooler = self._collNode2waterCooler[collNode]
+            self.lastBalloonTimestamp = globalClock.getFrameTime()
+            self.distGame.d_sendRequestGag(waterCooler.serialNum)
+            return
 
     def requestUseGag(self, x, y, h):
         self.distGame.b_toonUsedGag(x, y, h)

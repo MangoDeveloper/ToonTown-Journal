@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoGameMessageDisplay
 from direct.interval.FunctionInterval import Func
 from direct.interval.LerpInterval import LerpFunc
 from direct.interval.MetaInterval import Sequence

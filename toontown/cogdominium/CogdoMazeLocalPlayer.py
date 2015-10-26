@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoMazeLocalPlayer
 from pandac.PandaModules import Point3, CollisionNode, CollisionSphere, CollisionHandlerEvent
 from direct.interval.IntervalGlobal import Func, Sequence, Wait
 from direct.showbase.PythonUtil import bound as clamp
@@ -44,7 +45,7 @@ class CogdoMazeLocalPlayer(CogdoMazePlayer):
          'squashed': False,
          'boss': False,
          'minion': False}
-        self.accept('control', self.controlKeyPressed)
+        self.accept(base.JUMP, self.controlKeyPressed)
 
     def destroy(self):
         self.toon.showName()
@@ -132,7 +133,7 @@ class CogdoMazeLocalPlayer(CogdoMazePlayer):
     def enterDone(self):
         CogdoMazePlayer.enterDone(self)
         self._guiMgr.hideQuestArrow()
-        self.ignore('control')
+        self.ignore(base.JUMP)
         self._guiMgr.setMessage('')
         if self.exited == False:
             self.lostMemos()
@@ -183,19 +184,21 @@ class CogdoMazeLocalPlayer(CogdoMazePlayer):
     def removeGag(self):
         if self.equippedGag is None:
             return
-        CogdoMazePlayer.removeGag(self)
-        self.throwPending = False
-        messenger.send(Globals.WaterCoolerShowEventName, [])
-        return
+        else:
+            CogdoMazePlayer.removeGag(self)
+            self.throwPending = False
+            messenger.send(Globals.WaterCoolerShowEventName, [])
+            return
 
     def controlKeyPressed(self):
         if self.game.finished or self.throwPending or self.getCurrentOrNextState() == 'Hit' or self.equippedGag == None:
             return
-        self.throwPending = True
-        heading = self.toon.getH()
-        pos = self.toon.getPos()
-        self.game.requestUseGag(pos.getX(), pos.getY(), heading)
-        return
+        else:
+            self.throwPending = True
+            heading = self.toon.getH()
+            pos = self.toon.getPos()
+            self.game.requestUseGag(pos.getX(), pos.getY(), heading)
+            return
 
     def completeThrow(self):
         self.clearCollisions()

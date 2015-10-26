@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoMazeSuits
 from pandac.PandaModules import Point3, VBase4
 from direct.fsm.FSM import FSM
 from direct.interval.IntervalGlobal import Sequence, Parallel, ActorInterval, Func, Wait, ParticleInterval, Track, LerpColorScaleInterval, LerpScaleInterval, LerpHprInterval
@@ -19,8 +20,10 @@ class CogdoMazeSuit(MazeSuit, FSM, CogdoMazeSplattable):
         MazeSuit.__init__(self, serialNum, maze, randomNumGen, data['cellWalkPeriod'], difficulty, data['dnaName'], startTile=startTile, walkSameDirectionProb=Globals.SuitWalkSameDirectionProb, walkTurnAroundProb=Globals.SuitWalkTurnAroundProb, uniqueRandomNumGen=False, walkAnimName=walkAnimName)
         FSM.__init__(self, 'CogdoMazeSuit')
         CogdoMazeSplattable.__init__(self, self.suit, '%s-%i' % (Globals.SuitCollisionName, self.serialNum), 1.5)
-        if 'scale' in data:
+        if data.has_key('scale'):
             self.suit.setScale(data['scale'])
+        self.suit.nametag3d.stash()
+        self.suit.nametag.destroy()
         self.hp = data['hp']
         self.type = cogdoSuitType
         self.memos = data['memos']
@@ -159,7 +162,7 @@ class CogdoMazeSlowMinionSuit(CogdoMazeSuit):
             return None
         else:
             return self.defaultFilter(request, args)
-        return None
+            return None
 
     def exitAttack(self):
         self._attackIval.pause()
@@ -228,8 +231,8 @@ class CogdoMazeBossSuit(CogdoMazeSuit):
 
     def pickRandomValidSpot(self, r = 5):
         validSpots = []
-        for x in xrange(self.TX - r, self.TX + r):
-            for y in xrange(self.TY - r, self.TY + r):
+        for x in range(self.TX - r, self.TX + r):
+            for y in range(self.TY - r, self.TY + r):
                 if self.maze.isWalkable(x, y):
                     validSpots.append([x, y])
 

@@ -1,11 +1,7 @@
 from direct.showbase import PythonUtil
 from pandac.PandaModules import VBase4
-GameActions = PythonUtil.Enum(('EnterDoor',
- 'RevealDoor',
- 'OpenDoor',
- 'Countdown',
- 'TimeAlert'))
-SecondsUntilTimeout = 4.0 * 60.0
+GameActions = PythonUtil.Enum(('EnterDoor', 'RevealDoor', 'OpenDoor', 'Countdown', 'TimeAlert'))
+SecondsUntilTimeout = 240.0
 SecondsUntilGameEnds = 60.0
 SecondsForTimeAlert = 60.0
 MaxPlayers = 4
@@ -72,7 +68,7 @@ MazeBarriers = ([(7, 34),
 ToonRunSpeed = 11.2
 CameraAngle = 60
 CameraRemoteToonRadius = 6
-CameraMinDistance = 40
+CameraMinDistance = 35
 CameraMaxDistance = 61
 CamCutoffFactor = 1.34
 ToonAnimationInfo = {'hit': ('slip-backward', 2.25, 12)}
@@ -144,26 +140,11 @@ ThrowPlayRate = 1.5
 GagPickupScale = 2.0
 GagPickupCollisionRadius = 1.0
 GagPickupCollisionName = 'PickUpCollision'
-GagColors = ((1.0,
-  0.27,
-  0.27,
-  1.0),
- (1.0,
-  0.66,
-  0.15,
-  1.0),
- (0.31,
-  1.0,
-  0.29,
-  1.0),
- (0.31,
-  0.62,
-  1.0,
-  1.0),
- (0.91,
-  0.32,
-  1.0,
-  1.0))
+GagColors = ((1.0, 0.27, 0.27, 1.0),
+ (1.0, 0.66, 0.15, 1.0),
+ (0.31, 1.0, 0.29, 1.0),
+ (0.31, 0.62, 1.0, 1.0),
+ (0.91, 0.32, 1.0, 1.0))
 GagCollisionName = 'Gag_Collision'
 WaterCoolerTriggerRadius = 2.5
 WaterCoolerTriggerOffset = (0, -1.5, 0)
@@ -171,8 +152,8 @@ WaterCoolerCollisionName = 'WaterCooler_Collision'
 WaterCoolerShowEventName = 'CogdoMazeWaterCooler_Show'
 WaterCoolerHideEventName = 'CogdoMazeWaterCooler_Hide'
 AudioCutoff = 75.0
-MusicFiles = {'normal': 'phase_9/audio/bgm/CHQ_FACT_bg.ogg',
- 'timeRunningOut': 'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg'}
+MusicFiles = {'normal': 'phase_4/audio/FO/FO_ALL_BGM.ogg',
+ 'timeRunningOut': 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'}
 SfxFiles = {'toonHitByDrop': 'phase_5/audio/sfx/tt_s_ara_cmg_toonHit.ogg',
  'toonHit': 'phase_4/audio/sfx/MG_cannon_hit_dirt.ogg',
  'getMemo': 'phase_4/audio/sfx/MG_maze_pickup.ogg',
@@ -192,30 +173,18 @@ SfxFiles = {'toonHitByDrop': 'phase_5/audio/sfx/tt_s_ara_cmg_toonHit.ogg',
 MessageLabelPos = (0.0, 0.0, -0.4)
 MemoGuiPos = (-0.85, 0, -0.9)
 MemoGuiTextScale = 0.1
-MemoGuiTextColor = (0.95,
- 0.95,
- 0,
- 1)
+MemoGuiTextColor = (0.95, 0.95, 0, 1)
 MapGuiBgColor = (0.9, 0.9, 0.9)
-MapGuiFgColor = (0.5,
- 0.5,
- 0.5,
- 1)
-MapGuiPos = (1.05, 0.0, -0.71)
+MapGuiFgColor = (0.5, 0.5, 0.5, 1)
+MapGuiPos = (-0.283, 0, 0.29)
 MapGuiScale = 0.225
 MapGuiSuitMarkerFlashColor = (1.0, 0.0, 0.0)
 MapGuiSuitMarkerSize = 0.075
 MapGuiWaterCoolerMarkerSize = 0.08
 QuestArrowScale = 5
-QuestArrowColor = (1,
- 1,
- 0,
- 1)
+QuestArrowColor = (1, 1, 0, 1)
 CoolerArrowScale = 8
-CoolerArrowColor = (1,
- 1,
- 0,
- 1)
+CoolerArrowColor = (1, 1, 0, 1)
 CoolerArrowZ = 10
 CoolerArrowBounce = 2
 CoolerArrowSpeed = 2
@@ -225,11 +194,5 @@ BossGuiTitleLabelScale = 0.055
 BossCodeFrameWidth = 0.13
 BossCodeFrameGap = 0.005
 BossCodeFrameLabelScale = 0.12
-BossCodeFrameLabelNormalColor = (0,
- 0,
- 0,
- 1)
-BossCodeFrameLabelHighlightColor = (0,
- 0.5,
- 0,
- 1)
+BossCodeFrameLabelNormalColor = (0, 0, 0, 1)
+BossCodeFrameLabelHighlightColor = (0, 0.5, 0, 1)
