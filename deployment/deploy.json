@@ -1,5 +1,5 @@
 {
-  "ftp-address": "167.114.18.121",
+  "ftp-address": "167.114.18.121", # is this is the website or vps address I have no clue
   "ftp-username": "ttjdownload",
   "ftp-password": "",
   "platform": "win32",
@@ -9,8 +9,8 @@
   "version": "1.0.0",
   "version-prefix": "test-v",
   "launcher-version": "1.0.0",
-  "account-server": "gameserver.toontownjourney.com",
-  "client-agent": "167.114.28.238",
+  "account-server": "gameserver.toontownjourney.xyz # same thing as above vps ip to gameserver
+  "client-agent": "158.69.209.131",
   "patcher-includes": [
     "GameData.pyd", 
     "journey.exe", 
