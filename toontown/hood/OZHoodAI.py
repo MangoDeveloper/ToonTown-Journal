@@ -1,12 +1,15 @@
 from toontown.hood import HoodAI
+from panda3d.core import *
 from toontown.toonbase import ToontownGlobals
 from toontown.distributed.DistributedTimerAI import DistributedTimerAI
-from toontown.classicchars import DistributedChipAI
-from toontown.classicchars import DistributedDaleAI
+import string
 from toontown.dna.DNAParser import DNAGroup, DNAVisGroup
 from toontown.safezone.DistributedPicnicBasketAI import DistributedPicnicBasketAI
-from toontown.safezone import DistributedGameTableAI
+from toontown.safezone import DistributedPicnicTableAI
+from toontown.safezone import DistributedChineseCheckersAI
+from toontown.safezone import DistributedCheckersAI
 from toontown.hood import ZoneUtil
+import random
 
 
 class OZHoodAI(HoodAI.HoodAI):
@@ -16,8 +19,6 @@ class OZHoodAI(HoodAI.HoodAI):
                                ToontownGlobals.OutdoorZone)
 
         self.timer = None
-        self.classicCharChip = None
-        self.classicCharDale = None
         self.picnicTables = []
         self.gameTables = []
 
@@ -27,9 +28,6 @@ class OZHoodAI(HoodAI.HoodAI):
         HoodAI.HoodAI.startup(self)
 
         self.createTimer()
-        if simbase.config.GetBool('want-classic-chars', True):
-            if simbase.config.GetBool('want-chip-and-dale', True):
-                self.createClassicChars()
         self.createPicnicTables()
         if simbase.config.GetBool('want-game-tables', True):
             self.createGameTables()
@@ -37,15 +35,6 @@ class OZHoodAI(HoodAI.HoodAI):
     def createTimer(self):
         self.timer = DistributedTimerAI(self.air)
         self.timer.generateWithRequired(self.zoneId)
-
-    def createClassicChars(self):
-        self.classicCharChip = DistributedChipAI.DistributedChipAI(self.air)
-        self.classicCharChip.generateWithRequired(self.zoneId)
-        self.classicCharChip.start()
-        self.classicCharDale = DistributedDaleAI.DistributedDaleAI(self.air, self.classicCharChip.doId)
-        self.classicCharDale.generateWithRequired(self.zoneId)
-        self.classicCharDale.start()
-        self.classicCharChip.setDaleId(self.classicCharDale.doId)
 
     def findPicnicTables(self, dnaGroup, zoneId, area, overrideDNAZone=False):
         picnicTables = []
@@ -62,7 +51,7 @@ class OZHoodAI(HoodAI.HoodAI):
                     picnicTable.generateWithRequired(zoneId)
                     picnicTables.append(picnicTable)
         elif isinstance(dnaGroup, DNAVisGroup) and (not overrideDNAZone):
-            zoneId = ZoneUtil.getTrueZoneId(int(dnaGroup.getName().split(':')[0]), zoneId)
+            zoneId = int(dnaGroup.getName().split(':')[0])
         for i in xrange(dnaGroup.getNumChildren()):
             foundPicnicTables = self.findPicnicTables(
                 dnaGroup.at(i), zoneId, area, overrideDNAZone=overrideDNAZone)
@@ -73,7 +62,6 @@ class OZHoodAI(HoodAI.HoodAI):
         self.picnicTables = []
         for zoneId in self.getZoneTable():
             dnaData = self.air.dnaDataMap.get(zoneId, None)
-            zoneId = ZoneUtil.getTrueZoneId(zoneId, self.zoneId)
             if dnaData.getName() == 'root':
                 area = ZoneUtil.getCanonicalZoneId(zoneId)
                 foundPicnicTables = self.findPicnicTables(
@@ -90,11 +78,13 @@ class OZHoodAI(HoodAI.HoodAI):
                 if 'game_table' in childDnaGroup.getName():
                     pos = childDnaGroup.getPos()
                     hpr = childDnaGroup.getHpr()
-                    gameTable = DistributedGameTableAI.DistributedGameTableAI(simbase.air)
-                    gameTable.setPosHpr(pos[0], pos[1], pos[2], hpr[0], hpr[1], hpr[2])
-                    gameTable.generateWithRequired(zoneId)
+                    nameInfo = childDnaGroup.getName().split('_')
+                    tableIndex = int(childDnaGroup.get_parent().getName().split('_')[-1])
+                    gameTable = DistributedPicnicTableAI.DistributedPicnicTableAI(simbase.air, zoneId, nameInfo[2], pos[0], pos[1], pos[2], hpr[0], hpr[1], hpr[2])
+                    gameTable.setTableIndex(tableIndex)
+                    gameTable.generateOtpObject(simbase.air.districtId, zoneId, ['setX', 'setY', 'setZ', 'setH', 'setP', 'setR'])
         elif isinstance(dnaGroup, DNAVisGroup) and (not overrideDNAZone):
-            zoneId = ZoneUtil.getTrueZoneId(int(dnaGroup.getName().split(':')[0]), zoneId)
+            zoneId = int(dnaGroup.getName().split(':')[0])
         for i in xrange(dnaGroup.getNumChildren()):
             foundGameTables = self.findGameTables(
                 dnaGroup.at(i), zoneId, area, overrideDNAZone=overrideDNAZone)
@@ -105,7 +95,6 @@ class OZHoodAI(HoodAI.HoodAI):
         self.gameTables = []
         for zoneId in self.getZoneTable():
             dnaData = self.air.dnaDataMap.get(zoneId, None)
-            zoneId = ZoneUtil.getTrueZoneId(zoneId, self.zoneId)
             if dnaData.getName() == 'root':
                 area = ZoneUtil.getCanonicalZoneId(zoneId)
                 foundGameTables = self.findGameTables(

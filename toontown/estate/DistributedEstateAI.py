@@ -178,18 +178,57 @@ class DistributedEstateAI(DistributedObjectAI):
         self.sendUpdate('setRentalTimeStamp', [rental])
         
     def b_setRentalTimeStamp(self, rental):
-        self.setRentalTimeStamp(self, rental)
-        self.b_setRentalTimeStamp(self, rental)
+        self.setRentalTimeStamp(rental)
+        self.d_setRentalTimeStamp(rental)
         
     def getRentalTimeStamp(self):
         return self.rentalTimestamp
 
-    def setRentalType(self, todo0):
-        pass
+    def b_setRentalType(self, type):
+        self.d_setRentalType(type)
+        self.setRentalType(type)
+        
+    def d_setRentalType(self, type):
+        self.sendUpdate('setRentalType', [type])
+        
+    def setRentalType(self, type):
+        expirestamp = self.getRentalTimeStamp()
+        if expirestamp == 0:
+            expire = 0
+            
+        else:
+            expire = int(expirestamp - time.time())
+            
+        if expire < 0:
+            self.rentalType = 0
+            self.d_setRentalType(0)
+            self.b_setRentalTimeStamp(0)
+        
+        else:
+            if self.rentalType == type:
+                return
+                
+            self.rentalType = type
+            if self.rentalHandle:
+                self.rentalHandle.destroy()
+                self.rentalHandle = None
+                
+            if self.rentalType == ToontownGlobals.RentalCannon:
+                self.rentalHandle = CannonRental(self)
+                
+            else:
+                self.notify.warning('Unknown rental %s' % self.rentalType)
+                return
+                
+            self.rentalHandle.generateObjects()
         
     def getRentalType(self):
-        return 0
-
+        return self.rentalType
+        
+    def rentItem(self, rentType, duration):
+        self.b_setRentalTimeStamp(time.time() + duration * 60)
+        self.b_setRentalType(rentType)
+        
     def setSlot0ToonId(self, id):
         self.toons[0] = id
         
@@ -360,9 +399,43 @@ class DistributedEstateAI(DistributedObjectAI):
         self.setIdList(idList)
         self.d_setIdLst(idList)
         
-    def completeFlowerSale(self, todo0):
-        pass
-
+    def completeFlowerSale(self, flag):
+        if not flag:
+            return
+            
+        avId = self.air.getAvatarIdFromSender()
+        av = self.air.doId2do.get(avId)
+        if not av:
+            return
+            
+        collection = av.flowerCollection
+        
+        earning = 0
+        newSpecies = 0
+        for flower in av.flowerBasket.getFlower():
+            if collection.collectFlower(flower) == GardenGlobals.COLLECT_NEW_ENTRY:
+                newSpecies += 1
+                
+            earning += flower.getValue()
+        
+        av.b_setFlowerBasket([], [])
+        av.d_setFlowerCollection(*av.flowerCollection.getNetLists())
+        av.addMoney(earning)
+        
+        oldSpecies = len(collection) - newSpecies
+        dt = abs(len(collection) // 10 - oldSpecies // 10)
+        if dt:
+            self.notify.info('%d is getting a gardening trophy!' % avId)
+            
+            maxHp = av.getMaxHp()
+            maxHp = min(ToontownGlobals.MaxHpLimit, maxHp + dt)
+            av.b_setMaxHp(maxHp)
+            av.toonUp(maxHp)
+            
+            self.sendUpdate('awardedTrophy', [avId])
+        
+        av.b_setGardenTrophies(range(len(collection) // 10))
+    
     def awardedTrophy(self, todo0):
         pass
 

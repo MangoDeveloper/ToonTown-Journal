@@ -73,17 +73,7 @@ class FireworkShowMixin:
             preShow = self.preShow(eventId, songId, t)
             postShow = self.postShow(eventId)
             beginFireworkShow = Func(self.beginFireworkShow, max(0, t), root)
-
-            # TODO: Fix this properly. Hack-fixed for July 4th
-            delay = Wait(max(0, self.fireworkShow.getShowDuration() - max(0, t)))
-            if eventId == JULY4_FIREWORKS:
-                delay = Wait(max(0, self.fireworkShow.getShowDuration() - max(0, t)) - 9.5)
-            elif eventId == NEWYEARS_FIREWORKS:
-                delay = Wait(max(0, self.fireworkShow.getShowDuration() - max(0, t)) + 1.0)
-            elif eventId == PartyGlobals.FireworkShows.Summer:
-                delay = Wait(max(0, self.fireworkShow.getShowDuration() - max(0, t)) - 5.0)
-
-            self.currentShow = Sequence(preShow, beginFireworkShow, delay, postShow)
+            self.currentShow = Sequence(preShow, beginFireworkShow, Wait(max(0, self.fireworkShow.getShowDuration() - max(0, t))), postShow)
             self.currentShow.start()
         return
 

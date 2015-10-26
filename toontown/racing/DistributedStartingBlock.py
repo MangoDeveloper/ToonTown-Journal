@@ -21,9 +21,6 @@ from toontown.racing.Kart import Kart
 from toontown.racing.KartShopGlobals import KartGlobals
 from toontown.racing import RaceGlobals
 from toontown.toontowngui.TTDialog import TTGlobalDialog
-from toontown.toontowngui.TeaserPanel import TeaserPanel
-if (__debug__):
-    import pdb
 
 class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedStartingBlock')
@@ -118,7 +115,7 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
             self.setPad(self.cr.doId2do[padDoId])
         else:
             self.acceptOnce('generate-%d' % padDoId, self.setPad)
-        
+
     def setPad(self, pad):
         self.kartPad = pad
         self.kartPad.addStartingBlock(self)
@@ -148,7 +145,7 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
             def handleEnterRequest(self = self):
                 self.ignore('stoppedAsleep')
                 if hasattr(self.dialog, 'doneStatus') and self.dialog.doneStatus == 'ok':
-                    self.d_requestEnter(base.cr.isPaid())
+                    self.d_requestEnter()
                 elif self.cr and not self.isDisabled():
                     self.cr.playGame.getPlace().setState('walk')
                 else:
@@ -173,9 +170,9 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
         self.notify.debugStateCall(self)
         self.sendUpdate('movieFinished', [])
 
-    def d_requestEnter(self, paid):
+    def d_requestEnter(self):
         self.notify.debugStateCall(self)
-        self.sendUpdate('requestEnter', [paid])
+        self.sendUpdate('requestEnter')
 
     def d_requestExit(self):
         self.notify.debugStateCall(self)
@@ -219,8 +216,6 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
             self.dialog = TTGlobalDialog(msg, doneEvent, 2)
             self.dialog.accept(doneEvent, handleTicketError)
             self.accept('stoppedAsleep', handleTicketError)
-        elif errCode == KartGlobals.ERROR_CODE.eUnpaid:
-            self.dialog = TeaserPanel(pageName='karting', doneFunc=handleTicketError)
         else:
             self.cr.playGame.getPlace().setState('walk')
 
@@ -622,7 +617,7 @@ class DistributedViewingBlock(DistributedStartingBlock):
             def handleEnterRequest(self = self):
                 self.ignore('stoppedAsleep')
                 if hasattr(self.dialog, 'doneStatus') and self.dialog.doneStatus == 'ok':
-                    self.d_requestEnter(base.cr.isPaid())
+                    self.d_requestEnter()
                 else:
                     self.cr.playGame.getPlace().setState('walk')
                 self.dialog.ignoreAll()

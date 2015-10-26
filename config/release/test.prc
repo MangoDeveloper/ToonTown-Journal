@@ -6,10 +6,15 @@ server-version TTJ-1.0
 client-agents 8
 shard-low-pop 100
 shard-mid-pop 150
-smooth-min-suggest-resync 
 # Core features:
 want-housing #t
 want-pets #f
+want-game-tables #t
+want-find-four #t
+want-chinese-checkers #t
+want-checkers #t
+want-gifting #t
+
 want-parties #f
 want-cogdominiums #f
 want-achievements #f

@@ -124,8 +124,34 @@ class GSHoodAI(HoodAI.HoodAI):
             for viewingBlock in foundViewingBlocks:
                 viewPad.addStartingBlock(viewingBlock)
 
-    def findLeaderBoards(self, dnaData, zoneId):
-        return []  # TODO
+    def findLeaderBoards(self, dnaGroup, zoneId):
+        if not self.air.wantKarts:
+            return
+
+        leaderBoards = []
+
+        if isinstance(dnaGroup, DNAGroup) and ('leader_board' in dnaGroup.getName()):
+            for i in xrange(dnaGroup.getNumChildren()):
+                childDnaGroup = dnaGroup.at(i)
+
+                if 'leaderBoard' in childDnaGroup.getName():
+                    pos = childDnaGroup.getPos()
+                    hpr = childDnaGroup.getHpr()
+                    nameInfo = childDnaGroup.getName().split('_')
+
+                    if nameInfo[1] in RaceGlobals.LBSubscription:
+                        leaderBoard = DistributedLeaderBoardAI(simbase.air, RaceGlobals.LBSubscription[nameInfo[1]])
+                        leaderBoard.setPosHpr(pos[0], pos[1], pos[2], hpr[0], hpr[1], hpr[2])
+                        leaderBoard.generateWithRequired(zoneId)
+                        leaderBoards.append(leaderBoard)
+        elif isinstance(dnaGroup, DNAVisGroup):
+            zoneId = int(dnaGroup.getName().split(':')[0])
+
+        for i in xrange(dnaGroup.getNumChildren()):
+            foundLeaderBoards = self.findLeaderBoards(dnaGroup.at(i), zoneId)
+            leaderBoards.extend(foundLeaderBoards)
+
+        return leaderBoards
 
     def createLeaderBoards(self):
         self.leaderBoards = []

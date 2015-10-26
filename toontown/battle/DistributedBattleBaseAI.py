@@ -621,15 +621,9 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             self.notify.debug('requestAdjust() - in state: %s' % cstate)
 
     def __handleUnexpectedExit(self, avId):
-        #TODO: fixme
-        #disconnectCode = self.air.getAvatarDisconnectReason(avId)
-        disconnectCode = "placeHolder dc code, need self.air.getAvatarDisconnectReason(avId)"
-        self.notify.warning('toon: %d exited unexpectedly, reason %s' % (avId, disconnectCode))
-        #userAborted = disconnectCode == ToontownGlobals.DisconnectCloseWindow
-        #TODO: fixme
-        userAborted = False
+        userAborted = self.air.timeManager.getDisconnectReason(avId) == ToontownGlobals.DisconnectCloseWindow
         self.__handleSuddenExit(avId, userAborted)
-
+        
     def __handleSuddenExit(self, avId, userAborted):
         self.__removeToon(avId, userAborted=userAborted)
         if self.fsm.getCurrentState().getName() == 'PlayMovie' or self.fsm.getCurrentState().getName() == 'MakeMovie':
