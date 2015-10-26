@@ -497,7 +497,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
                 self.toon.sendCurrentPosition()
             self.doHeadScale(self.toon, 1.75)
             self.toon.setShear(0, 0, 0)
-        NametagGlobals.setOnscreenChatForced(1)
+        NametagGlobals.setForceOnscreenChat(True)
         if self.localVehicle:
             camera.reparentTo(self.cameraNode)
             camera.setPosHpr(0, -33, 16, 0, -10, 0)
@@ -537,8 +537,8 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
             self.toon.reparentTo(render)
             self.toon.loop('neutral')
             self.toon.startSmooth()
-        NametagGlobals.setOnscreenChatForced(0)
-        base.camLens.setMinFov(settings['fov']/(4./3.))
+        NametagGlobals.setForceOnscreenChat(False)
+        base.camLens.setMinFov(ToontownGlobals.DefaultCameraFov/(4./3.))
 
     def doHeadScale(self, model, scale):
         if scale == None:
@@ -683,7 +683,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
         newCameraPos = Point3(0, -25, 16)
         newCameraFov = 70
         turboDuration = 3
-        startFov = settings['fov']/(4./3.)
+        startFov = ToontownGlobals.DefaultCameraFov/(4./3.)
         if self.cameraTrack:
             self.cameraTrack.pause()
         cameraZoomIn = Parallel(LerpPosInterval(camera, 2, newCameraPos), LerpFunc(base.camLens.setMinFov, fromData=startFov, toData=newCameraFov, duration=2))
@@ -989,7 +989,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
 
     def enableControls(self):
         self.canRace = True
-        self.accept(base.JUMP, self.__controlPressed)
+        self.accept('control', self.__controlPressed)
         self.accept('control-up', self.__controlReleased)
         self.accept('InputState-forward', self.__upArrow)
         self.accept('InputState-reverse', self.__downArrow)
@@ -999,7 +999,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
     def disableControls(self):
         self.arrowVert = 0
         self.arrowHorz = 0
-        self.ignore(base.JUMP)
+        self.ignore('control')
         self.ignore('control-up')
         self.ignore('tab')
         self.ignore('InputState-forward')
