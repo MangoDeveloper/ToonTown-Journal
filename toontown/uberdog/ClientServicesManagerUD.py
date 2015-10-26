@@ -4,11 +4,12 @@ from direct.distributed.DistributedObjectGlobalUD import DistributedObjectGlobal
 from direct.distributed.PyDatagram import *
 from direct.fsm.FSM import FSM
 import hashlib
-import hmac
 import json
 from pandac.PandaModules import *
 import time
 import urllib2
+import datetime
+from datetime import datetime
 
 from otp.ai.MagicWordGlobal import *
 from otp.distributed import OtpDoGlobals
@@ -21,17 +22,30 @@ from toontown.toonbase import TTLocalizer
 # allows local hosted and developer builds of the game to run without it:
 accountDBType = simbase.config.GetString('accountdb-type', 'developer')
 
+if accountDBType == 'mongodb':
+    import pymongo
+    import bcrypt
+    from pymongo import MongoClient
+
+if accountDBType == 'mongodev':
+    import pymongo
+    from pymongo import MongoClient
+
+if accountDBType == 'mysqldb':
+    from passlib.hash import bcrypt
+    import mysql.connector
+
 # Sometimes we'll want to force a specific access level, such as on the
 # developer server:
 minAccessLevel = simbase.config.GetInt('min-access-level', 100)
 
 accountServerEndpoint = simbase.config.GetString(
-    'account-server-endpoint', 'https://toontowninfinite.com/api/')
+    'account-server-endpoint', 'https://toontownjourney.com/api/')
 accountServerSecret = 'ttjsecretkey3234523423'
-
+ 
 def rejectConfig(issue, securityIssue=True, dumb=True):
-    print
-    print
+   # print
+    #print
     print "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '.'
     if securityIssue:
         print 'ClientServicesManagerUD: This appears to be an accidential security issue while connecting.'
@@ -42,25 +56,29 @@ def rejectConfig(issue, securityIssue=True, dumb=True):
 http = HTTPClient()
 http.setVerifySsl(0)
 
-def executeHttpRequest(url, **extras):
-    timestamp = str(int(time.time()))
-    signature = hmac.new(accountServerSecret, timestamp, hashlib.sha256)
-    request = urllib2.Request(accountServerEndpoint + url)
-    request.add_header('User-Agent', 'TTJ-CSM')
-    request.add_header('X-CSM-Timestamp', timestamp)
-    request.add_header('X-CSM-Signature', signature.hexdigest())
-    for k, v in extras.items():
-        request.add_header('X-CSM-' + k, v)
-    try:
-        return urllib2.urlopen(request).read()
-    except:
-        return None
 
+def executeHttpRequest(url, **extras):
+    print "executeHttpRequest: ", accountDBType, url, extras
+
+    if accountDBType == 'remote':
+        timestamp = str(int(time.time()))
+        signature = hmac.new(accountServerSecret, timestamp, hashlib.sha256)
+        request = urllib2.Request(accountServerEndpoint + url)
+        request.add_header('User-Agent', 'TTJ-CSM')
+        request.add_header('X-CSM-Timestamp', timestamp)
+        request.add_header('X-CSM-Signature', signature.hexdigest())
+        for k, v in extras.items():
+            request.add_header('X-CSM-' + k, v)
+        try:
+            return urllib2.urlopen(request).read()
+        except:
+            return None
+
+    return None;
 
 blacklist = executeHttpRequest('names/blacklist.json')
 if blacklist:
     blacklist = json.loads(blacklist)
-
 
 def judgeName(name):
     if not name:
@@ -77,7 +95,7 @@ def judgeName(name):
 
 
 # --- ACCOUNT DATABASES ---
-# These classes make up the available account databases for Toontown Infinite.
+# These classes make up the available account databases for Toontown fellowship.
 # Databases with login tokens use the PyCrypto module for decrypting them.
 # DeveloperAccountDB is a special database that accepts a username, and assigns
 # each user with 600 access automatically upon login.
@@ -104,6 +122,12 @@ class AccountDB:
 
     def lookup(self, username, callback):
         pass  # Inheritors should override this.
+
+    def persistMessage(self, category, description, sender, receiver):
+        print ['persistMessage', category, description, sender, receiver]
+
+    def persistChat(self, sender, message, channel):
+        pass
 
     def storeAccountID(self, userId, accountId, callback):
         self.dbm[str(userId)] = str(accountId)  # semidbm only allows strings.
@@ -150,7 +174,6 @@ class DeveloperAccountDB(AccountDB):
 # give the user an access level of 600. Instead, the first user that is created
 # gets 700 access, and every user created afterwards gets 100 access:
 
-
 class LocalAccountDB(AccountDB):
     notify = directNotify.newCategory('LocalAccountDB')
 
@@ -165,6 +188,7 @@ class LocalAccountDB(AccountDB):
                 'accountId': 0,
                 'accessLevel': max((700 if not self.dbm.keys() else 100), minAccessLevel)
             }
+
             callback(response)
             return response
 
@@ -178,7 +202,502 @@ class LocalAccountDB(AccountDB):
             }
             callback(response)
             return response
+            
+class MongoDevAccountDB(AccountDB):
+    #This class is used for development, and NOT production.
+    # params:
+    #    mongodb-url   how to connect to the mongodb
+    #    mongodb-name  What db to use
+    #
+    # dependencies:
+    #    pip install PyMongo    
 
+    notify = directNotify.newCategory('MongoAccountDB')
+
+    def __init__(self, csm):
+        self.csm = csm
+
+        dburltest = simbase.config.GetString('mongodb-url', 'mongodb://localhost:27017')
+        self.client = MongoClient(dburltest)
+
+        dbnametest = simbase.config.GetString('mongodb-name', 'test')
+        self.db = self.client[dbnametest]
+
+        self.accounts = self.db.accountdb
+
+    def lookup(self, username, callback):
+        if accounts.count() == 0:
+            account = { "username": username, "accountId": 0, "accessLevel": 700}
+            accounts.insert(account)
+            response = {
+              'success': True,
+              'userId': username,
+              'accountId': 0,
+              'accessLevel': 700
+            }
+            callback(response)
+            return response
+
+        account = accounts.find_one({"username": username}) 
+
+        if account:
+            response = {
+              'success': True,
+              'userId': username,
+              'accountId': int(account["accountId"]),
+              'accessLevel': int(account["accessLevel"])
+            }
+            callback(response)
+            return response
+            
+
+        account = { "username": username, "accountId": 0, "accessLevel": 600}
+        accounts.insert(account)
+
+        response = {
+          'success': True,
+          'userId': username,
+          'accountId': 0,
+          'accessLevel': int(account["accessLevel"])
+        }
+
+        callback(response)
+        return response
+
+    def storeAccountID(self, userId, accountId, callback):
+        account = accounts.find_one({"username": userId})
+        if account:
+            accounts.update({"username": userId}, {"$set": {"accountId": accountId}})
+            callback(True)
+        else:
+            self.notify.warning('Unable to associate user %s with account %d!' % (userId, accountId))
+            callback(False)
+            
+# Mongo implementation of the AccountDB
+#
+# This was never used in production and might possibly not work.
+# Still, it is a good starting point.  This has a similar behavior to
+# DeveloperAccountDB and LocalAccountDB in that it automatically
+# registers new users, the first user that is created
+# gets 700 access, and every user created afterwards gets 100 access.
+#
+# params:
+#    mongodb-url   how to connect to the mongodb
+#    mongodb-name  What db to use
+#
+# dependencies:
+#    pip install py-bcrypt PyMongo
+
+class MongoAccountDB(AccountDB):
+    notify = directNotify.newCategory('MongoAccountDB')
+
+    def get_hashed_password(self, plain_text_password):
+        return bcrypt.encrypt(plain_text_password)
+ 
+    def check_password(self, plain_text_password, hashed_password):
+        return bcrypt.verify(plain_text_password, hashed_password)
+
+    def __init__(self, csm):
+        self.csm = csm
+
+        dburl = simbase.config.GetString('mongodb-url', 'mongodb://localhost:21021')
+        self.client = MongoClient(dburl)
+
+        dbname = simbase.config.GetString('mongodb-name', 'test')
+        self.db = self.client[dbname]
+
+        self.accounts = self.db.accountdb
+        self.nameStatus = self.db.nameStatus
+
+    def addNameRequest(self, avId, name):
+        self.nameStatus.insert( { "avId": avId, "name": name, "status": "PENDING" } )
+        return 'Success'
+
+    def getNameStatus(self, avId):
+        stat = self.nameStatus[avId]
+        if stat:
+            return stat["status"]
+        return 'REJECTED'
+
+    def removeNameRequest(self, avId):
+        self.nameStatus.remove( { "avId": avId } )
+        return 'Success'
+
+    def lookup(self, token, callback):
+        try:
+            tokenList = token.split(':')
+    
+            if len(tokenList) != 2:
+                response = {
+                  'success': False,
+                  'reason': "invalid password format"
+                }
+                callback(response)
+                return response
+
+            username = tokenList[0]
+            password = tokenList[1]
+
+            # special case for first user
+            if accounts.count() == 0:
+                account = { "username": username, "password": self.get_hashed_password(password), "accountId": 0, "accessLevel": 700}
+                accounts.insert(account)
+                response = {
+                  'success': True,
+                  'userId': username,
+                  'accountId': 0,
+                  'accessLevel': 700
+                }
+                callback(response)
+                return response
+
+            account = accounts.find_one({"username": username})
+
+            if account:
+                if not self.check_password(password, account["password"]):
+                    response = {
+                      'success': False,
+                      'reason': "invalid password"
+                    }
+                    callback(response)
+                    return response
+
+                response = {
+                    'success': True,
+                    'userId': username,
+                    'accountId': int(account["accountId"]),
+                    'accessLevel': int(account["accessLevel"])
+                }
+                callback(response)
+                return response
+
+            account = { "username": username, "password": self.get_hashed_password(password), "accountId": 0, "accessLevel": max(100, minAccessLevel)}
+            accounts.insert(account)
+
+            response = {
+              'success': True,
+              'userId': username,
+              'accountId': 0,
+              'accessLevel': int(account["accessLevel"])
+            }
+
+            callback(response)
+            return response
+                
+        except:
+            self.notify.warning('Could not decode the provided token!')
+            response = {
+                'success': False,
+                'reason': "Can't decode this token."
+            }
+            callback(response)
+            return response
+
+    def storeAccountID(self, userId, accountId, callback):
+        account = accounts.find_one({"username": userId})
+        if account:
+            accounts.update({"username": userId}, {"$set": {"accountId": accountId}})
+            callback(True)
+        else:
+            self.notify.warning('Unable to associate user %s with account %d!' % (userId, accountId))
+            callback(False)
+
+# MySQL implementation of the AccountDB
+#
+# params:
+#        'mysql-username' =>  'toontown'
+#        'mysql-password' =>  'password'
+#        'mysql-db' =>  'toontown'
+#        'mysql-host' =>  '127.0.0.1'
+#        'mysql-port' =>  3306
+#        'mysql-ssl' =>  False
+#        'mysql-ssl-ca' =>  ''
+#        'mysql-ssl-cert' =>  ''
+#        'mysql-ssl-key' =>  ''
+#        'mysql-ssl-verify-cert' =>  False
+#        'mysql-auto-new-account' =>  True
+#
+
+# dependencies:
+#    apt-get install python-mysqldb
+#    pip install passlib
+
+class MySQLAccountDB(AccountDB):
+    notify = directNotify.newCategory('MySQLAccountDB')
+
+    def get_hashed_password(self, plain_text_password):
+        newpass = bcrypt.encrypt(plain_text_password)
+        return newpass
+
+    def check_password(self, plain_text_password, hashed_password):
+        try:
+            return bcrypt.verify(plain_text_password, hashed_password)
+        except:
+            print ("bad hash: ", (plain_text_password, hashed_password))
+            return False
+
+    def create_database(self, cursor):
+      try:
+          cursor.execute(
+            "CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(self.db))
+      except mysql.connector.Error as err:
+          print("Failed creating database: {}".format(err))
+          exit(1)
+
+    def auto_migrate_semidbm(self):
+        self.cur.execute(self.count_account)
+        row = self.cur.fetchone()
+        if row[0] != 0:
+            return
+
+        filename = simbase.config.GetString(
+            'account-bridge-filename', 'account-bridge')
+        dbm = semidbm.open(filename, 'c')
+
+        for account in dbm.keys():
+            accountid = dbm[account]
+            print "%s maps to %s"%(account, accountid)
+            self.cur.execute(self.add_account, (account,  "", accountid, 0))
+        self.cnx.commit()
+        dbm.close()
+
+    def __init__(self, csm):
+        self.csm = csm
+
+        # Just a few configuration options
+        self.username = simbase.config.GetString('mysql-username', 'toontown')
+        self.password = simbase.config.GetString('mysql-password', 'password')
+        self.db = simbase.config.GetString('mysql-db', 'toontown')
+        self.host = simbase.config.GetString('mysql-host', '127.0.0.1')
+        self.port = simbase.config.GetInt('mysql-port', 3306)
+        self.ssl = simbase.config.GetBool('mysql-ssl', False)
+        self.ssl_ca = simbase.config.GetString('mysql-ssl-ca', '')
+        self.ssl_cert = simbase.config.GetString('mysql-ssl-cert', '')
+        self.ssl_key = simbase.config.GetString('mysql-ssl-key', '')
+        self.ssl_verify_cert = simbase.config.GetBool('mysql-ssl-verify-cert', False)
+        self.auto_new_account = simbase.config.GetBool('mysql-auto-new-account', True)
+        self.auto_migrate = True
+
+        # Lets try connection to the db
+        if self.ssl:
+            self.config = {
+              'user': self.username,
+              'password': self.password,
+              'db': self.db,
+              'host': self.host,
+              'port': self.port,
+              'client_flags': [ClientFlag.SSL],
+              'ssl_ca': self.ssl_ca,
+              'ssl_cert': self.ssl_cert,
+              'ssl_key': self.ssl_key,
+              'ssl_verify_cert': self.ssl_verify_cert
+            }
+        else:
+            self.config = {
+              'user': self.username,
+              'password': self.password,
+              'db': self.db,
+              'host': self.host,
+              'port': self.port,
+            }
+
+        self.cnx = mysql.connector.connect(**self.config)
+        self.cur = self.cnx.cursor(buffered=True)
+
+        # First we try to change the the particular db using the
+        # database property.  If there is an error, we try to
+        # create the database and then switch to it.
+
+        try:
+            self.cnx.database = self.db
+        except mysql.connector.Error as err:
+            if err.errno == mysql.connector.errorcode.ER_BAD_DB_ERROR:
+                self.create_database(self.cur)
+                self.cnx.database = self.db
+            else:
+                print(err)
+                exit(1)
+
+        self.count_account = ("SELECT COUNT(*) from Accounts")
+        self.select_account = ("SELECT password,accountId,accessLevel,status,canPlay,banRelease FROM Accounts where username = %s")
+        self.add_account = ("REPLACE INTO Accounts (username, password, accountId, accessLevel, rawPassword) VALUES (%s, %s, %s, %s)")
+        self.update_avid = ("UPDATE Accounts SET accountId = %s where username = %s")
+        self.count_avid = ("SELECT COUNT(*) from Accounts WHERE username = %s")
+        self.insert_avoid = ("INSERT IGNORE Toons SET accountId = %s,toonid=%s")
+        self.insert_message = ("INSERT IGNORE Messages SET time=%s,category=%s,description=%s,sender=%s,receiver=%s")
+        self.insert_chat = ("INSERT IGNORE ChatAudit SET time=%s,sender=%s,message=%s,channel=%s")
+
+        self.select_name = ("SELECT status FROM NameApprovals where avId = %s")
+        self.add_name_request = ("REPLACE INTO NameApprovals (avId, name, status) VALUES (%s, %s, %s)")
+        self.delete_name_query = ("DELETE FROM NameApprovals where avId = %s")
+
+        if self.auto_migrate:
+            self.auto_migrate_semidbm()
+
+    def __del__(self):
+        try:
+            this.cur.close()
+        except:
+            pass
+
+        try:
+            this.cnx.close()
+        except:
+            pass
+
+    def persistMessage(self, category, description, sender, receiver):
+        self.cur.execute(self.insert_message, (int(time.time()), str(category), description, sender, receiver))
+        self.cnx.commit()
+
+    def persistChat(self, sender, message, channel):
+        self.cur.execute(self.insert_chat, (int(time.time()), sender, message, channel))
+        self.cnx.commit()
+
+    def addNameRequest(self, avId, name):
+       self.cur.execute(self.add_name_request, (avId, name, "PENDING"))
+       self.cnx.commit()
+       return 'Success'
+        
+    def getNameStatus(self, avId):
+        self.cur.execute(self.select_name, (avId,))
+        row = self.cur.fetchone()
+        if row:
+            return row[0]
+        return "REJECTED"
+
+    def removeNameRequest(self, avId):
+        self.cur.execute(self.delete_name_query, (avId,))
+        return 'Success'
+
+    def __handleRetrieve(self, dclass, fields):
+        if dclass != self.csm.air.dclassesByName['AccountUD']:
+            return
+        self.account = fields
+        if self.account:
+            self.avList = self.account['ACCOUNT_AV_SET']
+            print self.avList
+            for avId in self.avList:
+                if avId:
+                    self.cur.execute(self.insert_avoid, (self.accountid, avId))
+                    self.cnx.commit()
+
+    def lookup(self, token, callback):
+        try:
+            tokenList = token.split(':')
+
+            if len(tokenList) != 2:
+                response = {
+                  'success': False,
+                  'reason': "invalid password format"
+                }
+                print response
+                callback(response)
+                return response
+
+            username = tokenList[0]
+            password = tokenList[1]
+
+            self.cur.execute(self.select_account, (username,))
+            row = self.cur.fetchone()
+            self.cnx.commit()
+
+            if row:
+                if row[4] == 0 and int(row[5]) > time.time():
+                    response = {
+                      'success': False,
+                      'reason': "banned"
+                    }
+                    callback(response)
+                    return response
+                if not self.check_password(password, row[0]):
+                    response = {
+                      'success': False,
+                      'reason': "invalid password"
+                    }
+                    callback(response)
+                    return response
+
+                if row[1] != 0:
+                    self.account = None
+                    self.accountid = row[1]
+                    self.csm.air.dbInterface.queryObject(self.csm.air.dbId,  self.accountid, self.__handleRetrieve)
+
+                response = {
+                    'success': True,
+                    'userId': username,
+                    'accessLevel': int(row[2]),
+                    'accountId': row[1]
+                }
+
+                print response
+                callback(response)
+                return response
+            if self.auto_new_account:
+                self.cur.execute(self.add_account, (username, self.get_hashed_password(password), 0, max(100, minAccessLevel), 2))
+                self.cnx.commit()
+
+                response = {
+                  'success': True,
+                  'userId': username,
+                  'accountId': 0,
+                  'accessLevel': max(100, minAccessLevel)
+                }
+
+                callback(response)
+                return response
+            else:
+                response = {
+                'success': False,
+                'reason': "unknown user"
+                } 
+            print response
+            callback(response)
+            return response
+
+        except mysql.connector.Error as err:
+            print("mysql exception {}".format(err))
+            response = {
+                'success': False,
+                'reason': "Can't decode this token."
+            }
+            print response
+            callback(response)
+            return response
+#        except:
+#            print "exception..."
+#            self.notify.warning('Could not decode the provided token!')
+#            response = {
+#                'success': False,
+#                'reason': "Can't decode this token."
+#            }
+#            print response
+#            callback(response)
+#            return response
+
+    def storeAccountID(self, userId, accountId, callback):
+        self.cur.execute(self.count_avid, (userId,))
+        row = self.cur.fetchone()
+    
+        if row[0] >= 1:
+            self.cur.execute(self.update_avid, (accountId, userId))
+            self.cnx.commit()
+            callback(True)
+        else:
+            print ("storeAccountId", self.update_avid, (aceountId, userId))
+            self.notify.warning('Unable to associate user %s with account %d!' % (userId, accountId))
+            callback(False)
+
+class RemoteAccountDB(AccountDB):
+    notify = directNotify.newCategory('RemoteAccountDB')
+
+    def addNameRequest(self, avId, name):
+        return executeHttpRequest('names/append', ID=str(avId), Name=name)
+
+    def getNameStatus(self, avId):
+        return executeHttpRequest('names/status/?Id=' + str(avId))
+
+    def removeNameRequest(self, avId):
+        return executeHttpRequest('names/remove', ID=str(avId))
 
 class RemoteAccountDB(AccountDB):
     notify = directNotify.newCategory('RemoteAccountDB')
@@ -382,13 +901,26 @@ class LoginAccountFSM(OperationFSM):
         datagram.addChannel(self.csm.GetAccountConnectionChannel(self.accountId))
         self.csm.air.send(datagram)
 
-        # Add this connection to extra channels which may be useful:
-        if self.accessLevel > 100:
-            datagram = PyDatagram()
-            datagram.addServerHeader(self.target, self.csm.air.ourChannel,
-                                     CLIENTAGENT_OPEN_CHANNEL)
-            datagram.addChannel(OtpDoGlobals.OTP_STAFF_CHANNEL)
-            self.csm.air.send(datagram)
+      # Subscribe to any "staff" channels that the account has access to.
+        access = self.account.get('ADMIN_ACCESS', 0)
+        if access >= 200:
+            # Subscribe to the moderator channel.
+            dg = PyDatagram()
+            dg.addServerHeader(self.target, self.csm.air.ourChannel, CLIENTAGENT_OPEN_CHANNEL)
+            dg.addChannel(OtpDoGlobals.OTP_MOD_CHANNEL)
+            self.csm.air.send(dg)
+        if access >= 400:
+            # Subscribe to the administrator channel.
+            dg = PyDatagram()
+            dg.addServerHeader(self.target, self.csm.air.ourChannel, CLIENTAGENT_OPEN_CHANNEL)
+            dg.addChannel(OtpDoGlobals.OTP_ADMIN_CHANNEL)
+            self.csm.air.send(dg)
+        if access >= 500:
+            # Subscribe to the system administrator channel.
+            dg = PyDatagram()
+            dg.addServerHeader(self.target, self.csm.air.ourChannel, CLIENTAGENT_OPEN_CHANNEL)
+            dg.addChannel(OtpDoGlobals.OTP_SYSADMIN_CHANNEL)
+            self.csm.air.send(dg)
 
         # Now set their sender channel to represent their account affiliation:
         datagram = PyDatagram()
@@ -933,7 +1465,7 @@ class UnloadAvatarFSM(OperationFSM):
     def enterUnloadAvatar(self):
         channel = self.csm.GetAccountConnectionChannel(self.target)
 
-        # Tell TTJFriendsManager somebody is logging off:
+        # Tell TTIFriendsManager somebody is logging off:
         self.csm.air.friendsManager.toonOffline(self.avId)
 
         # Clear off POSTREMOVE:
@@ -994,13 +1526,19 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.nameGenerator = NameGenerator()
 
         # Temporary HMAC key:
-        self.key = 'ttjsecretkey3234523423'
+       self.key = 'ttjsecretkey3234523423'
 
         # Instantiate our account DB interface:
         if accountDBType == 'developer':
             self.accountDB = DeveloperAccountDB(self)
         elif accountDBType == 'local':
             self.accountDB = LocalAccountDB(self)
+        elif accountDBType == 'mongodb':
+            self.accountDB = MongoAccountDB(self)
+        elif accountDBType == 'mongodev':
+            self.accountDB = MongoDevAccountDB(self)
+        elif accountDBType == 'mysqldb':
+            self.accountDB = MySQLAccountDB(self)
         elif accountDBType == 'remote':
             self.accountDB = RemoteAccountDB(self)
         else:
@@ -1054,6 +1592,8 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.notify.debug('Received login cookie %r from %d' % (cookie, self.air.getMsgSender()))
 
         sender = self.air.getMsgSender()
+
+        # Time to check this login to see if its authentic
 
         if sender >> 32:
             self.killConnection(sender, 'Client is already logged in.')
