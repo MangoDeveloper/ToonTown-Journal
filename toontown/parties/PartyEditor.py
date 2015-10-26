@@ -66,7 +66,7 @@ class PartyEditor(DirectObject, FSM):
                 pass
             elif isVictory and decorationId in PartyGlobals.VictoryPartyReplacementDecorationIds or isValentine and decorationId in PartyGlobals.ValentinePartyReplacementDecorationIds:
                 pass
-            elif decorationId in PartyGlobals.TTIUnreleasedDecor:
+            elif decorationId in PartyGlobals.TTOUnreleasedDecor:
                 pass
             else:
                 pele = PartyEditorListElement(self, decorationId, isDecoration=True)
