@@ -45,3 +45,11 @@ want-instant-parties #t
 
 
 estate-day-night #t
+
+# Server Performance:
+smooth-min-suggest-resync 1
+smooth-enable-smoothing 1
+smooth-enable-prediction 1
+smooth-lag .1
+smooth-prediction-lag 1
+cog-thief-ortho 0
