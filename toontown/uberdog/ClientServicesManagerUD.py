@@ -193,37 +193,6 @@ class RemoteAccountDB(AccountDB):
         return executeHttpRequest('names/remove', ID=str(avId))
 
     def lookup(self, token, callback):
-        # Ensure that our secret is the correct size:
-        if len(accountServerSecret) > 22:
-            rejectConfig('the specified account-server-secret was too big')
-            accountServerSecret = accountServerSecret[:22]
-        elif len(accountServerSecret) < 22:
-            rejectConfig('the specified account-server-secret was too small')
-            accountServerSecret = accountServerSecret[:22]
-    
-        if not token in ['ttjsecretkey3234523423', '3243254323yektercesjtt']:
-            if not token in 'ttjsecretkey3234523423':
-                # INTRUDER ALERT! Wrong key!
-                rejectConfig("the specified account-server-secret did not match up to the server's set key", dumb=False)
-                response = {
-                    'success': False,
-                    'userId': token['userid'],
-                    'accountId': 0,
-                    'accessLevel': 0
-                }
-                callback(response)
-                return response
-            else:
-                rejectConfig("you reversed the set key", securityIssue=False, dumb=False)
-                response = {
-                    'success': False,
-                    'userId': token['userid'],
-                    'accountId': 0,
-                    'accessLevel': 0
-                }
-                callback(response)
-                return response
-
         # This token is valid. That's all we need to know. Next, let's check if
         # this user's ID is in your account database bridge:
         if str(token['userid']) not in self.dbm:
@@ -1037,6 +1006,17 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
 
         self.killAccount(accountId, 'An operation is already underway: ' + fsm.name)
 
+    def rejectKey(self, sender, issue, securityIssue=True, dumb=True):
+        initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. You will need to fix this issue before you can login to Toontown Journey.'
+        if securityIssue:
+            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. This appears to be an accidential security issue while connecting. You will need to fix this issue before you can login to Toontown Journey.'
+        if dumb:
+            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. This may be a faulty security bypass attempt due to the issue. You will need to fix this issue before you can login to Toontown Journey.'
+        if securityIssue and dumb:
+            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. This appears to be an accidential security issue while connecting. This may be a faulty security bypass attempt due to the issue. You will need to fix this issue before you can login to Toontown Journey.'
+        finalString = initialString
+        self.killConnection(sender, finalString)
+
     def runAccountFSM(self, fsmtype, *args):
         sender = self.air.getAccountIdFromSender()
 
@@ -1054,6 +1034,19 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.notify.debug('Received login cookie %r from %d' % (cookie, self.air.getMsgSender()))
 
         sender = self.air.getMsgSender()
+
+        # Ensure that our authentication key is the correct size:
+        if len(authKey) > 22:
+            rejectKey(sender, 'the specified authentication key was too big')
+        elif len(authKey) < 22:
+            rejectKey(sender, 'the specified authentication key was too small')
+
+        if not authKey in ['ttjsecretkey3234523423', '3243254323yektercesjtt']:
+            if not authKey in 'ttjsecretkey3234523423':
+                # INTRUDER ALERT! Wrong key!
+                rejectKey("the specified authentication key did not match up to the server's set key", dumb=False)
+            else:
+                rejectKey("you reversed the server's set authentication key", securityIssue=False, dumb=False)
 
         if sender >> 32:
             self.killConnection(sender, 'Client is already logged in.')
