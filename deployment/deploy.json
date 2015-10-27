@@ -9,8 +9,8 @@
   "version": "1.0.0",
   "version-prefix": "test-v",
   "launcher-version": "1.0.0",
-  "account-server": "gameserver.toontownjourney.xyz # same thing as above vps ip or gameserver
-  "client-agent": "158.69.209.131",
+  "account-server": "gameserver.toontownjourney.com",
+  "client-agent": "167.114.28.238",
   "patcher-includes": [
     "GameData.pyd", 
     "journey.exe", 
