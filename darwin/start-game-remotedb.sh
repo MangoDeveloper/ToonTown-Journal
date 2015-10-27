@@ -16,7 +16,7 @@ export TTJ_PLAYCOOKIE=$ttjUsername
 export TTJ_GAMESERVER=$TTJ_GAMESERVER
 
 echo "==============================="
-echo "Starting Toontown Infinite..."
+echo "Starting Toontown Journey..."
 echo "Username: $ttjUsername"
 echo "Gameserver: $TTJ_GAMESERVER"
 echo "==============================="

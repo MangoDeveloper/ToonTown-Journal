@@ -58,7 +58,7 @@ messagedirector:
 roles:
     - type: clientagent
       bind: 0.0.0.0:7199
-      version: "infinite-dev"
+      version: "TTJ-1.0"
       client:
         relocate: true
         add_interest: enabled

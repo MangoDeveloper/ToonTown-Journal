@@ -12,7 +12,7 @@ rem Export the environment variables:
 set TTJ_PLAYCOOKIE=%ttjUsername%
 
 echo ===============================
-echo Starting Toontown Infinite...
+echo Starting Toontown Journey...
 echo ppython: %PPYTHON_PATH%
 echo Username: %ttjUsername%
 echo Gameserver: %TTJ_GAMESERVER%

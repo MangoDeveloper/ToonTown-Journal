@@ -26,7 +26,7 @@ accountDBType = simbase.config.GetString('accountdb-type', 'developer')
 minAccessLevel = simbase.config.GetInt('min-access-level', 100)
 
 accountServerEndpoint = simbase.config.GetString(
-    'account-server-endpoint', 'https://toontowninfinite.com/api/')
+    'account-server-endpoint', 'https://toontownjourney.xyz/api/')
 accountServerSecret = 'ttjsecretkey3234523423'
 
 def rejectConfig(issue, securityIssue=True, dumb=True):
@@ -77,7 +77,7 @@ def judgeName(name):
 
 
 # --- ACCOUNT DATABASES ---
-# These classes make up the available account databases for Toontown Infinite.
+# These classes make up the available account databases for Toontown Journey.
 # Databases with login tokens use the PyCrypto module for decrypting them.
 # DeveloperAccountDB is a special database that accepts a username, and assigns
 # each user with 600 access automatically upon login.
