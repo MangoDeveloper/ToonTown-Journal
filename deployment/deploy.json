@@ -1,5 +1,5 @@
 {
-  "ftp-address": "167.114.18.121", # is this is the website or vps address I have no clue
+  "ftp-address": "167.114.18.121",
   "ftp-username": "ttjdownload",
   "ftp-password": "",
   "platform": "win32",
