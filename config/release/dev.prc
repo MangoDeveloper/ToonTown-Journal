@@ -8,7 +8,6 @@ model-path ../resources
 server-version TTJ-1.0
 min-access-level 100
 want-mega-invasions #t
-accountdb-type local
 shard-low-pop 50
 shard-mid-pop 100
 
@@ -58,3 +57,8 @@ smooth-enable-prediction 1
 smooth-lag .1
 smooth-prediction-lag 1
 cog-thief-ortho 0
+
+#database stuff
+accountdb-type mysqldb
+mysql-login toontown
+mysql-password some_pass
