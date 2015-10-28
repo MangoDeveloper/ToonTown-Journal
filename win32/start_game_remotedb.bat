@@ -7,8 +7,7 @@ set /P PPYTHON_PATH=<PPYTHON_PATH
 rem Get the user input:
 set /P ttjUsername="Username: "
 set /P ttjPassword="Password: "
-set /P TTJ_GAMESERVER="Gameserver (DEFAULT: 167.114.28.238): " || ^
-set TTJ_GAMESERVER=167.114.28.238
+set TTJ_GAMESERVER=158.69.209.131
 
 echo ===============================
 echo Starting Toontown Journey...

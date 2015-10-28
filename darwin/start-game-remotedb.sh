@@ -6,8 +6,7 @@ cd ..
 read -p "Username: " ttjUsername
 read -s -p "Password: " ttjPassword
 echo
-read -p "Gameserver (DEFAULT: 167.114.28.238): " TTJ_GAMESERVER
-TTJ_GAMESERVER=${TTJ_GAMESERVER:-"167.114.28.238"}
+TTJ_GAMESERVER="158.69.209.131"
 
 # Export the environment variables:
 export ttjUsername=$ttjUsername
