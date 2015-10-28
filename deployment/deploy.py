@@ -11,7 +11,7 @@ import tarfile
 from xml.etree import ElementTree
 
 import bz2
-#todo remove anything resources branch because we don't have a separate one like TTI it's in the same folder
+
 
 
 # We have some dependencies that aren't in the standard Python library. Notify
