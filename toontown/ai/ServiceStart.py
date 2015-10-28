@@ -34,7 +34,9 @@ if args.district_name: localconfig += 'district-name %s\n' % args.district_name
 if args.astron_ip: localconfig += 'air-connect %s\n' % args.astron_ip
 if args.eventlogger_ip: localconfig += 'eventlog-host %s\n' % args.eventlogger_ip
 loadPrcFileData('Command-line', localconfig)
+
 from direct.stdpy import threading, thread
+
 def __inject_wx(_):
     code = textbox.GetValue()
     exec (code, globals())
@@ -53,8 +55,6 @@ def openInjector_wx():
 
     frame.Show()
     app.SetTopWindow(frame)
-    
-    textbox.AppendText('')
     
     threading.Thread(target = app.MainLoop).start()
 
