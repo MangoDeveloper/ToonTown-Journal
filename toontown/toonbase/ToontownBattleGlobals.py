@@ -116,7 +116,7 @@ def gagIsVelvetRoped(track, level):
     return False
 
 
-MaxToonAcc = 95
+MaxToonAcc = 100
 StartingLevel = 0
 CarryLimits = (((10,
    0,
@@ -620,13 +620,13 @@ AvPropAccuracy = ((70,
   95,
   95,
   95),
- (50,
-  50,
-  50,
-  50,
-  50,
-  50,
-  50))
+ (70,
+  70,
+  70,
+  70,
+  70,
+  70,
+  90))
 AvLureBonusAccuracy = (60,
  60,
  70,
