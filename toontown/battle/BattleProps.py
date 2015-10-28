@@ -25,7 +25,7 @@ Props = ((5, 'partyBall', 'partyBall'),
   '1dollar',
   '1dollar-bill-mod',
   '1dollar-bill-chan'),
- (5, 'big-magnet', 'magnet'),
+ (5, 'big-magnet', 'BigMagnet'),
  (5,
   'hypno-goggles',
   'hypnotize-mod',
@@ -228,6 +228,7 @@ Variants = ('tart',
  'geyser',
  'ship',
  'trolley',
+ 'BigMagnet'
  'traintrack')
 
 class PropPool:
@@ -275,6 +276,9 @@ class PropPool:
         propName = 'small-magnet'
         self.propStrings[propName] = (self.getPath(5, 'magnet'),)
         self.propTypes[propName] = 'model'
+        propName = 'BigMagnet'
+        self.propStrings[propName] = (self.getPath(5, 'magnet'),)
+        self.propTypes[propName] = 'model'        
         propName = '5dollar'
         self.propStrings[propName] = (self.getPath(5, '1dollar-bill-mod'), self.getPath(5, '1dollar-bill-chan'))
         self.propTypes[propName] = 'actor'
@@ -316,6 +320,10 @@ class PropPool:
             tie.getChild(0).setHpr(23.86, -16.03, 9.18)
         elif name == 'small-magnet':
             self.props[name].setScale(0.5)
+        elif name == 'BigMagnet':
+            tex = loader.loadTexture('phase_5/maps/big-magnet.jpg')
+            self.props[name].setTexture(tex, 1)
+   
         elif name == 'shredder-paper':
             paper = self.props[name]
             paper.setPosHpr(2.22, -0.95, 1.16, -48.61, 26.57, -111.51)
