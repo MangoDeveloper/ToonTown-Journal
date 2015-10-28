@@ -8,6 +8,7 @@ from otp.ai import BanManagerAI
 from otp.distributed.OtpDoGlobals import *
 from otp.friends.FriendManagerAI import FriendManagerAI
 from toontown.ai import CogPageManagerAI
+from toontown.racing.LeaderboardMgrAI import LeaderboardMgrAI
 from toontown.ai import CogSuitManagerAI
 from toontown.ai import PromotionManagerAI
 from toontown.ai.AchievementsManagerAI import AchievementsManagerAI
@@ -99,6 +100,7 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.newsManager = NewsManagerAI(self)
         self.newsManager.generateWithRequired(2)
         self.safeZoneManager = SafeZoneManagerAI(self)
+        self.leaderboardMgr = LeaderboardMgrAI(self)
         self.safeZoneManager.generateWithRequired(2)
         self.tutorialManager = TutorialManagerAI(self)
         self.tutorialManager.generateWithRequired(2)
