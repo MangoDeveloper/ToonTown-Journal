@@ -7,6 +7,7 @@ from toontown.racing.DistributedRacePadAI import DistributedRacePadAI
 from toontown.racing.DistributedStartingBlockAI import DistributedStartingBlockAI
 from toontown.racing.DistributedViewPadAI import DistributedViewPadAI
 from toontown.racing.DistributedStartingBlockAI import DistributedViewingBlockAI
+from toontown.racing.DistributedLeaderBoardAI import DistributedLeaderBoardAI
 from toontown.toonbase import ToontownGlobals
 
 
