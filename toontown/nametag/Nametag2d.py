@@ -184,6 +184,11 @@ class Nametag2d(Nametag, Clickable2d, MarginVisible):
 
         # Calculate the center of the TextNode:
         left, right, bottom, top = self.chatTextNode.getFrameActual()
+            left -= self.chatBalloon.BALLOON_X_PADDING
+            right += self.chatBalloon.BALLOON_X_PADDING
+            bottom -= self.chatBalloon.BALLOON_Z_PADDING
+            top += self.chatBalloon.BALLOON_Z_PADDING
+ 
         center = self.contents.getRelativePoint(
             self.chatBalloon.textNodePath,
             ((left+right) / 2.0, 0, (bottom+top) / 2.0))
@@ -292,6 +297,10 @@ class Nametag2d(Nametag, Clickable2d, MarginVisible):
             nodePath = self.textNodePath
 
             left, right, bottom, top = self.textNode.getFrameActual()
+            left -= self.PANEL_X_PADDING
+            right += self.PANEL_X_PADDING
+            bottom -= self.PANEL_Z_PADDING
+            top += self.PANEL_Z_PADDING
 
             # Compensate for the arrow:
             bottom -= self.ARROW_SCALE
