@@ -23,7 +23,7 @@ class ContentPacksManager:
         self.sortFilename = os.path.join(self.filepath, sortFilename)
 
         if __debug__:
-            self.mountPoint = '../resources'
+            self.mountPoint = '/resources'
         else:
             self.mountPoint = '/'
 
