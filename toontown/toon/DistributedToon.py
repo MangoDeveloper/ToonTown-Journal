@@ -2634,7 +2634,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setBuffs(self, buffs):
         self.buffs = buffs
         self.applyBuffs()
-
+        
     def applyBuffs(self):
         for id, timestamp in enumerate(self.buffs):
             if id == ToontownGlobals.BMovementSpeed:
@@ -2651,6 +2651,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                     ToontownGlobals.ToonJumpForce,
                     ToontownGlobals.ToonReverseSpeed * ToontownGlobals.BMovementSpeedMultiplier,
                     ToontownGlobals.ToonRotateSpeed * ToontownGlobals.BMovementSpeedMultiplier)
+                    
+    def warnLocalToon(self, reason):
+        reason = 'You have been warned by a moderator for: %s' % reason
+        self.setSystemMessage(base.localAvatar.doId, reason)
 
 @magicWord(category=CATEGORY_COMMUNITY_MANAGER)
 def globalTeleport():

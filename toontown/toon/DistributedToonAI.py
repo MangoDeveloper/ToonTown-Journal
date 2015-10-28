@@ -134,6 +134,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.gardenSpecials = []
         self.houseId = 0
         self.posIndex = 0
+        self.magicWordTeleportRequests = []
         self.savedCheesyEffect = ToontownGlobals.CENormal
         self.savedCheesyHoodId = 0
         self.savedCheesyExpireTime = 0
@@ -5170,3 +5171,23 @@ def invasion(suitDept, suitIndex=None, isSkelecog=0, isV2=0, isWaiter=0, isVirtu
 def invasionend():
     simbase.air.suitInvasionManager.stopInvasion()
     return 'Ending Invasion...'
+
+@magicWord(category=CATEGORY_MODERATOR, types=[int])
+def goto(avIdShort):
+    """ Teleport to the avId specified. """
+    avId = 100000000+avIdShort # To get target doId.
+    toon = simbase.air.doId2do.get(avId)
+    if not toon:
+        return "Unable to teleport to target, they are not currently on this district."
+    spellbook.getInvoker().magicWordTeleportRequests.append(avId)
+    toon.sendUpdate('magicTeleportRequest', [spellbook.getInvoker().getDoId()])
+
+
+@magicWord(category=CATEGORY_MODERATOR, types=[str])
+def warn(reason):
+    target = spellbook.getTarget()
+    if target == spellbook.getInvoker():
+        return 'You can\'t warn yourself!'
+
+    target.sendUpdate('warnLocalToon', [reason])
+    return 'Warned %s for %s!' % (target.getName(), reason)
