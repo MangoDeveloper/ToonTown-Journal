@@ -33,6 +33,8 @@ if args.astron_ip: localconfig += 'air-connect %s\n' % args.astron_ip
 if args.eventlogger_ip: localconfig += 'eventlog-host %s\n' % args.eventlogger_ip
 loadPrcFileData('Command-line', localconfig)
 
+from direct.stdpy import threading, thread
+
 def __inject_wx(_):
     code = textbox.GetValue()
     exec (code, globals())
