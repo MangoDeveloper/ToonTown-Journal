@@ -54,8 +54,6 @@ def openInjector_wx():
     frame.Show()
     app.SetTopWindow(frame)
     
-    textbox.AppendText(defaultText)
-    
     threading.Thread(target = app.MainLoop).start()
 
 openInjector_wx()
