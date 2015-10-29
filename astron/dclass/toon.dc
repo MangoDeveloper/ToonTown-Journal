@@ -10,6 +10,7 @@ from toontown.classicchars import DistributedMinnie/AI
 from toontown.classicchars import DistributedWitchMinnie/AI
 from toontown.classicchars import DistributedGoofy/AI
 from toontown.classicchars import DistributedSuperGoofy/AI
+from toontown.uberdog import MegaInvasionManager/AI/UD
 from toontown.classicchars import DistributedDaisy/AI
 from toontown.classicchars import DistributedSockHopDaisy/AI
 from toontown.classicchars import DistributedChip/AI
