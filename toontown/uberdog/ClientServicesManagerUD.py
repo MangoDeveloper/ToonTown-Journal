@@ -21,7 +21,7 @@ from toontown.toonbase import TTLocalizer
 # allows local hosted and developer builds of the game to run without it:
 accountDBType = simbase.config.GetString('accountdb-type', 'developer')
 if accountDBType == 'mysqldb':
-    from passlib.hash import bcrypt
+    import base64
     import mysql.connector
 
 # Sometimes we'll want to force a specific access level, such as on the
@@ -217,12 +217,12 @@ class MySQLAccountDB(AccountDB):
     notify = directNotify.newCategory('MySQLAccountDB')
 
     def get_hashed_password(self, plain_text_password):
-        newpass = bcrypt.encrypt(plain_text_password)
+        newpass = base64.b64encode(plain_text_password)
         return newpass
 
     def check_password(self, plain_text_password, hashed_password):
         try:
-            return bcrypt.verify(plain_text_password, hashed_password)
+            return base64.decodestring(hashed_password)
         except:
             print ("bad hash: ", (plain_text_password, hashed_password))
             return False
