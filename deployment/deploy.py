@@ -49,7 +49,7 @@ if sys.platform == 'win32':
     with open('../PPYTHON_PATH', 'r') as f:
         pythonPath = f.read().strip()
 elif sys.platform == 'darwin': 
-      pythonPath = ppython
+      pythonPath = 'ppython'
 else:
     pythonPath = '/usr/bin/python2'
 
