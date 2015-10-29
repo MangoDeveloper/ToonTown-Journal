@@ -25,10 +25,6 @@ class TTHoodAI(HoodAI.HoodAI):
         if simbase.config.GetBool('want-butterflies', True):
             self.createButterflies()
 
-        NPCToons.createNPC(
-            simbase.air, 2021,
-            (ToontownGlobals.ToontownCentral, TTLocalizer.NPCToonNames[2021], ('dss', 'ls', 's', 'm', 13, 41, 13, 13, 1, 6, 1, 6, 0, 18, 0), 'm', 1, NPCToons.NPC_GLOVE),
-             ToontownGlobals.ToontownCentral, posIndex=0)
 
         self.trickOrTreatMgr = DistributedEffectMgrAI.DistributedEffectMgrAI(self.air, ToontownGlobals.HALLOWEEN, 12)
         self.trickOrTreatMgr.generateWithRequired(2649) # All Fun and Games Shop, Silly Street
