@@ -59,6 +59,6 @@ smooth-prediction-lag 1
 cog-thief-ortho 0
 
 #database stuff
-accountdb-type mysqldb
+accountdb-type local
 mysql-login toontown
 mysql-password some_pass
