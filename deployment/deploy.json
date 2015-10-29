@@ -77,6 +77,6 @@
     "resources/phase_12.mf",
     "resources/phase_13.mf"
   ],
-  "modules": ["otp", "toontown"],
-  "main-module": "toontown.toonbase.ClientStartDist"
+  "modules": ["otp", "toontown", "journey"],
+  "main-module": "journey.base.JourneyStartDist"
 }
