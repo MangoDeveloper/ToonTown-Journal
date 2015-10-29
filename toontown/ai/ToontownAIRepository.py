@@ -9,11 +9,13 @@ from otp.distributed.OtpDoGlobals import *
 from otp.friends.FriendManagerAI import FriendManagerAI
 from toontown.ai import CogPageManagerAI
 from toontown.racing.LeaderboardMgrAI import LeaderboardMgrAI
+from toontown.coderedemption.TTCodeRedemptionMgrAI import TTCodeRedemptionMgrAI
 from toontown.ai import CogSuitManagerAI
 from toontown.ai import PromotionManagerAI
 from toontown.ai.AchievementsManagerAI import AchievementsManagerAI
 from toontown.ai.FishManagerAI import  FishManagerAI
 from toontown.ai.HolidayManagerAI import HolidayManagerAI
+from toontown.building.DistributedBuildingQueryMgrAI import DistributedBuildingQueryMgrAI
 from toontown.ai.NewsManagerAI import NewsManagerAI
 from toontown.ai.QuestManagerAI import QuestManagerAI
 from toontown.ai import BankManagerAI
@@ -100,6 +102,10 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.newsManager = NewsManagerAI(self)
         self.newsManager.generateWithRequired(2)
         self.safeZoneManager = SafeZoneManagerAI(self)
+        self.codeRedemptionMgr = TTCodeRedemptionMgrAI(self)
+        self.codeRedemptionMgr.generateWithRequired(2)
+        self.buildingQueryMgr = DistributedBuildingQueryMgrAI(self)
+        self.buildingQueryMgr.generateWithRequired(2)
         self.leaderboardMgr = LeaderboardMgrAI(self)
         self.safeZoneManager.generateWithRequired(2)
         self.tutorialManager = TutorialManagerAI(self)
@@ -134,6 +140,8 @@ class ToontownAIRepository(ToontownInternalRepository):
             self.partyManager.generateWithRequired(2)
             self.globalPartyMgr = self.generateGlobalObject(
                 OTP_DO_ID_GLOBAL_PARTY_MANAGER, 'GlobalPartyManager')
+        self.megaInvasionManager = simbase.air.generateGlobalObject(
+            OTP_DO_ID_MEGA_INVASION_MANAGER, 'MegaInvasionManager')
 
     def createSafeZones(self):
         NPCToons.generateZone2NpcDict()
