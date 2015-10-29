@@ -1,10 +1,10 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSafeAI
 from toontown.suit import DistributedCashbotBossGoonAI
-#from toontown.coghq import DistributedCashbotBossTreasureAI
+from toontown.coghq import DistributedCashbotBossTreasureAI
 from toontown.battle import BattleExperienceAI
 from toontown.chat import ResistanceChat
 from direct.fsm import FSM
@@ -17,6 +17,7 @@ import math
 class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossAI')
     maxGoons = 8
+    BossName = "CFO"
 
     def __init__(self, air):
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'm')
@@ -46,8 +47,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def generate(self):
         DistributedBossCogAI.DistributedBossCogAI.generate(self)
-        if __dev__:
-            self.scene.reparentTo(self.getRender())
 
     def getHoodId(self):
         return ToontownGlobals.CashbotHQ
@@ -198,9 +197,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             treasure.b_setPosition(pos[0], pos[1], 0)
             treasure.b_setFinalPosition(fpos[0], fpos[1], 0)
         else:
-            #treasure = DistributedCashbotBossTreasureAI.DistributedCashbotBossTreasureAI(self.air, self, goon, style, fpos[0], fpos[1], 0)
-            #treasure.generateWithRequired(self.zoneId)
-            pass
+            treasure = DistributedCashbotBossTreasureAI.DistributedCashbotBossTreasureAI(self.air, self, goon, style, fpos[0], fpos[1], 0)
+            treasure.generateWithRequired(self.zoneId)
         treasure.healAmount = healAmount
         self.treasures[treasure.doId] = treasure
 
@@ -389,21 +387,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             if toon:
                 toon.doResistanceEffect(self.rewardId)
 
-            if simbase.config.GetBool('cfo-staff-event', False):
-
-                withStaff = False
-                for avId in self.involvedToons:
-                    av = self.air.doId2do.get(avId)
-                    if av:
-                        if av.adminAccess > 100:
-                            withStaff = True
-
-                if withStaff:
-                    participants = simbase.backups.load('cfo-staff-event', ('participants',), default={'doIds': []})
-                    if avId not in participants['doIds']:
-                        participants['doIds'].append(toon.doId)
-                    simbase.backups.save('cfo-staff-event', ('participants',), participants)
-
     def enterOff(self):
         DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
         self.rewardedToons = []
@@ -476,8 +459,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
          'track': self.dna.dept,
          'isSkelecog': 0,
          'isForeman': 0,
-         'isVP': 0,
-         'isCFO': 1,
+         'isBoss': 1,
          'isSupervisor': 0,
          'isVirtual': 0,
          'activeToons': self.involvedToons[:]})
@@ -555,6 +537,6 @@ def killCFO():
                 boss = do
                 break
     if not boss:
-        return "You aren't in a CFO!"
+        return "You aren't in a CFO"
     boss.b_setState('Victory')
     return 'Killed CFO.'
