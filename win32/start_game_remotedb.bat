@@ -16,5 +16,5 @@ echo Username: %ttjUsername%
 echo Gameserver: %TTJ_GAMESERVER%
 echo ===============================
 
-%PPYTHON_PATH% -m journey.base.JourneyStartDist
+%PPYTHON_PATH% -m toontown.toonbase.ClientStartRemoteDB
 pause
