@@ -14,6 +14,6 @@ The local database is for development servers. No admin access given by default.
 
 The development database is also for development servers, but everyone is given admin access.
 
-The MySQL database is for production servers. It uses the login server's MySQL to use bcrypt to salt passwords and hash passwords with Blowfish hashing to secure user information. The ClientServicesManager uberdog will authenticate users through the login server's MySQL.
+The MySQL database is for production servers. It uses the login server's MySQL to use base64 to hash passwords in order to secure user information. The ClientServicesManager uberdog will authenticate users through the login server's MySQL.
 
 The remote database is unused, it may be used later for remote developer access to the public gameserver.
