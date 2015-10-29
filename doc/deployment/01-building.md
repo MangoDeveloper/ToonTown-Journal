@@ -1,6 +1,6 @@
 Building the Client
 ===================
-The first step in building a distributable Toontown Journey client is building ```GameData.pyd```. ```GameData.pyd``` is an encrypted blob of frozen Python code. It contains all of the code necessary to run the game. There are two steps to building this file:
+The first step in building a distributable Toontown Journey client is building ```GameData.pyd```. ```GameData.pyd``` is a blob of frozen Python code. It contains all of the code necessary to run the game. There are two steps to building this file:
 
 * [Prepare for building](00-preparing.md)
 * **Build the frozen Python module**
