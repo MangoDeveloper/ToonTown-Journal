@@ -2,6 +2,7 @@ from direct.distributed.PyDatagram import *
 import urlparse
 
 from otp.distributed.DistributedDirectoryAI import DistributedDirectoryAI
+from otp.otpbase import BackupManager
 from otp.distributed.OtpDoGlobals import *
 from toontown.distributed.ToontownInternalRepository import ToontownInternalRepository
 import toontown.minigame.MinigameCreatorAI
