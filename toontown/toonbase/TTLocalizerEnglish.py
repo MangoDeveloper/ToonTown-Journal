@@ -9941,3 +9941,5 @@ SillySaturdayOngoing = 'Welcome! Silly Saturday is currently in progress.'
 SillySaturdayEnd = 'Silly Saturday is over. Hope you had fun. See you next week!'
 AprilToonsWeekStart = "It's April Toons Week!"
 AprilToonsWeekEnd = 'April Toons Week is over. See you next year!'
+WaitingForOtherToons = 'Waiting for other toons...'
+WaitingForOtherToonsDots = 'Waiting for other toons%s'
