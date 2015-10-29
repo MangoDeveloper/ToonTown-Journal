@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoGameExit
 from pandac.PandaModules import NodePath, Point3
 from direct.interval.MetaInterval import Parallel, Sequence
 from direct.interval.SoundInterval import SoundInterval

@@ -27,7 +27,7 @@ want-game-tables #t
 want-find-four #t
 want-chinese-checkers #t
 want-checkers #t
-want-cogdominiums #f
+want-cogdominiums #t
 want-mega-invasions #t
 want-achievements #f
 safe-harbours Toon Valley

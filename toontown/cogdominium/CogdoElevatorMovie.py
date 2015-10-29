@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoElevatorMovie
 from pandac.PandaModules import NodePath, Point3, PlaneNode, TextNode
 from direct.interval.IntervalGlobal import *
 from direct.showbase.ShowBase import Plane
@@ -10,6 +11,7 @@ from toontown.toonbase.ToontownGlobals import *
 from toontown.toonbase import TTLocalizer
 from toontown.suit import Suit, SuitDNA
 from toontown.toon import Toon, ToonHead, ToonDNA
+from DistributedCogdoInterior import *
 from CogdoUtil import CogdoGameMovie
 import CogdoUtil
 
@@ -44,8 +46,6 @@ class CogdoElevatorMovie(CogdoGameMovie):
         suit.reparentTo(self.toonHead)
         for part in suit.getHeadParts():
             part.hide()
-
-        suit.loop('neutral')
 
     def load(self):
         self.notify.debug('load()')
@@ -83,6 +83,7 @@ class CogdoElevatorMovie(CogdoGameMovie):
         self._camHelperNode = NodePath('CamHelperNode')
         self._camHelperNode.reparentTo(render)
         dialogue = TTLocalizer.CogdoElevatorRewardLaff
+        base.camLens.setFov(ToontownGlobals.CBElevatorFov)
 
         def start():
             self.frame.show()

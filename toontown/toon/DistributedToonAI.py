@@ -5191,3 +5191,20 @@ def warn(reason):
 
     target.sendUpdate('warnLocalToon', [reason])
     return 'Warned %s for %s!' % (target.getName(), reason)
+    
+@magicWord(category=CATEGORY_PROGRAMMER, types=[str, int])
+def spawnFO(track, difficulty = 0):
+    tracks = ['s', 'l']
+    if track not in tracks:
+        return 'Invalid Field Office type! Supported types are "s" and "l"'
+    else:
+        av = spellbook.getInvoker()
+        try:
+            building = av.findClosestDoor()
+        except KeyError:
+            return "You're not on a street!"
+
+        if building == None:
+            return 'Unable to spawn "%s" Field Office with difficulty %d.' % (track, difficulty)
+        building.cogdoTakeOver(difficulty, 2, track)
+        return 'Successfully spawned "%s" Field Office with difficulty %d!' % (track, difficulty)	

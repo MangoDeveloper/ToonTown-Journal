@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoGameAudioManager
 from pandac.PandaModules import AudioSound
 from direct.interval.SoundInterval import SoundInterval
 

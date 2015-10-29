@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoInterior
 from pandac.PandaModules import ModelPool, TexturePool
 from direct.task.Task import Task
 from direct.directnotify import DirectNotifyGlobal
@@ -76,7 +77,7 @@ class CogdoInterior(Place.Place):
         self.parentFSM.getStateNamed('cogdoInterior').addChild(self.fsm)
         self.townBattle = TownBattle.TownBattle('town-battle-done')
         self.townBattle.load()
-        for i in xrange(1, 3):
+        for i in range(1, 3):
             Suit.loadSuits(i)
 
     def unload(self):
@@ -90,7 +91,7 @@ class CogdoInterior(Place.Place):
         self.townBattle.unload()
         self.townBattle.cleanup()
         del self.townBattle
-        for i in xrange(1, 3):
+        for i in range(1, 3):
             Suit.unloadSuits(i)
 
     def setState(self, state, battleEvent = None):

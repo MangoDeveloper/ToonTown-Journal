@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoCraneGameSpec
 from toontown.coghq.SpecImports import *
 GlobalEntities = {1000: {'type': 'levelMgr',
         'name': 'LevelMgr',

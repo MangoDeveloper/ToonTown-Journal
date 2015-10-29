@@ -41,8 +41,9 @@ Camera.AlphaBetweenToon = 0.35
 Camera.SpinRadius = 9.0
 Camera.MaxSpinAngle = 20.0
 Camera.MaxSpinX = 16.0
+Camera.GameCameraFar = 400.0
 Gameplay = VariableContainer()
-Gameplay.SecondsUntilGameOver = 60.0 * 3.0
+Gameplay.SecondsUntilGameOver = 180.0
 Gameplay.TimeRunningOutSeconds = 45.0
 Gameplay.IntroDurationSeconds = 24.0
 Gameplay.FinishDurationSeconds = 10.0
@@ -167,16 +168,16 @@ LegalEagle.PostCooldownHeightOffNest = 40.0
 Dev = DevVariableContainer('cogdoflying')
 Dev.DisableDeath = False
 Dev.InfiniteFuel = False
-Dev.InfiniteTimeLimit = True
+Dev.InfiniteTimeLimit = False
 Dev.Invincibility = False
 Dev.NoLegalEagleAttacks = False
 Audio = VariableContainer()
 Audio.Cutoff = 75.0
-Audio.MusicFiles = {'normal': 'phase_4/audio/bgm/MG_cannon_game.ogg',
- 'end': 'phase_4/audio/bgm/FF_safezone.ogg',
- 'waiting': 'phase_4/audio/bgm/m_match_bg2.ogg',
- 'invul': 'phase_4/audio/bgm/MG_CogThief.ogg',
- 'timeRunningOut': 'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg'}
+Audio.MusicFiles = {'normal': 'phase_4/audio/FO/FO_ALL_BGM.mid',
+ 'end': 'phase_9/audio/bgm/encntr_toon_winning.mid',
+ 'waiting': 'phase_9/audio/bgm/CogHQ_finale.mid',
+ 'invul': 'phase_9/audio/bgm/encntr_toon_winning.mid',
+ 'timeRunningOut': 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'}
 Audio.SfxFiles = {'propeller': 'phase_4/audio/sfx/TB_propeller.ogg',
  'propeller_damaged': 'phase_5/audio/sfx/tt_s_ara_cfg_propellers_damaged.ogg',
  'fan': 'phase_4/audio/sfx/target_wind_float_loop.ogg',
@@ -229,8 +230,8 @@ Level.DifficultyOrder = {2000: (1, 1, 1, 2, 1),
  9000: (2, 3, 2, 3, 2, 3, 2)}
 Dev.WantTempLevel = True
 Dev.DevQuadsOrder = (1, 2, 3, 4, 5, 6, 7, 8)
-Level.AddSparkleToPowerups = True
-Level.AddParticlesToStreamers = True
+Level.AddSparkleToPowerups = False
+Level.AddParticlesToStreamers = False
 Level.IgnoreLaffPowerups = False
 Level.SpawnLaffPowerupsInNests = True
 Level.LaffPowerupNestOffset = Point3(0.0, 2.0, 3.0)

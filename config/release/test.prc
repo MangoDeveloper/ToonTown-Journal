@@ -16,7 +16,7 @@ want-checkers #t
 want-gifting #t
 
 want-parties #f
-want-cogdominiums #f
+want-cogdominiums #t
 want-achievements #f
 boarding-group-merges #t
 want-mega-invasions #t

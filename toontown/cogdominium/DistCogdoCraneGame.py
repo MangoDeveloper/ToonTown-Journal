@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.DistCogdoCraneGame
 from pandac import PandaModules as PM
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task.Task import Task
@@ -102,7 +103,7 @@ class DistCogdoCraneGame(CogdoCraneGameBase, DistCogdoLevelGame):
                 self.notify.warning('Not a collision node: %s' % repr(cnp))
                 break
             newCollideMask = newCollideMask | cn.getIntoCollideMask()
-            for i in xrange(cn.getNumSolids()):
+            for i in range(cn.getNumSolids()):
                 solid = cn.getSolid(i)
                 if isinstance(solid, PM.CollisionPolygon):
                     plane = PM.Plane(solid.getPlane())

@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.CogdoUtil
 from pandac.PandaModules import ColorBlendAttrib
 ModelPhase = 5
 ModelTypes = {'animation': 'a',
@@ -35,6 +36,7 @@ def loadModel(baseName, game = 'shared', type = 'model', group = 'area'):
 
 class VariableContainer:
     pass
+
 
 class DevVariableContainer:
 
@@ -120,9 +122,9 @@ def rotateTable(table, angle):
         t = []
         width = len(table[0])
         height = len(table)
-        for j in xrange(width):
+        for j in range(width):
             row = []
-            for i in xrange(height):
+            for i in range(height):
                 row.append(table[height - 1 - i][j])
 
             t.append(row)
@@ -137,9 +139,9 @@ def rotateTable(table, angle):
         t = []
         width = len(table[0])
         height = len(table)
-        for j in xrange(width):
+        for j in range(width):
             row = []
-            for i in xrange(height):
+            for i in range(height):
                 row.append(table[i][width - 1 - j])
 
             t.append(row)

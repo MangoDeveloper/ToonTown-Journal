@@ -1,3 +1,4 @@
+# Embedded file name: toontown.cogdominium.DistCogdoCraneCog
 from pandac import PandaModules as PM
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.distributed.DistributedObject import DistributedObject
