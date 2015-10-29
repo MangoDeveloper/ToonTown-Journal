@@ -19,5 +19,5 @@ echo Username: %ttjUsername%
 echo Gameserver: %TTJ_GAMESERVER%
 echo ===============================
 
-%PPYTHON_PATH% -m journey.base.JourneyDist
+%PPYTHON_PATH% -m journey.base.JourneyStartDist
 pause
