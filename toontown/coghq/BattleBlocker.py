@@ -1,5 +1,4 @@
-from pandac.PandaModules import *
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.interval.IntervalGlobal import *
 from otp.level import BasicEntities
 from toontown.toonbase import ToontownGlobals
@@ -87,9 +86,3 @@ class BattleBlocker(BasicEntities.DistributedNodePathEntity):
         if callback:
             track.append(Func(callback))
         track.start()
-
-    if __dev__:
-
-        def attribChanged(self, *args):
-            self.unloadCollisionGeom()
-            self.initCollisionGeom()

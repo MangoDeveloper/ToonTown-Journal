@@ -152,7 +152,7 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
     def setCountryClubInteriorZoneForce(self, zoneId):
         place = self.cr.playGame.getPlace()
         if place:
-            place.fsm.request('elevator', [self, 1])
+            place.fsm.request('elevator', [self])
             hoodId = self.cr.playGame.hood.hoodId
             countryClubId = self.countryClubId
             if bboard.has('countryClubIdOverride'):
@@ -359,8 +359,6 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.KartMinLaff % self.minLaff)
             elif reason == ElevatorConstants.REJECT_PROMOTION:
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.BossElevatorRejectMessage)
-            elif reason == ElevatorConstants.REJECT_NOT_YET_AVAILABLE:
-                base.localAvatar.elevatorNotifier.showMe(TTLocalizer.NotYetAvailable)
         doneStatus = {'where': 'reject'}
         elevator = self.getPlaceElevator()
         if elevator:

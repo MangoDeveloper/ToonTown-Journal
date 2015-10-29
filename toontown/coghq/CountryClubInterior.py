@@ -3,9 +3,8 @@ from toontown.battle import BattlePlace
 from direct.fsm import ClassicFSM, State
 from direct.fsm import State
 from direct.showbase import BulletinBoardWatcher
-from pandac.PandaModules import *
+from panda3d.core import *
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
-from toontown.nametag import NametagGlobals
 from toontown.toon import Toon
 from toontown.toonbase import ToontownGlobals
 from toontown.hood import ZoneUtil
@@ -14,7 +13,7 @@ from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedCountryClub
 from toontown.building import Elevator
-from toontown.nametag import NametagGlobals
+from otp.nametag import NametagGlobals
 import random
 
 class CountryClubInterior(BattlePlace.BattlePlace):
@@ -34,7 +33,6 @@ class CountryClubInterior(BattlePlace.BattlePlace):
           'died',
           'teleportOut',
           'squished',
-          'DFA',
           'fallDown',
           'stopped',
           'elevator']),
@@ -43,7 +41,6 @@ class CountryClubInterior(BattlePlace.BattlePlace):
          State.State('push', self.enterPush, self.exitPush, ['walk', 'died', 'teleportOut']),
          State.State('stickerBook', self.enterStickerBook, self.exitStickerBook, ['walk',
           'battle',
-          'DFA',
           'WaitForBattle',
           'died',
           'teleportOut']),
@@ -62,8 +59,6 @@ class CountryClubInterior(BattlePlace.BattlePlace):
           'FLA',
           'quietZone',
           'WaitForBattle']),
-         State.State('DFA', self.enterDFA, self.exitDFA, ['DFAReject', 'teleportOut']),
-         State.State('DFAReject', self.enterDFAReject, self.exitDFAReject, ['walkteleportOut']),
          State.State('died', self.enterDied, self.exitDied, ['teleportOut']),
          State.State('FLA', self.enterFLA, self.exitFLA, ['quietZone']),
          State.State('quietZone', self.enterQuietZone, self.exitQuietZone, ['teleportIn']),
@@ -91,12 +86,12 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         self._telemLimiter = TLGatherAllAvs('CountryClubInterior', RotationLimitToH)
 
         def commence(self = self):
-            NametagGlobals.setWant2dNametags(True)
+            NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
             base.playMusic(self.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             CountryClub = bboard.get(DistributedCountryClub.DistributedCountryClub.ReadyPost)
-            self.loader.hood.spawnTitleText(CountryClub.countryClubId, CountryClub.floorNum)
+            self.loader.hood.spawnTitleText(CountryClub.countryClubId)
 
         self.CountryClubReadyWatcher = BulletinBoardWatcher.BulletinBoardWatcher('CountryClubReady', DistributedCountryClub.DistributedCountryClub.ReadyPost, commence)
         self.CountryClubDefeated = 0
@@ -111,7 +106,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         self.acceptOnce('localToonConfrontedCountryClubBoss', handleConfrontedBoss)
 
     def exit(self):
-        NametagGlobals.setWant2dNametags(False)
+        NametagGlobals.setMasterArrowsOn(0)
         bboard.remove(DistributedCountryClub.DistributedCountryClub.ReadyPost)
         self._telemLimiter.destroy()
         del self._telemLimiter
@@ -260,11 +255,9 @@ class CountryClubInterior(BattlePlace.BattlePlace):
     def detectedElevatorCollision(self, distElevator):
         self.fsm.request('elevator', [distElevator])
 
-    def enterElevator(self, distElevator, skipDFABoard = 0):
+    def enterElevator(self, distElevator):
         self.accept(self.elevatorDoneEvent, self.handleElevatorDone)
         self.elevator = Elevator.Elevator(self.fsm.getStateNamed('elevator'), self.elevatorDoneEvent, distElevator)
-        if skipDFABoard:
-            self.elevator.skipDFABoard = 1
         self.elevator.setReverseBoardingCamera(True)
         distElevator.elevatorFSM = self.elevator
         self.elevator.load()

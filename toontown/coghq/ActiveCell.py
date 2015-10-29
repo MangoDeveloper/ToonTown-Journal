@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from otp.level import BasicEntities
 from direct.directnotify import DirectNotifyGlobal
 
@@ -32,11 +32,3 @@ class ActiveCell(BasicEntities.DistributedNodePathEntity):
     def setState(self, state, objId):
         self.state = state
         self.occupantId = objId
-
-    if __dev__:
-
-        def attribChanged(self, *args):
-            model = self.find('*')
-            if not model.isEmpty():
-                model.removeNode()
-            self.loadModel()

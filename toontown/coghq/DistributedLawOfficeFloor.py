@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from toontown.toonbase.ToontownGlobals import *
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
@@ -12,8 +12,6 @@ from otp.level import LevelSpec
 from otp.level import LevelConstants
 from toontown.toonbase import TTLocalizer
 from toontown.coghq import FactoryCameraViews
-if __dev__:
-    from otp.level import EditorGlobals
 
 class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase.LawOfficeBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedLawOffice')
@@ -36,8 +34,6 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
         DistributedLevel.DistributedLevel.generate(self)
         self.factoryViews = FactoryCameraViews.FactoryCameraViews(self)
         base.localAvatar.chatMgr.chatInputSpeedChat.addFactoryMenu()
-        if __dev__:
-            bboard.post(EditorGlobals.EditTargetPostName, self)
         self.accept('SOSPanelEnter', self.handleSOSPanel)
 
     def delete(self):
@@ -46,8 +42,6 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
         self.factoryViews.delete()
         del self.factoryViews
         self.ignore('SOSPanelEnter')
-        if __dev__:
-            bboard.removeIfEqual(EditorGlobals.EditTargetPostName, self)
 
     def setLawOfficeId(self, id):
         LawOfficeBase.LawOfficeBase.setLawOfficeId(self, id)
@@ -70,16 +64,9 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
         DistributedLevel.DistributedLevel.levelAnnounceGenerate(self)
         specModule = FactorySpecs.getFactorySpecModule(self.lawOfficeId)
         factorySpec = LevelSpec.LevelSpec(specModule)
-        if __dev__:
-            typeReg = self.getEntityTypeReg()
-            factorySpec.setEntityTypeReg(typeReg)
         DistributedLevel.DistributedLevel.initializeLevel(self, factorySpec)
 
     def privGotSpec(self, levelSpec):
-        if __dev__:
-            if not levelSpec.hasEntityTypeReg():
-                typeReg = self.getEntityTypeReg()
-                levelSpec.setEntityTypeReg(typeReg)
         firstSetZoneDoneEvent = self.cr.getNextSetZoneDoneEvent()
 
         def handleFirstSetZoneDone():
@@ -98,7 +85,7 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
             h = base.localAvatar.getH(self.getZoneNode(self.lastToonZone))
             print 'factory pos: %s, h: %s, zone %s' % (repr(pos), h, self.lastToonZone)
             posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\nZone: %s' % str(self.lastToonZone)
-            base.localAvatar.setChat(posStr, CFThought, 0)
+            base.localAvatar.setChatAbsolute(posStr, CFThought)
 
         self.accept('f2', printPos)
         base.localAvatar.setCameraCollisionsCanMove(1)

@@ -3,7 +3,7 @@ from toontown.battle import BattlePlace
 from direct.fsm import ClassicFSM, State
 from direct.fsm import State
 from direct.showbase import BulletinBoardWatcher
-from pandac.PandaModules import *
+from panda3d.core import *
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
 from toontown.toon import Toon
 from toontown.toonbase import ToontownGlobals
@@ -13,7 +13,7 @@ from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedStage
 from toontown.building import Elevator
-from toontown.nametag import NametagGlobals
+from otp.nametag import NametagGlobals
 
 class StageInterior(BattlePlace.BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('StageInterior')
@@ -32,14 +32,12 @@ class StageInterior(BattlePlace.BattlePlace):
           'died',
           'teleportOut',
           'squished',
-          'DFA',
           'fallDown',
           'elevator']),
          State.State('sit', self.enterSit, self.exitSit, ['walk', 'died', 'teleportOut']),
          State.State('push', self.enterPush, self.exitPush, ['walk', 'died', 'teleportOut']),
          State.State('stickerBook', self.enterStickerBook, self.exitStickerBook, ['walk',
           'battle',
-          'DFA',
           'WaitForBattle',
           'died',
           'teleportOut']),
@@ -58,8 +56,6 @@ class StageInterior(BattlePlace.BattlePlace):
           'FLA',
           'quietZone',
           'WaitForBattle']),
-         State.State('DFA', self.enterDFA, self.exitDFA, ['DFAReject', 'teleportOut']),
-         State.State('DFAReject', self.enterDFAReject, self.exitDFAReject, ['walkteleportOut']),
          State.State('died', self.enterDied, self.exitDied, ['teleportOut']),
          State.State('FLA', self.enterFLA, self.exitFLA, ['quietZone']),
          State.State('quietZone', self.enterQuietZone, self.exitQuietZone, ['teleportIn']),
@@ -86,7 +82,7 @@ class StageInterior(BattlePlace.BattlePlace):
         base.cr.forbidCheesyEffects(1)
 
         def commence(self = self):
-            NametagGlobals.setWant2dNametags(True)
+            NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
             base.playMusic(self.music, looping=1, volume=0.8)
             base.transitions.irisIn()
@@ -106,7 +102,7 @@ class StageInterior(BattlePlace.BattlePlace):
         self.acceptOnce('localToonConfrontedStageBoss', handleConfrontedBoss)
 
     def exit(self):
-        NametagGlobals.setWant2dNametags(False)
+        NametagGlobals.setMasterArrowsOn(0)
         self._telemLimiter.destroy()
         del self._telemLimiter
         bboard.remove(DistributedStage.DistributedStage.ReadyPost)

@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
 from otp.level import BasicEntities
@@ -200,10 +200,3 @@ class DistributedLift(BasicEntities.DistributedNodePathEntity):
 
     def exitWaiting(self):
         pass
-
-    if __dev__:
-
-        def attribChanged(self, *args):
-            BasicEntities.DistributedNodePathEntity.attribChanged(self, *args)
-            self.destroyPlatform()
-            self.initPlatform()

@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.hood import Place
@@ -9,8 +9,8 @@ from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import BattlePlace
 from toontown.suit import Suit
-from toontown.nametag.NametagGlobals import *
-from toontown.nametag import NametagGlobals
+from otp.nametag.NametagConstants import *
+from otp.nametag import NametagGlobals
 import math
 
 class CogHQBossBattle(BattlePlace.BattlePlace):
@@ -31,7 +31,6 @@ class CogHQBossBattle(BattlePlace.BattlePlace):
           'teleportOut',
           'died',
           'tunnelOut',
-          'DFA',
           'battle',
           'movie',
           'ouch',
@@ -58,7 +57,6 @@ class CogHQBossBattle(BattlePlace.BattlePlace):
           'teleportOut',
           'died',
           'tunnelOut',
-          'DFA',
           'battle',
           'movie',
           'ouch',
@@ -66,13 +64,12 @@ class CogHQBossBattle(BattlePlace.BattlePlace):
           'finalBattle',
           'WaitForBattle']),
          State.State('stickerBook', self.enterStickerBook, self.exitStickerBook, ['walk',
-          'DFA',
           'WaitForBattle',
           'movie',
-          'battle']),
+          'battle',
+          'tunnelOut',
+          'teleportOut']),
          State.State('WaitForBattle', self.enterWaitForBattle, self.exitWaitForBattle, ['battle', 'walk', 'movie']),
-         State.State('DFA', self.enterDFA, self.exitDFA, ['DFAReject', 'teleportOut', 'tunnelOut']),
-         State.State('DFAReject', self.enterDFAReject, self.exitDFAReject, ['walk']),
          State.State('teleportIn', self.enterTeleportIn, self.exitTeleportIn, ['walk']),
          State.State('teleportOut', self.enterTeleportOut, self.exitTeleportOut, ['teleportIn', 'final', 'WaitForBattle']),
          State.State('died', self.enterDied, self.exitDied, ['final']),
@@ -112,7 +109,7 @@ class CogHQBossBattle(BattlePlace.BattlePlace):
         if self.bossCog:
             self.bossCog.d_avatarEnter()
         self._telemLimiter = TLGatherAllAvs('CogHQBossBattle', RotationLimitToH)
-        NametagGlobals.setWant2dNametags(True)
+        NametagGlobals.setMasterArrowsOn(1)
         base.localAvatar.inventory.setRespectInvasions(0)
         self.fsm.request(requestStatus['how'], [requestStatus])
 

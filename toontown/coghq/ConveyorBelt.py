@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.interval.IntervalGlobal import *
 import MovingPlatform
 from otp.level import BasicEntities
@@ -99,9 +99,3 @@ class ConveyorBelt(BasicEntities.NodePathEntity):
             self.clearClipPlane()
             for tread in self.treads:
                 tread.parentingNode.clearClipPlane()
-
-    if __dev__:
-
-        def attribChanged(self, attrib, value):
-            self.destroyBelt()
-            self.initBelt()

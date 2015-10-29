@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.showbase import DirectObject
 from direct.fsm import ClassicFSM, State
 from toontown.toonbase import ToontownGlobals
@@ -38,9 +38,6 @@ class CountryClubRoom(DirectObject.DirectObject):
         return self.roomNum
 
     def setGeom(self, geom):
-        if geom == None:
-            import pdb
-            pdb.set_trace()
         self.__geom = geom
         return
 

@@ -2,8 +2,8 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import ClassicFSM, State
 from direct.fsm import State
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
-from toontown.nametag import NametagGlobals
-from pandac.PandaModules import *
+from otp.nametag import NametagGlobals
+from panda3d.core import *
 from toontown.battle import BattlePlace
 from toontown.building import Elevator
 from toontown.dna.DNAParser import loadDNAFileAI, DNAStorage
@@ -27,7 +27,6 @@ class FactoryExterior(BattlePlace.BattlePlace):
          State.State('walk', self.enterWalk, self.exitWalk, ['stickerBook',
           'teleportOut',
           'tunnelOut',
-          'DFA',
           'doorOut',
           'elevator',
           'stopped',
@@ -35,14 +34,13 @@ class FactoryExterior(BattlePlace.BattlePlace):
           'battle']),
          State.State('stopped', self.enterStopped, self.exitStopped, ['walk', 'teleportOut', 'elevator']),
          State.State('stickerBook', self.enterStickerBook, self.exitStickerBook, ['walk',
-          'DFA',
           'WaitForBattle',
           'battle',
-          'elevator']),
+          'elevator',
+          'tunnelOut',
+          'teleportOut']),
          State.State('WaitForBattle', self.enterWaitForBattle, self.exitWaitForBattle, ['battle', 'walk']),
          State.State('battle', self.enterBattle, self.exitBattle, ['walk', 'teleportOut', 'died']),
-         State.State('DFA', self.enterDFA, self.exitDFA, ['DFAReject', 'teleportOut', 'tunnelOut']),
-         State.State('DFAReject', self.enterDFAReject, self.exitDFAReject, ['walk']),
          State.State('teleportIn', self.enterTeleportIn, self.exitTeleportIn, ['walk']),
          State.State('teleportOut', self.enterTeleportOut, self.exitTeleportOut, ['teleportIn', 'final', 'WaitForBattle']),
          State.State('doorIn', self.enterDoorIn, self.exitDoorIn, ['walk']),
@@ -77,10 +75,9 @@ class FactoryExterior(BattlePlace.BattlePlace):
                 groupFullName = dnaStore.getDNAVisGroupName(i)
                 visGroup = dnaStore.getDNAVisGroupAI(i)
                 visZoneId = int(base.cr.hoodMgr.extractGroupName(groupFullName))
-                visZoneId = ZoneUtil.getTrueZoneId(visZoneId, self.zoneId)
                 visibles = []
                 for i in xrange(visGroup.getNumVisibles()):
-                    visibles.append(int(visGroup.visibles[i]))
+                    visibles.append(int(visGroup.getVisible(i)))
                 visibles.append(ZoneUtil.getBranchZone(visZoneId))
                 self.zoneVisDict[visZoneId] = visibles
 
@@ -96,8 +93,8 @@ class FactoryExterior(BattlePlace.BattlePlace):
         self._telemLimiter = TLGatherAllAvs('FactoryExterior', RotationLimitToH)
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
-        NametagGlobals.setWant2dNametags(True)
-        self.tunnelOriginList = base.cr.hoodMgr.addLinkTunnelHooks(self, self.nodeList, self.zoneId)
+        NametagGlobals.setMasterArrowsOn(1)
+        self.tunnelOriginList = base.cr.hoodMgr.addLinkTunnelHooks(self, self.nodeList)
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
 
@@ -145,11 +142,9 @@ class FactoryExterior(BattlePlace.BattlePlace):
     def exitTeleportOut(self):
         BattlePlace.BattlePlace.exitTeleportOut(self)
 
-    def enterElevator(self, distElevator, skipDFABoard = 0):
+    def enterElevator(self, distElevator):
         self.accept(self.elevatorDoneEvent, self.handleElevatorDone)
         self.elevator = Elevator.Elevator(self.fsm.getStateNamed('elevator'), self.elevatorDoneEvent, distElevator)
-        if skipDFABoard:
-            self.elevator.skipDFABoard = 1
         distElevator.elevatorFSM = self.elevator
         self.elevator.load()
         self.elevator.enter()

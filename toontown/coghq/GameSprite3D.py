@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.interval.IntervalGlobal import *
 import math
 import random
@@ -184,9 +184,6 @@ class GameSprite:
             self.multiColorStep = 0.1
         elif colorType == 9:
             myModel = 'phase_12/models/bossbotHQ/bust_a_cog_ball_steel'
-            if not myModel:
-                import pdb
-                pdb.set_trace()
             self.breakable = 0
         elif colorType == 10:
             myModel = 'phase_12/models/bossbotHQ/bust_a_cog_ball_fire'

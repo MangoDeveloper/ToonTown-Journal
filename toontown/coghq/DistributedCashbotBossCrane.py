@@ -1,5 +1,5 @@
 from direct.gui.DirectGui import *
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
 from direct.fsm import FSM
@@ -10,8 +10,8 @@ from direct.task import Task
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from otp.otpbase import OTPGlobals
+from otp.nametag import NametagGlobals
 import random
-from toontown.nametag import NametagGlobals
 
 class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossCrane')
@@ -398,7 +398,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             text_pos=(0, -0.07), text_fg=VBase4(1, 1, 1, 1), pos=(-0.25, 0, 0.175),
             command=self.__exitCrane)
         self.accept('escape', self.__exitCrane)
-        self.accept('control', self.__controlPressed)
+        self.accept(base.JUMP, self.__controlPressed)
         self.accept('control-up', self.__controlReleased)
         self.accept('InputState-forward', self.__upArrow)
         self.accept('InputState-reverse', self.__downArrow)
@@ -407,7 +407,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         taskMgr.add(self.__watchControls, 'watchCraneControls')
         taskMgr.doMethodLater(5, self.__displayCraneAdvice, self.craneAdviceName)
         taskMgr.doMethodLater(10, self.__displayMagnetAdvice, self.magnetAdviceName)
-        NametagGlobals.setForceOnscreenChat(True)
+        NametagGlobals.setOnscreenChatForced(1)
         self.arrowVert = 0
         self.arrowHorz = 0
         return
@@ -420,7 +420,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.__cleanupCraneAdvice()
         self.__cleanupMagnetAdvice()
         self.ignore('escape')
-        self.ignore('control')
+        self.ignore(base.JUMP)
         self.ignore('control-up')
         self.ignore('InputState-forward')
         self.ignore('InputState-reverse')
@@ -428,7 +428,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.ignore('InputState-turnRight')
         self.arrowVert = 0
         self.arrowHorz = 0
-        NametagGlobals.setForceOnscreenChat(False)
+        NametagGlobals.setOnscreenChatForced(0)
         taskMgr.remove('watchCraneControls')
         self.__setMoveSound(None)
         return

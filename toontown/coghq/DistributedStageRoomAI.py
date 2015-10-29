@@ -39,10 +39,6 @@ class DistributedStageRoomAI(DistributedLevelAI.DistributedLevelAI, StageRoomBas
         self.notify.debug('loading spec')
         specModule = StageRoomSpecs.getStageRoomSpecModule(self.roomId)
         roomSpec = LevelSpec.LevelSpec(specModule)
-        if __dev__:
-            self.notify.debug('creating entity type registry')
-            typeReg = self.getStageEntityTypeReg()
-            roomSpec.setEntityTypeReg(typeReg)
         self.notify.debug('creating entities')
         DistributedLevelAI.DistributedLevelAI.generate(self, roomSpec)
         self.notify.debug('creating cogs')
@@ -115,7 +111,7 @@ class DistributedStageRoomAI(DistributedLevelAI.DistributedLevelAI, StageRoomBas
         for avId in activeVictorIds:
             self.air.writeServerEvent('stageDefeated', avId, description)
         for toon in activeVictors:
-            simbase.air.questManager.toonDefeatedStage(toon, self.stageId, activeVictors)
+            simbase.air.questManager.toonDefeatedStage(toon, self.stageId)
 
     def b_setDefeated(self):
         self.d_setDefeated()

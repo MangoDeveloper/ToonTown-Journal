@@ -3,9 +3,9 @@ from toontown.battle import BattlePlace
 from direct.fsm import ClassicFSM, State
 from direct.fsm import State
 from toontown.toonbase import ToontownGlobals
-from pandac.PandaModules import *
+from panda3d.core import *
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
-from toontown.nametag import NametagGlobals
+from otp.nametag import NametagGlobals
 
 class CogHQExterior(BattlePlace.BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('CogHQExterior')
@@ -18,9 +18,9 @@ class CogHQExterior(BattlePlace.BattlePlace):
           'teleportIn',
           'doorIn']),
          State.State('walk', self.enterWalk, self.exitWalk, ['stickerBook',
+          'purchase',
           'teleportOut',
           'tunnelOut',
-          'DFA',
           'doorOut',
           'died',
           'stopped',
@@ -32,17 +32,16 @@ class CogHQExterior(BattlePlace.BattlePlace):
          State.State('doorIn', self.enterDoorIn, self.exitDoorIn, ['walk', 'stopped']),
          State.State('doorOut', self.enterDoorOut, self.exitDoorOut, ['walk', 'stopped']),
          State.State('stickerBook', self.enterStickerBook, self.exitStickerBook, ['walk',
-          'DFA',
           'WaitForBattle',
           'battle',
           'tunnelOut',
+          'teleportOut',
           'doorOut',
           'squished',
           'died']),
+         State.State('purchase', self.enterPurchase, self.exitPurchase, ['walk']),
          State.State('WaitForBattle', self.enterWaitForBattle, self.exitWaitForBattle, ['battle', 'walk']),
          State.State('battle', self.enterBattle, self.exitBattle, ['walk', 'teleportOut', 'died']),
-         State.State('DFA', self.enterDFA, self.exitDFA, ['DFAReject', 'teleportOut', 'tunnelOut']),
-         State.State('DFAReject', self.enterDFAReject, self.exitDFAReject, ['walk']),
          State.State('squished', self.enterSquished, self.exitSquished, ['walk', 'died', 'teleportOut']),
          State.State('teleportIn', self.enterTeleportIn, self.exitTeleportIn, ['walk', 'WaitForBattle', 'battle']),
          State.State('teleportOut', self.enterTeleportOut, self.exitTeleportOut, ['teleportIn', 'final', 'WaitForBattle']),
@@ -70,8 +69,8 @@ class CogHQExterior(BattlePlace.BattlePlace):
         self._telemLimiter = TLGatherAllAvs('CogHQExterior', RotationLimitToH)
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
-        NametagGlobals.setWant2dNametags(True)
-        self.tunnelOriginList = base.cr.hoodMgr.addLinkTunnelHooks(self, self.nodeList, self.zoneId)
+        NametagGlobals.setMasterArrowsOn(1)
+        self.tunnelOriginList = base.cr.hoodMgr.addLinkTunnelHooks(self, self.nodeList)
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
 
@@ -88,6 +87,19 @@ class CogHQExterior(BattlePlace.BattlePlace):
             self.loader.geom.reparentTo(hidden)
         self.ignoreAll()
         BattlePlace.BattlePlace.exit(self)
+
+    def enterPurchase(self):
+        base.localAvatar.b_setAnimState('neutral', 1)
+        self.accept('teleportQuery', self.handleTeleportQuery)
+        base.localAvatar.setTeleportAvailable(1)
+        base.localAvatar.laffMeter.start()
+        base.localAvatar.obscureMoveFurnitureButton(1)
+
+    def exitPurchase(self):
+        base.localAvatar.setTeleportAvailable(0)
+        self.ignore('teleportQuery')
+        base.localAvatar.laffMeter.stop()
+        base.localAvatar.obscureMoveFurnitureButton(-1)
 
     def enterTunnelOut(self, requestStatus):
         fromZoneId = self.zoneId - self.zoneId % 100

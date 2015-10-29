@@ -1,7 +1,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import State
 from direct.interval.IntervalGlobal import *
-from pandac.PandaModules import *
+from panda3d.core import *
 from toontown.building import Elevator
 from toontown.coghq import CogHQExterior
 from toontown.dna.DNAParser import loadDNAFileAI, DNAStorage
@@ -69,10 +69,9 @@ class CashbotHQExterior(CogHQExterior.CogHQExterior):
             groupFullName = dnaStore.getDNAVisGroupName(i)
             visGroup = dnaStore.getDNAVisGroupAI(i)
             visZoneId = int(base.cr.hoodMgr.extractGroupName(groupFullName))
-            visZoneId = ZoneUtil.getTrueZoneId(visZoneId, self.zoneId)
             visibles = []
             for i in xrange(visGroup.getNumVisibles()):
-                visibles.append(int(visGroup.visibles[i]))
+                visibles.append(int(visGroup.getVisible(i)))
             visibles.append(ZoneUtil.getBranchZone(visZoneId))
             self.zoneVisDict[visZoneId] = visibles
 
@@ -84,11 +83,9 @@ class CashbotHQExterior(CogHQExterior.CogHQExterior):
         for train in self.trains:
             train.hide()
 
-    def enterElevator(self, distElevator, skipDFABoard = 0):
+    def enterElevator(self, distElevator):
         self.accept(self.elevatorDoneEvent, self.handleElevatorDone)
         self.elevator = Elevator.Elevator(self.fsm.getStateNamed('elevator'), self.elevatorDoneEvent, distElevator)
-        if skipDFABoard:
-            self.elevator.skipDFABoard = 1
         self.elevator.load()
         self.elevator.enter()
 

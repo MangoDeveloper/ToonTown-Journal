@@ -6,6 +6,8 @@ from direct.gui import DirectGui
 from toontown.toonbase import TTLocalizer
 from toontown.toon import Toon
 from direct.fsm import State
+from direct.actor.Actor import Actor
+import MegaCorpInterior
 import FactoryExterior
 import FactoryInterior
 import SellbotHQExterior
@@ -24,6 +26,7 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
             state.addTransition('factoryExterior')
 
         self.fsm.addState(State.State('factoryInterior', self.enterFactoryInterior, self.exitFactoryInterior, ['quietZone', 'factoryExterior']))
+        self.fsm.addState(State.State('megaCorpInterior', self.enterMegaCorpInterior, self.exitMegaCorpInterior, ['quietZone', 'factoryExterior']))
         for stateName in ['quietZone']:
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('factoryInterior')
@@ -49,6 +52,9 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
         zoneId = zoneId - zoneId % 100
         if zoneId == ToontownGlobals.SellbotHQ:
             self.geom = loader.loadModel(self.cogHQExteriorModelPath)
+            factoryPOV = loader.loadModel('phase_9/models/cogHQ/SellbotFactoryPov')
+            factoryPOV.reparentTo(self.geom)
+            factoryPOV.setPosHpr(580.62, -139.52, 15.22, 272.73, 0, 0)
             dgLinkTunnel = self.geom.find('**/Tunnel1')
             dgLinkTunnel.setName('linktunnel_dg_5316_DNARoot')
             factoryLinkTunnel = self.geom.find('**/Tunnel2')
@@ -89,6 +95,10 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
                 door.flattenMedium()
             cogSign.removeNode()
             self.geom.flattenMedium()
+            self.botcam1 = Actor("phase_9/models/char/BotCam-zero.bam",{"botcamneutral":"phase_9/models/char/BotCam-neutral.bam"})
+            self.botcam1.reparentTo(self.geom)
+            self.botcam1.setPos(-0.01,-39.3,24)
+            self.botcam1.loop('botcamneutral')
         elif zoneId == ToontownGlobals.SellbotFactoryExt:
             self.geom = loader.loadModel(self.factoryExteriorModelPath)
             factoryLinkTunnel = self.geom.find('**/tunnel_group2')
@@ -109,6 +119,11 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
             hqText = DirectGui.OnscreenText(text=TTLocalizer.Headquarters, font=ToontownGlobals.getSuitFont(), pos=(0, -0.34), scale=0.1, mayChange=False, parent=hqSign)
             hqText.setDepthWrite(0)
             hqText.flattenStrong()
+
+            courtyardPOV = loader.loadModel('phase_9/models/cogHQ/SellbotHQExterior')
+            courtyardPOV.reparentTo(self.geom)
+            courtyardPOV.setPos(-200, -635, 0)
+            courtyardPOV.setH (-275)
             frontDoor = self.geom.find('**/doorway1')
             fdSign = cogSign.copyTo(frontDoor)
             fdSign.setPosHprScale(62.74, -87.99, 17.26, 2.72, 0.0, 0.0, elevatorSignSF, elevatorSignSF, elevatorSignSF * aspectSF)
@@ -163,6 +178,14 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
     def exitFactoryExterior(self):
         taskMgr.remove('titleText')
         self.hood.hideTitleText()
+        self.exitPlace()
+        self.placeClass = None
+
+    def enterMegaCorpInterior(self, requestStatus):
+        self.placeClass = MegaCorpInterior.MegaCorpInterior
+        self.enterPlace(requestStatus)
+
+    def exitMegaCorpInterior(self):
         self.exitPlace()
         self.placeClass = None
 

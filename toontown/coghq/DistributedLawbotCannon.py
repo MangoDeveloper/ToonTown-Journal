@@ -7,9 +7,9 @@ from pandac.PandaModules import CollisionSphere, CollisionNode
 from toontown.toonbase import ToontownGlobals
 from toontown.estate import DistributedCannon
 from toontown.estate import CannonGlobals
-from toontown.nametag import NametagGlobals
+from otp.nametag import NametagGlobals
 from direct.gui.DirectGui import *
-from pandac.PandaModules import *
+from panda3d.core import *
 from toontown.toon import NPCToons
 from toontown.toon import ToonHead
 from toontown.toonbase import TTLocalizer
@@ -30,11 +30,11 @@ CAMERA_PULLBACK_MAX = 40
 class DistributedLawbotCannon(DistributedObject.DistributedObject):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedLawbotCannon')
     LOCAL_CANNON_MOVE_TASK = 'localCannonMoveTask'
-    FIRE_KEY = 'control'
-    UP_KEY = 'arrow_up'
-    DOWN_KEY = 'arrow_down'
-    LEFT_KEY = 'arrow_left'
-    RIGHT_KEY = 'arrow_right'
+    FIRE_KEY = base.JUMP
+    UP_KEY = base.Move_Up
+    DOWN_KEY = base.Move_Down
+    LEFT_KEY = base.Move_Left
+    RIGHT_KEY = base.Move_Right
     HIT_GROUND = 0
 
     def __init__(self, cr):
@@ -253,7 +253,7 @@ class DistributedLawbotCannon(DistributedObject.DistributedObject):
     def __makeGui(self):
         if self.madeGui:
             return
-        NametagGlobals.setWant2dNametags(False)
+        NametagGlobals.setMasterArrowsOn(0)
         guiModel = 'phase_4/models/gui/cannon_game_gui'
         cannonGui = loader.loadModel(guiModel)
         self.aimPad = DirectFrame(image=cannonGui.find('**/CannonFire_PAD'), relief=None, pos=(0.7, 0, -0.553333), scale=0.8)
@@ -297,7 +297,7 @@ class DistributedLawbotCannon(DistributedObject.DistributedObject):
         if self.flashingLabel:
             self.flashingLabel.finish()
             self.flashingLabel = None
-        NametagGlobals.setWant2dNametags(True)
+        NametagGlobals.setMasterArrowsOn(1)
         self.__disableAimInterface()
         self.upButton.unbind(DGG.B1PRESS)
         self.upButton.unbind(DGG.B1RELEASE)
