@@ -4,7 +4,7 @@ from toontown.building import DistributedAnimatedProp/AI
 from toontown.toon import DistributedToon/AI/UD
 from toontown.classicchars import DistributedCCharBase/AI
 from toontown.classicchars import DistributedMickey/AI
-from src.toontown.ai import DistributedEffectMgr/AI
+from toontown.ai import DistributedEffectMgr/AI
 from toontown.classicchars import DistributedVampireMickey/AI
 from toontown.building import DistributedBuildingQueryMgr/AI
 from toontown.classicchars import DistributedMinnie/AI
