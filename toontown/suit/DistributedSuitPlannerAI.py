@@ -54,8 +54,8 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             if not hasattr(self.__class__, 'CogdoPopAdjusted'):
                 self.__class__.CogdoPopAdjusted = True
                 for index in xrange(len(self.SuitHoodInfo)):
-                    SuitBuildingGlobals[self.zoneId][0] = int(0.5 + self.CogdoPopFactor * SuitBuildingGlobals[self.zoneId][0])
-                    SuitBuildingGlobals[self.zoneId][1] = int(0.5 + self.CogdoPopFactor * SuitBuildingGlobals[self.zoneId][1])
+                    SuitBuildingGlobals.buildingMinMax[self.zoneId][0] = int(0.5 + self.CogdoPopFactor * SuitBuildingGlobals.buildingMinMax[self.zoneId][0])
+                    SuitBuildingGlobals.buildingMinMax[self.zoneId][1] = int(0.5 + self.CogdoPopFactor * SuitBuildingGlobals.buildingMinMax[self.zoneId][1])
         self.hoodInfoIdx = -1
         for index in xrange(len(self.SuitHoodInfo)):
             currHoodInfo = self.SuitHoodInfo[index]
