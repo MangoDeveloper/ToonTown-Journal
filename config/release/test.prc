@@ -15,7 +15,7 @@ want-chinese-checkers #t
 want-checkers #t
 want-gifting #t
 
-want-parties #f
+want-parties #t
 want-cogdominiums #t
 want-achievements #f
 boarding-group-merges #t
