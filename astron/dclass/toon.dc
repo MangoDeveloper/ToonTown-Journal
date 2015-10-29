@@ -2621,7 +2621,7 @@ dclass DistributedViewingBlock : DistributedStartingBlock {
 
 dclass DistributedLeaderBoard : DistributedObject {
   setPosHpr(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10) required broadcast ram;
-  setDisplay(blob) broadcast ram;
+  setDisplay(uint8, uint8, LeaderboardResult[]) required broadcast ram;
 };
 
 dclass DistributedDeliveryManager : DistributedObject {
