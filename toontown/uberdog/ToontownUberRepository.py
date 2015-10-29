@@ -39,6 +39,10 @@ class ToontownUberRepository(ToontownInternalRepository):
             endpoint = config.GetString('rpc-server-endpoint', 'http://localhost:8080/')
             self.rpcServer = ToontownRPCServer(endpoint, ToontownRPCHandler(self))
             self.rpcServer.start(useTaskChain=True)
+      
+        self.backups = BackupManager.BackupManager(
+            filepath=self.config.GetString('backups-filepath', 'backups/'),
+            extension=self.config.GetString('backups-extension', '.json'))
 
         self.createGlobals()
         self.notify.info('Done.')
