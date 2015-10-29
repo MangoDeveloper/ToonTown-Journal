@@ -36,5 +36,5 @@ for mount in mounts:
 # Next, let's get the DC stream:
 __builtin__.dcStream = StringStream(game_data.DC)
 
-# Finally, start the game:
-import toontown.toonbase.ClientStart
+# Finally, start the game remotely:
+import toontown.toonbase.ClientStartRemoteDB
