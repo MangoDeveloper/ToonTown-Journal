@@ -1,6 +1,6 @@
-from toontown.pets import PetDNA, PetTraits, PetConstants
-from toontown.pets import PetNameGenerator
+from src.toontown.pets import PetDNA, PetTraits, PetConstants
 from direct.showbase import PythonUtil
+from src.toontown.toonbase import TTLocalizer
 import random
 
 def getPetInfoFromSeed(seed, safezoneId):
@@ -8,7 +8,7 @@ def getPetInfoFromSeed(seed, safezoneId):
     random.seed(seed)
     dnaArray = PetDNA.getRandomPetDNA(safezoneId)
     gender = PetDNA.getGender(dnaArray)
-    nameString = PetNameGenerator.PetNameGenerator().randomName(gender=gender, seed=seed + safezoneId)
+    nameString = TTLocalizer.getRandomPetName(gender=gender, seed=seed)
     traitSeed = PythonUtil.randUint31()
     random.setstate(S)
     return (nameString, dnaArray, traitSeed)

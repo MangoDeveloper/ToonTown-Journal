@@ -4,10 +4,10 @@ from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.distributed.ClockDelta import *
 from direct.task import Task
 
-from otp.ai.MagicWordGlobal import *
+from src.otp.ai.MagicWordGlobal import *
 
-from toontown.toonbase import ToontownGlobals
-from toontown.parties import PartyGlobals
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.parties import PartyGlobals
 
 import FireworkShows
 import random
@@ -36,25 +36,22 @@ class DistributedFireworkShowAI(DistributedObjectAI):
         pass
 
 
-@magicWord(category=CATEGORY_ADMINISTRATOR, types=[str])
+@magicWord(category=CATEGORY_SYSTEM_ADMINISTRATOR, types=[str])
 def fireworks(showName='july4'):
     """
     Starts a fireworks show on the AI server.
     """
     showName = showName.lower()
     if showName == 'july4':
-        showType = ToontownGlobals.JULY4_FIREWORKS
+        showType = ToontownGlobals.SUMMER_FIREWORKS
     elif showName == 'newyears':
-        showType = ToontownGlobals.NEWYEARS_FIREWORKS
+        showType = ToontownGlobals.NEW_YEAR_FIREWORKS
     elif showName == 'summer':
         showType = PartyGlobals.FireworkShows.Summer
-    elif showName == 'combo':
-        showType = ToontownGlobals.COMBO_FIREWORKS
     else:
         return 'Invalid fireworks show name!'
     numShows = len(FireworkShows.shows.get(showType, []))
     showIndex = random.randint(0, numShows - 1)
-    # TODO: Start the fireworks show in all districts.
     for hood in simbase.air.hoods:
         if hood.zoneId == ToontownGlobals.GolfZone:
             continue

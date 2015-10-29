@@ -1,5 +1,5 @@
-from toontown.toonbase import ToontownGlobals
-from toontown.pets import PetMood, PetTraits, PetDetail
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.pets import PetMood, PetTraits, PetDetail
 
 class PetHandle:
 
@@ -59,6 +59,7 @@ class PetHandle:
     def updateMoodFromServer(self, callWhenDone = None):
 
         def handleGotDetails(avatar, callWhenDone = callWhenDone):
+            avatar.announceGenerate()
             self._grabMood(avatar)
             if callWhenDone:
                 callWhenDone()

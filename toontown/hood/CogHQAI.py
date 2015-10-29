@@ -1,10 +1,8 @@
-from toontown.building import DoorTypes
-from toontown.building.DistributedBoardingPartyAI import DistributedBoardingPartyAI
-from toontown.coghq import DistributedCogHQDoorAI
-from toontown.coghq import LobbyManagerAI
-from toontown.toonbase import TTLocalizer
-from toontown.toonbase import ToontownGlobals
-
+from src.toontown.building import DoorTypes
+from src.toontown.building.DistributedBoardingPartyAI import DistributedBoardingPartyAI
+from src.toontown.coghq import DistributedCogHQDoorAI, DistributedCogHQExteriorDoorAI, LobbyManagerAI
+from src.toontown.toonbase import TTLocalizer, ToontownGlobals
+from src.toontown.toon import NPCToons
 
 class CogHQAI:
     notify = directNotify.newCategory('CogHQAI')
@@ -41,6 +39,12 @@ class CogHQAI:
         self.extDoor = self.makeCogHQDoor(self.lobbyZoneId, 0, 0, self.lobbyFADoorCode)
         if simbase.config.GetBool('want-boarding-groups', True):
             self.createBoardingParty()
+        self.npcs = NPCToons.createNpcsInZone(self.air, self.zoneId)
+
+    def shutdown(self):
+        for npc in self.npcs:
+            npc.requestDelete()
+        del self.npcs
 
     def createLobbyManager(self):
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, self.bossCtor)

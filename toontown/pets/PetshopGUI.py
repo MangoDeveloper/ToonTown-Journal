@@ -1,23 +1,23 @@
-from direct.directnotify import DirectNotifyGlobal
 from direct.gui.DirectGui import *
+from panda3d.core import *
+from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.DirectObject import DirectObject
-from pandac.PandaModules import *
-import random
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.toonbase import TTLocalizer
+from src.toontown.toonbase import ToontownTimer
+from direct.task import Task
+from src.otp.namepanel import NameTumbler
+from src.otp.otpbase import OTPGlobals
+from src.otp.otpbase import OTPLocalizer
+from src.toontown.fishing import FishSellGUI
+from src.toontown.pets import Pet, PetConstants
+from src.toontown.pets import PetDNA
+from src.toontown.pets import PetUtil
+from src.toontown.pets import PetDetail
+from src.toontown.pets import PetTraits
+from src.toontown.hood import ZoneUtil
 import string
-
-from toontown.fishing import FishSellGUI
-from toontown.hood import ZoneUtil
-from toontown.pets import Pet, PetConstants
-from toontown.pets import PetDNA
-from toontown.pets import PetDetail
-from toontown.pets import PetNameGenerator
-from toontown.pets import PetTraits
-from toontown.pets import PetUtil
-from toontown.toonbase import TTLocalizer
-from toontown.toonbase import ToontownGlobals
-from toontown.toonbase import ToontownTimer
-
-
+import random
 Dialog_MainMenu = 0
 Dialog_AdoptPet = 1
 Dialog_ChoosePet = 2
@@ -47,6 +47,7 @@ class PetshopGUI(DirectObject):
             self.bNo = DirectButton(self, image=(buttons.find('**/CloseBtn_UP'), buttons.find('**/CloseBtn_DN'), buttons.find('**/CloseBtn_Rllvr')), relief=None, text=TTLocalizer.TutorialNo, text_scale=0.05, text_pos=(0.0, -0.1), pos=(0.15, 0.0, -0.1), command=lambda : messenger.send(doneEvent, [0]))
             buttons.removeNode()
             gui.removeNode()
+            return
 
     class NamePicker(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.NamePicker')
@@ -65,15 +66,14 @@ class PetshopGUI(DirectObject):
             self.petModel.fitAndCenterHead(0.435, forGui=1)
             self.petModel.reparentTo(self.petView)
             self.petModel.setH(225)
+            self.petModel.setScale(0.125)
             self.petModel.enterNeutralHappy()
-            self.ng = PetNameGenerator.PetNameGenerator()
-            if gender == 1:
-                self.allNames = self.ng.boyFirsts
+            self.allNames = TTLocalizer.NeutralPetNames
+            if gender == 0:
+                self.allNames += TTLocalizer.BoyPetNames
             else:
-                self.allNames = self.ng.girlFirsts
-            self.allNames += self.ng.neutralFirsts
+                self.allNames += TTLocalizer.GirlPetNames
             self.allNames.sort()
-            self.checkNames()
             self.letters = []
             for name in self.allNames:
                 if name[0:TTLocalizer.PGUIcharLength] not in self.letters:
@@ -87,19 +87,14 @@ class PetshopGUI(DirectObject):
             self.rebuildNameList()
             self.randomButton = DirectButton(parent=self, relief=None, image=(self.gui.find('**/RandomUpButton'), self.gui.find('**/RandomDownButton'), self.gui.find('**/RandomRolloverButton')), scale=self.guiScale, text=TTLocalizer.RandomButton, text_pos=(-0.8, -5.7), text_scale=0.8, text_fg=text2Color, pressEffect=False, command=self.randomName)
             self.nameResult = DirectLabel(parent=self, relief=None, scale=self.guiScale, text='', text_align=TextNode.ACenter, text_pos=(-1.85, 2.6), text_fg=text0Color, text_scale=0.6, text_wordwrap=8)
-            self.submitButton = DirectButton(parent=self, relief=None, image=(self.gui.find('**/SubmitUpButton'), self.gui.find('**/SubmitDownButton'), self.gui.find('**/SubmitRolloverButton')), scale=self.guiScale, text=TTLocalizer.PetshopAdopt, text_pos=(3.3, -5.7), text_scale=TTLocalizer.PGUIsubmitButton, text_fg=text0Color, pressEffect=False, command=lambda : messenger.send(doneEvent, [self.ng.returnUniqueID(self.curName)]))
+            self.submitButton = DirectButton(parent=self, relief=None, image=(self.gui.find('**/SubmitUpButton'), self.gui.find('**/SubmitDownButton'), self.gui.find('**/SubmitRolloverButton')), scale=self.guiScale, text=TTLocalizer.PetshopAdopt, text_pos=(3.3, -5.7), text_scale=TTLocalizer.PGUIsubmitButton, text_fg=text0Color, pressEffect=False, command=lambda : messenger.send(doneEvent, [TTLocalizer.getPetNameId(self.curName)]))
             model = loader.loadModel('phase_4/models/gui/PetShopInterface')
             modelScale = 0.1
             cancelImageList = (model.find('**/CancelButtonUp'), model.find('**/CancelButtonDown'), model.find('**/CancelButtonRollover'))
             cancelIcon = model.find('**/CancelIcon')
             self.cancelButton = DirectButton(parent=self, relief=None, pos=(-0.04, 0, -0.47), image=cancelImageList, geom=cancelIcon, scale=modelScale, pressEffect=False, command=lambda : messenger.send(doneEvent, [-1]))
             self.randomName()
-
-        def checkNames(self):
-            if __dev__:
-                for name in self.allNames:
-                    if not name.replace(' ', '').isalpha():
-                        self.notify.warning('Bad name:%s' % name)
+            return
 
         def destroy(self):
             self.petModel.delete()
@@ -201,6 +196,7 @@ class PetshopGUI(DirectObject):
             if not base.localAvatar.hasPet():
                 self.returnPetButton['state'] = DGG.DISABLED
             model.removeNode()
+            return
 
     class AdoptPetDlg(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.AdoptPetDlg')
@@ -208,7 +204,7 @@ class PetshopGUI(DirectObject):
         def __init__(self, doneEvent, petSeed, petNameIndex):
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(petSeed, zoneId)
-            name = PetNameGenerator.PetNameGenerator().getName(petNameIndex)
+            name = TTLocalizer.getPetName(petNameIndex)
             cost = PetUtil.getPetCostFromSeed(petSeed, zoneId)
             model = loader.loadModel('phase_4/models/gui/AdoptPet')
             modelPos = (0, 0, -0.3)
@@ -222,6 +218,7 @@ class PetshopGUI(DirectObject):
             self.petModel.fitAndCenterHead(0.395, forGui=1)
             self.petModel.reparentTo(self.petView)
             self.petModel.setH(130)
+            self.petModel.setScale(0.125)
             self.petModel.enterNeutralHappy()
             self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.075, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.225, 0.33), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
@@ -233,6 +230,7 @@ class PetshopGUI(DirectObject):
             self.cancelButton = DirectButton(parent=self, relief=None, image=cancelImageList, geom=cancelIcon, scale=modelScale, text=('', TTLocalizer.PetshopGoBack), text_pos=(-5.8, 4.4), text_scale=0.7, pressEffect=False, command=lambda : messenger.send(doneEvent, [0]))
             self.okButton = DirectButton(parent=self, relief=None, image=okImageList, geom=checkIcon, scale=modelScale, text=('', TTLocalizer.PetshopAdopt), text_pos=(5.8, 4.4), text_scale=0.7, pressEffect=False, command=lambda : messenger.send(doneEvent, [1]))
             model.removeNode()
+            return
 
         def destroy(self):
             self.ignore(localAvatar.uniqueName('moneyChange'))
@@ -263,11 +261,13 @@ class PetshopGUI(DirectObject):
                 self.okButton = DirectButton(parent=self, relief=None, image=okImageList, geom=checkIcon, scale=modelScale, text=('', TTLocalizer.PetshopReturn), text_pos=(5.8, 4.4), text_scale=0.7, pressEffect=False, command=lambda : messenger.send(doneEvent, [1]))
                 self.petView = self.attachNewNode('petView')
                 self.petView.setPos(-0.15, 0, 0.8)
+                avatar.announceGenerate()
                 self.petModel = Pet.Pet(forGui=1)
                 self.petModel.setDNA(avatar.getDNA())
                 self.petModel.fitAndCenterHead(0.395, forGui=1)
                 self.petModel.reparentTo(self.petView)
                 self.petModel.setH(130)
+                self.petModel.setScale(0.125)
                 self.petModel.enterNeutralSad()
                 model.removeNode()
                 self.initialized = True
@@ -284,6 +284,7 @@ class PetshopGUI(DirectObject):
                 self.PetPanel = None
                 self.petModel.delete()
                 DirectFrame.destroy(self)
+            return
 
     class ChoosePetDlg(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.ChoosePetDlg')
@@ -317,6 +318,7 @@ class PetshopGUI(DirectObject):
             self.petSeeds = petSeeds
             self.makePetList()
             self.showPet()
+            return
 
         def makePetList(self):
             self.numPets = len(self.petSeeds)
@@ -351,7 +353,7 @@ class PetshopGUI(DirectObject):
                     descList.append('\t%s' % trait)
 
                 descList.append(TTLocalizer.PetshopDescCost % cost)
-                self.petDesc.append(string.join(descList, '\n'))
+                self.petDesc.append('\n'.join(descList))
                 self.petCost.append(cost)
 
         def destroy(self):
@@ -374,12 +376,14 @@ class PetshopGUI(DirectObject):
             self.petModel.fitAndCenterHead(0.57, forGui=1)
             self.petModel.reparentTo(self.petView)
             self.petModel.setH(130)
+            self.petModel.setScale(0.125)
             self.petModel.enterNeutralHappy()
             self.descLabel = DirectLabel(parent=self, pos=(-0.4, 0, 0.72), relief=None, scale=0.05, text=self.petDesc[self.curPet], text_align=TextNode.ALeft, text_wordwrap=TTLocalizer.PGUIwordwrap, text_scale=TTLocalizer.PGUIdescLabel)
             if self.petCost[self.curPet] > base.localAvatar.getTotalMoney():
                 self.okButton['state'] = DGG.DISABLED
             else:
                 self.okButton['state'] = DGG.NORMAL
+            return
 
         def __moneyChange(self, money):
             self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
@@ -401,6 +405,7 @@ class PetshopGUI(DirectObject):
         self.timer.posInTopRightCorner()
         self.timer.countdown(PetConstants.PETCLERK_TIMER, self.__timerExpired)
         self.doDialog(Dialog_MainMenu)
+        return
 
     def __timerExpired(self):
         messenger.send(self.eventDict['guiDone'], [True])
@@ -421,6 +426,7 @@ class PetshopGUI(DirectObject):
         if self.dialog != None:
             self.dialog.destroy()
             self.dialog = None
+        return
 
     def popDialog(self):
         self.dialogStack.pop()
@@ -503,6 +509,7 @@ class PetshopGUI(DirectObject):
                 self.notify.warning('Tried to go home, but place is None.')
                 return
             place.goHomeNow(base.localAvatar.lastHood)
+        return
 
     def __handleReturnPetDlg(self, exitVal):
         if exitVal == 0:

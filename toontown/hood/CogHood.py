@@ -1,6 +1,6 @@
 from direct.fsm import ClassicFSM, State
-from toontown.toonbase import ToontownGlobals
-from toontown.hood.Hood import Hood
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.hood.Hood import Hood
 
 
 class CogHood(Hood):
@@ -14,10 +14,27 @@ class CogHood(Hood):
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
         Hood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
 
-        self.fsm = ClassicFSM.ClassicFSM('Hood', [State.State('start', self.enterStart, self.exitStart, ['cogHQLoader']),
-         State.State('cogHQLoader', self.enterCogHQLoader, self.exitCogHQLoader, ['quietZone']),
-         State.State('quietZone', self.enterQuietZone, self.exitQuietZone, ['cogHQLoader']),
-         State.State('final', self.enterFinal, self.exitFinal, [])], 'start', 'final')
+        self.fsm = ClassicFSM.ClassicFSM(
+            'Hood',
+            [State.State('start',
+                         self.enterStart,
+                         self.exitStart,
+                         ['cogHQLoader']),
+             State.State('cogHQLoader',
+                         self.enterCogHQLoader,
+                         self.exitCogHQLoader,
+                         ['quietZone']),
+             State.State('quietZone',
+                         self.enterQuietZone,
+                         self.exitQuietZone,
+                         ['cogHQLoader']),
+             State.State('final',
+                         self.enterFinal,
+                         self.exitFinal,
+                         [])
+             ],
+            'start',
+            'final')
         self.fsm.enterInitialState()
 
         # Until Hood is cleaned up, we will need to define some variables:
@@ -34,14 +51,14 @@ class CogHood(Hood):
         skyMiddle = self.sky.find('**/MiddleGroup')
         skyOuter = self.sky.find('**/OutterSky')
 
-        if not skyOuter.isEmpty():
-            skyOuter.setBin('background', 0)
-        if not skyMiddle.isEmpty():
-            skyMiddle.setDepthWrite(0)
-            skyMiddle.setBin('background', 10)
-        if not skyInner.isEmpty():
-            skyInner.setDepthWrite(0)
-            skyInner.setBin('background', 20)
+       # if not skyOuter.isEmpty():
+          #  skyOuter.setBin('background', 0)
+       # if not skyMiddle.isEmpty():
+         #   skyMiddle.setDepthWrite(0)
+           # skyMiddle.setBin('background', 10)
+      #  if not skyInner.isEmpty():
+          #  skyInner.setDepthWrite(0)
+            #skyInner.setBin('background', 20)
 
         self.parentFSM.getStateNamed(self.__class__.__name__).addChild(self.fsm)
 
@@ -75,7 +92,7 @@ class CogHood(Hood):
             messenger.send(self.doneEvent)
 
     def exit(self):
-        base.localAvatar.setCameraFov(ToontownGlobals.DefaultCameraFov)
+        base.localAvatar.setCameraFov(settings['fov'])
         base.camLens.setNearFar(ToontownGlobals.DefaultCameraNear, ToontownGlobals.DefaultCameraFar)
 
         Hood.exit(self)

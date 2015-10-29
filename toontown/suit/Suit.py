@@ -69,8 +69,7 @@ hh = (('pen-squirt', 'fountain-pen', 7),
  ('magic3', 'magic3', 5),
  ('roll-o-dex', 'roll-o-dex', 5))
 cr = (('pickpocket', 'pickpocket', 5), ('throw-paper', 'throw-paper', 3.5), ('glower', 'glower', 5))
-tbc = (('cigar-smoke', 'cigar-smoke', 8),
- ('glower', 'glower', 5),
+tbc = (('glower', 'glower', 5),
  ('magic1', 'magic1', 5),
  ('song-and-dance', 'song-and-dance', 8),
  ('golf-club-swing', 'golf-club-swing', 5))
@@ -101,7 +100,7 @@ m = (('speak', 'speak', 5),
  ('magic2', 'magic2', 5),
  ('magic1', 'magic1', 5),
  ('golf-club-swing', 'golf-club-swing', 5),
- ('cigar-smoke', 'cigar-smoke', 8))
+ )
 mh = (('magic1', 'magic1', 5),
  ('smile', 'smile', 5),
  ('golf-club-swing', 'golf-club-swing', 5),
@@ -116,7 +115,7 @@ bc = (('phone', 'phone', 5), ('hold-pencil', 'hold-pencil', 5))
 nc = (('phone', 'phone', 5), ('throw-object', 'throw-object', 5))
 mb = (('magic1', 'magic1', 5), ('throw-paper', 'throw-paper', 3.5))
 ls = (('throw-paper', 'throw-paper', 5), ('throw-object', 'throw-object', 5), ('hold-pencil', 'hold-pencil', 5))
-rb = (('glower', 'glower', 5), ('cigar-smoke', 'cigar-smoke', 8), ('magic1', 'magic1', 5), ('golf-club-swing', 'golf-club-swing', 5))
+rb = (('glower', 'glower', 5), ('magic1', 'magic1', 5), ('golf-club-swing', 'golf-club-swing', 5))
 bf = (('pickpocket', 'pickpocket', 5),
  ('rubber-stamp', 'rubber-stamp', 5),
  ('shredder', 'shredder', 3.5),
@@ -135,7 +134,7 @@ ac = (('throw-object', 'throw-object', 5),
  ('stomp', 'stomp', 5),
  ('phone', 'phone', 5),
  ('throw-paper', 'throw-paper', 5))
-bs = (('magic1', 'magic1', 5), ('cigar-smoke', 'cigar-smoke', 8), ('throw-paper', 'throw-paper', 5), ('finger-wag', 'fingerwag', 5))
+bs = (('magic1', 'magic1', 5), ('throw-paper', 'throw-paper', 5), ('finger-wag', 'fingerwag', 5))
 sd = (('magic2', 'magic2', 5),
  ('quick-jump', 'jump', 6),
  ('stomp', 'stomp', 5),
@@ -147,7 +146,6 @@ le = (('speak', 'speak', 5),
  ('glower', 'glower', 5),
  ('throw-paper', 'throw-paper', 5))
 bw = (('finger-wag', 'fingerwag', 5),
- ('cigar-smoke', 'cigar-smoke', 8),
  ('gavel', 'gavel', 8),
  ('magic1', 'magic1', 5),
  ('throw-object', 'throw-object', 5),

@@ -1,10 +1,8 @@
-from toontown.classicchars import DistributedMinnieAI
-from toontown.hood import HoodAI
-from toontown.safezone import DistributedTrolleyAI
-from toontown.toonbase import ToontownGlobals
-from toontown.ai import DistributedTrickOrTreatTargetAI
-from toontown.ai import DistributedWinterCarolingTargetAI
-
+from src.toontown.hood import HoodAI
+from src.toontown.safezone import DistributedTrolleyAI
+from src.toontown.safezone import DistributedMMPianoAI
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.ai import DistributedEffectMgrAI
 
 class MMHoodAI(HoodAI.HoodAI):
     def __init__(self, air):
@@ -13,7 +11,7 @@ class MMHoodAI(HoodAI.HoodAI):
                                ToontownGlobals.MinniesMelodyland)
 
         self.trolley = None
-        self.classicChar = None
+        self.piano = None
 
         self.startup()
 
@@ -22,24 +20,17 @@ class MMHoodAI(HoodAI.HoodAI):
 
         if simbase.config.GetBool('want-minigames', True):
             self.createTrolley()
-        if simbase.config.GetBool('want-classic-chars', True):
-            if simbase.config.GetBool('want-minnie', True):
-                self.createClassicChar()
 
-        if simbase.air.wantHalloween:
-            self.TrickOrTreatTargetManager = DistributedTrickOrTreatTargetAI.DistributedTrickOrTreatTargetAI(self.air)
-            self.TrickOrTreatTargetManager.generateWithRequired(4835)
-        
-        if simbase.air.wantChristmas:
-            self.WinterCarolingTargetManager = DistributedWinterCarolingTargetAI.DistributedWinterCarolingTargetAI(self.air)
-            self.WinterCarolingTargetManager.generateWithRequired(4614)
+        self.piano = DistributedMMPianoAI.DistributedMMPianoAI(self.air)
+        self.piano.generateWithRequired(self.zoneId)
+
+        self.trickOrTreatMgr = DistributedEffectMgrAI.DistributedEffectMgrAI(self.air, ToontownGlobals.HALLOWEEN, 12)
+        self.trickOrTreatMgr.generateWithRequired(4835) # Ursatz for Really Kool Katz, Tenor Terrace
+
+        self.winterCarolingMgr = DistributedEffectMgrAI.DistributedEffectMgrAI(self.air, ToontownGlobals.CHRISTMAS, 14)
+        self.winterCarolingMgr.generateWithRequired(4614) # Shave and a Haircut for a Song, Alto Avenue
 
     def createTrolley(self):
         self.trolley = DistributedTrolleyAI.DistributedTrolleyAI(self.air)
         self.trolley.generateWithRequired(self.zoneId)
         self.trolley.start()
-
-    def createClassicChar(self):
-        self.classicChar = DistributedMinnieAI.DistributedMinnieAI(self.air)
-        self.classicChar.generateWithRequired(self.zoneId)
-        self.classicChar.start()

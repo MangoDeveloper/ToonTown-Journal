@@ -1,11 +1,8 @@
-from toontown.classicchars import DistributedDonaldAI
-from toontown.hood import HoodAI
-from toontown.safezone import DistributedTrolleyAI
-from toontown.toonbase import ToontownGlobals
-from toontown.ai import DistributedResistanceEmoteMgrAI
-from toontown.ai import DistributedTrickOrTreatTargetAI
-from toontown.ai import DistributedWinterCarolingTargetAI
-
+from src.toontown.hood import HoodAI
+from src.toontown.safezone import DistributedTrolleyAI
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.ai import DistributedResistanceEmoteMgrAI
+from src.toontown.ai import DistributedEffectMgrAI
 
 class DLHoodAI(HoodAI.HoodAI):
     def __init__(self, air):
@@ -14,7 +11,6 @@ class DLHoodAI(HoodAI.HoodAI):
                                ToontownGlobals.DonaldsDreamland)
 
         self.trolley = None
-        self.classicChar = None
 
         self.startup()
 
@@ -23,27 +19,17 @@ class DLHoodAI(HoodAI.HoodAI):
 
         if simbase.config.GetBool('want-minigames', True):
             self.createTrolley()
-        if simbase.config.GetBool('want-classic-chars', True):
-            if simbase.config.GetBool('want-donald-dreamland', True):
-                self.createClassicChar()
-        
+
         self.resistanceEmoteManager = DistributedResistanceEmoteMgrAI.DistributedResistanceEmoteMgrAI(self.air)
         self.resistanceEmoteManager.generateWithRequired(9720)
-        
-        if simbase.air.wantHalloween:
-            self.TrickOrTreatTargetManager = DistributedTrickOrTreatTargetAI.DistributedTrickOrTreatTargetAI(self.air)
-            self.TrickOrTreatTargetManager.generateWithRequired(9619)
-        
-        if simbase.air.wantChristmas:
-            self.WinterCarolingTargetManager = DistributedWinterCarolingTargetAI.DistributedWinterCarolingTargetAI(self.air)
-            self.WinterCarolingTargetManager.generateWithRequired(9720)
+
+        self.trickOrTreatMgr = DistributedEffectMgrAI.DistributedEffectMgrAI(self.air, ToontownGlobals.HALLOWEEN, 12)
+        self.trickOrTreatMgr.generateWithRequired(9619) # Relax to the Max, Lullaby Lane
+
+        self.winterCarolingMgr = DistributedEffectMgrAI.DistributedEffectMgrAI(self.air, ToontownGlobals.CHRISTMAS, 14)
+        self.winterCarolingMgr.generateWithRequired(9722) # Dream On Talent Agency, Pajama Place
 
     def createTrolley(self):
         self.trolley = DistributedTrolleyAI.DistributedTrolleyAI(self.air)
         self.trolley.generateWithRequired(self.zoneId)
         self.trolley.start()
-
-    def createClassicChar(self):
-        self.classicChar = DistributedDonaldAI.DistributedDonaldAI(self.air)
-        self.classicChar.generateWithRequired(self.zoneId)
-        self.classicChar.start()

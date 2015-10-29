@@ -1,19 +1,19 @@
-from pandac.PandaModules import *
-from toontown.toonbase.ToonBaseGlobal import *
-from toontown.toonbase.ToontownGlobals import *
-from toontown.distributed.ToontownMsgTypes import *
+from panda3d.core import *
+from src.toontown.toonbase.ToonBaseGlobal import *
+from src.toontown.toonbase.ToontownGlobals import *
+from src.toontown.distributed.ToontownMsgTypes import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import StateData
 from direct.task.Task import Task
 from direct.interval.IntervalGlobal import *
-from toontown.minigame import Purchase
+from src.toontown.minigame import Purchase
 from direct.gui import OnscreenText
-from toontown.building import SuitInterior
+from src.toontown.building import SuitInterior
 import QuietZoneState
 import ZoneUtil
-from toontown.toonbase import TTLocalizer
-from toontown.toon.Toon import teleportDebug
-from toontown.dna.DNAParser import *
+from src.toontown.toonbase import TTLocalizer
+from src.toontown.toon.Toon import teleportDebug
+from src.toontown.dna.DNAParser import *
 
 class Hood(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('Hood')
@@ -76,28 +76,36 @@ class Hood(StateData.StateData):
 
     def load(self):
         files = []
+
         if self.storageDNAFile:
             files.append(self.storageDNAFile)
-        newsManager = base.cr.newsManager
-        if newsManager:
-            holidayIds = base.cr.newsManager.getDecorationHolidayId()
-            for holiday in holidayIds:
-                for storageFile in self.holidayStorageDNADict.get(holiday, []):
+
+        for key, value in self.holidayStorageDNADict.iteritems():
+
+
+            if base.cr.newsManager.isHolidayRunning(key):
+
+                for storageFile in value:
                     files.append(storageFile)
 
-            if ToontownGlobals.HALLOWEEN_COSTUMES not in holidayIds and ToontownGlobals.SPOOKY_COSTUMES not in holidayIds or not self.spookySkyFile:
-                self.sky = loader.loadModel(self.skyFile)
-                self.sky.setTag('sky', 'Regular')
-                self.sky.setScale(1.0)
-                self.sky.setFogOff()
-            else:
-                self.sky = loader.loadModel(self.spookySkyFile)
-                self.sky.setTag('sky', 'Halloween')
-        if not newsManager:
+        if not base.cr.newsManager.isHolidayRunning(ToontownGlobals.HALLOWEEN) or not self.spookySkyFile:
+
+
+
+
+
+
+
+
+
             self.sky = loader.loadModel(self.skyFile)
             self.sky.setTag('sky', 'Regular')
             self.sky.setScale(1.0)
             self.sky.setFogOff()
+        else:
+            self.sky = loader.loadModel(self.spookySkyFile)
+            self.sky.setTag('sky', 'Halloween')
+
         dnaBulk = DNABulkLoader(self.dnaStore, tuple(files))
         dnaBulk.loadDNAFiles()
 

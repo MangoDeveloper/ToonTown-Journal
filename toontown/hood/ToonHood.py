@@ -1,16 +1,15 @@
-from pandac.PandaModules import *
-from toontown.toonbase.ToonBaseGlobal import *
-from toontown.toonbase.ToontownGlobals import *
-from toontown.distributed.ToontownMsgTypes import *
+from panda3d.core import *
+from src.toontown.toonbase.ToonBaseGlobal import *
+from src.toontown.toonbase.ToontownGlobals import *
+from src.toontown.distributed.ToontownMsgTypes import *
 from direct.fsm import ClassicFSM, State
-from toontown.minigame import Purchase
-from otp.avatar import DistributedAvatar
-from toontown.hood.Hood import Hood
-from toontown.building import SuitInterior
-from toontown.cogdominium import CogdoInterior
-from toontown.toon.Toon import teleportDebug
-from toontown.hood import SkyUtil
-
+from src.toontown.minigame import Purchase
+from src.otp.avatar import DistributedAvatar
+from src.toontown.hood.Hood import Hood
+from src.toontown.building import SuitInterior
+from src.toontown.cogdominium import CogdoInterior
+from src.toontown.toon.Toon import teleportDebug
+from src.toontown.hood import SkyUtil
 
 class ToonHood(Hood):
     notify = directNotify.newCategory('ToonHood')
@@ -22,7 +21,6 @@ class ToonHood(Hood):
     SKY_FILE = None
     SPOOKY_SKY_FILE = None
     TITLE_COLOR = None
-
     HOLIDAY_DNA = {}
 
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
@@ -53,18 +51,6 @@ class ToonHood(Hood):
           'minigame']),
          State.State('final', self.enterFinal, self.exitFinal, [])], 'start', 'final')
         self.fsm.enterInitialState()
-
-        # Load content pack ambience settings:
-        ambience = contentPacksMgr.getAmbience('general')
-
-        color = ambience.get('underwater-color')
-        if color is not None:
-            try:
-                self.underwaterColor = Vec4(color['r'], color['g'], color['b'], color['a'])
-            except Exception, e:
-                raise ContentPackError(e)
-        else:
-            self.underwaterColor = None
 
         # Until we cleanup Hood, we will need to define some variables
         self.id = self.ID
@@ -118,13 +104,13 @@ class ToonHood(Hood):
             self.doneStatus = doneStatus
             messenger.send(self.doneEvent)
 
-    def enterPurchase(self, pointsAwarded, playerMoney, playerIds, playerStates, remain, metagameRound = -1, votesArray = None):
+    def enterPurchase(self, pointsAwarded, playerMoney, avIds, playerStates, remain):
         messenger.send('enterSafeZone')
         DistributedAvatar.DistributedAvatar.HpTextEnabled = 0
         base.localAvatar.laffMeter.start()
         self.purchaseDoneEvent = 'purchaseDone'
         self.accept(self.purchaseDoneEvent, self.handlePurchaseDone)
-        self.purchase = Purchase.Purchase(base.localAvatar, pointsAwarded, playerMoney, playerIds, playerStates, remain, self.purchaseDoneEvent, metagameRound, votesArray)
+        self.purchase = Purchase.Purchase(base.localAvatar, pointsAwarded, playerMoney, avIds, playerStates, remain, self.purchaseDoneEvent)
         self.purchase.load()
         self.purchase.enter()
 
@@ -251,15 +237,15 @@ class ToonHood(Hood):
 
     def setUnderwaterFog(self):
         if base.wantFog:
-            self.fog.setColor(self.underwaterColor)
+            self.fog.setColor(0.245, 0.322, 0.5)
             self.fog.setLinearRange(0.1, 100.0)
             render.setFog(self.fog)
             self.sky.setFog(self.fog)
 
     def setWhiteFog(self):
         if base.wantFog:
-            self.fog.setColor(self.whiteFogColor)
-            self.fog.setLinearRange(0.0, 400.0)
+            self.fog.setColor(0.6, 0.6, 0.6)
+            self.fog.setExpDensity(0.008)
             render.clearFog()
             render.setFog(self.fog)
             self.sky.clearFog()

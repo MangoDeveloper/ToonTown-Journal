@@ -1,23 +1,21 @@
-from pandac.PandaModules import *
-from toontown.toonbase.ToonBaseGlobal import *
+from panda3d.core import *
+from src.toontown.toonbase.ToonBaseGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import StateData
-from direct.showbase.PythonUtil import PriorityCallbacks
-from toontown.safezone import PublicWalk
-from toontown.launcher import DownloadForceAcknowledge
-import TrialerForceAcknowledge
+from src.toontown.toonbase.PythonUtil import PriorityCallbacks
+from src.toontown.safezone import PublicWalk
 import ZoneUtil
-from toontown.friends import FriendsListManager
-from toontown.toonbase import ToontownGlobals
-from toontown.toon.Toon import teleportDebug
-from toontown.estate import HouseGlobals
-from toontown.toonbase import TTLocalizer
-from otp.otpbase import OTPLocalizer
-from otp.avatar import Emote
-from otp.avatar.Avatar import teleportNotify
+from src.toontown.friends import FriendsListManager
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.toon.Toon import teleportDebug
+from src.toontown.estate import HouseGlobals
+from src.toontown.toonbase import TTLocalizer
+from src.otp.otpbase import OTPLocalizer
+from src.otp.avatar import Emote
+from src.otp.avatar.Avatar import teleportNotify
 from direct.task import Task
 import QuietZoneState
-from toontown.distributed import ToontownDistrictStats
+from src.toontown.distributed import ToontownDistrictStats
 
 class Place(StateData.StateData, FriendsListManager.FriendsListManager):
     notify = DirectNotifyGlobal.directNotify.newCategory('Place')
@@ -26,10 +24,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         StateData.StateData.__init__(self, doneEvent)
         FriendsListManager.FriendsListManager.__init__(self)
         self.loader = loader
-        self.dfaDoneEvent = 'dfaDoneEvent'
-        self.trialerFADoneEvent = 'trialerFADoneEvent'
         self.zoneId = None
-        self.trialerFA = None
         self._tiToken = None
         self._leftQuietZoneLocalCallbacks = PriorityCallbacks()
         self._leftQuietZoneSubframeCall = None
@@ -63,9 +58,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         self.walkStateData.unload()
         del self.walkStateData
         del self.loader
-        if self.trialerFA:
-            self.trialerFA.exit()
-            del self.trialerFA
         return
 
     def _getQZState(self):
@@ -143,48 +135,11 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
     def getTaskZoneId(self):
         return self.getZoneId()
 
-    def isPeriodTimerEffective(self):
-        return 1
-
     def handleTeleportQuery(self, fromAvatar, toAvatar):
-        if base.config.GetBool('want-tptrack', False):
-            if toAvatar == localAvatar:
-                toAvatar.doTeleportResponse(fromAvatar, toAvatar, toAvatar.doId, 1, toAvatar.defaultShard, base.cr.playGame.getPlaceId(), self.getZoneId(), fromAvatar.doId)
-            else:
-                self.notify.warning('handleTeleportQuery toAvatar.doId != localAvatar.doId' % (toAvatar.doId, localAvatar.doId))
+        if toAvatar == localAvatar:
+            toAvatar.doTeleportResponse(fromAvatar, toAvatar, toAvatar.doId, 1, toAvatar.defaultShard, base.cr.playGame.getPlaceId(), self.getZoneId(), fromAvatar.doId)
         else:
-            fromAvatar.d_teleportResponse(toAvatar.doId, 1, toAvatar.defaultShard, base.cr.playGame.getPlaceId(), self.getZoneId())
-
-    def enablePeriodTimer(self):
-        if self.isPeriodTimerEffective():
-            if base.cr.periodTimerExpired:
-                taskMgr.doMethodLater(5, self.redoPeriodTimer, 'redoPeriodTimer')
-            self.accept('periodTimerExpired', self.periodTimerExpired)
-
-    def disablePeriodTimer(self):
-        taskMgr.remove('redoPeriodTimer')
-        self.ignore('periodTimerExpired')
-
-    def redoPeriodTimer(self, task):
-        messenger.send('periodTimerExpired')
-        return Task.done
-
-    def periodTimerExpired(self):
-        self.fsm.request('final')
-        if base.localAvatar.book.isEntered:
-            base.localAvatar.book.exit()
-            base.localAvatar.b_setAnimState('CloseBook', 1, callback=self.__handlePeriodTimerBookClose)
-        else:
-            base.localAvatar.b_setAnimState('TeleportOut', 1, self.__handlePeriodTimerExitTeleport)
-
-    def exitPeriodTimerExpired(self):
-        pass
-
-    def __handlePeriodTimerBookClose(self):
-        base.localAvatar.b_setAnimState('TeleportOut', 1, self.__handlePeriodTimerExitTeleport)
-
-    def __handlePeriodTimerExitTeleport(self):
-        base.cr.loginFSM.request('periodTimeout')
+            self.notify.warning('handleTeleportQuery toAvatar.doId != localAvatar.doId' % (toAvatar.doId, localAvatar.doId))
 
     def detectedPhoneCollision(self):
         self.fsm.request('phone')
@@ -210,22 +165,15 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         if teleportIn == 0:
             self.walkStateData.fsm.request('walking')
         self.acceptOnce(self.walkDoneEvent, self.handleWalkDone)
-        if base.cr.productName in ['DisneyOnline-US', 'ES'] and not base.cr.isPaid() and base.localAvatar.tutorialAck:
-            base.localAvatar.chatMgr.obscure(0, 0)
-            base.localAvatar.chatMgr.normalButton.show()
         self.accept('teleportQuery', self.handleTeleportQuery)
         base.localAvatar.setTeleportAvailable(1)
         base.localAvatar.questPage.acceptOnscreenHooks()
         base.localAvatar.invPage.acceptOnscreenHooks()
         base.localAvatar.questMap.acceptOnscreenHooks()
         self.walkStateData.fsm.request('walking')
-        self.enablePeriodTimer()
 
     def exitWalk(self):
         self.exitFLM()
-        if base.cr.productName in ['DisneyOnline-US', 'ES'] and not base.cr.isPaid() and base.localAvatar.tutorialAck and not base.cr.whiteListChatEnabled:
-            base.localAvatar.chatMgr.obscure(1, 0)
-        self.disablePeriodTimer()
         messenger.send('wakeup')
         self.walkStateData.exit()
         self.ignore(self.walkDoneEvent)
@@ -261,14 +209,14 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         self.accept('teleportQuery', self.handleTeleportQuery)
         base.localAvatar.setTeleportAvailable(1)
         base.localAvatar.b_setAnimState('SitStart', 1)
-        self.accept('arrow_up', self.fsm.request, extraArgs=['walk'])
+        self.accept(base.Move_Up, self.fsm.request, extraArgs=['walk'])
 
     def exitSit(self):
         self.exitFLM()
         base.localAvatar.laffMeter.stop()
         base.localAvatar.setTeleportAvailable(0)
         self.ignore('teleportQuery')
-        self.ignore('arrow_up')
+        self.ignore(base.Move_Up)
 
     def enterDrive(self):
         self.enterFLM()
@@ -323,7 +271,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.startSleepWatch(self.__handleFallingAsleep)
         self.accept('bookDone', self.__handleBook)
         base.localAvatar.b_setAnimState('ReadBook', 1)
-        self.enablePeriodTimer()
 
     def __handleFallingAsleep(self, task):
         base.localAvatar.book.exit()
@@ -337,7 +284,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
 
     def exitStickerBook(self):
         base.localAvatar.stopSleepWatch()
-        self.disablePeriodTimer()
         self.exitFLM()
         base.localAvatar.laffMeter.stop()
         base.localAvatar.setGuiConflict(0)
@@ -462,19 +408,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         if hasattr(self, 'fsm'):
             self.doRequestLeave(requestStatus)
 
-    def doRequestLeave(self, requestStatus):
-        teleportDebug(requestStatus, 'requestLeave(%s)' % (requestStatus,))
-        self.fsm.request('DFA', [requestStatus])
-
-    def enterDFA(self, requestStatus):
-        teleportDebug(requestStatus, 'enterDFA(%s)' % (requestStatus,))
-        self.acceptOnce(self.dfaDoneEvent, self.enterDFACallback, [requestStatus])
-        self.dfa = DownloadForceAcknowledge.DownloadForceAcknowledge(self.dfaDoneEvent)
-        self.dfa.enter(base.cr.hoodMgr.getPhaseFromHood(requestStatus['hoodId']))
-
-    def exitDFA(self):
-        self.ignore(self.dfaDoneEvent)
-
     def handleEnterTunnel(self, requestStatus, collEntry):
         if localAvatar.hasActiveBoardingGroup():
             rejectText = TTLocalizer.BoardingCannotLeaveZone
@@ -491,57 +424,19 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
             return
         self.requestLeave(requestStatus)
 
-    def enterDFACallback(self, requestStatus, doneStatus):
-        teleportDebug(requestStatus, 'enterDFACallback%s' % ((requestStatus, doneStatus),))
-        self.dfa.exit()
-        del self.dfa
-        if doneStatus['mode'] == 'complete':
-            if requestStatus.get('tutorial', 0):
-                out = {'teleportIn': 'tunnelOut'}
-                requestStatus['zoneId'] = 22000
-                requestStatus['hoodId'] = 22000
-            else:
-                out = {'teleportIn': 'teleportOut',
-                 'tunnelIn': 'tunnelOut',
-                 'doorIn': 'doorOut'}
-            teleportDebug(requestStatus, 'requesting %s, requestStatus=%s' % (out[requestStatus['how']], requestStatus))
-            self.fsm.request(out[requestStatus['how']], [requestStatus])
-        elif doneStatus['mode'] == 'incomplete':
-            self.fsm.request('DFAReject')
+    def doRequestLeave(self, requestStatus):
+        if requestStatus.get('tutorial', 0):
+            out = {'teleportIn': 'tunnelOut'}
+            requestStatus['zoneId'] = 2000
+            requestStatus['hoodId'] = 2000
         else:
-            Place.notify.error('Unknown done status for DownloadForceAcknowledge: ' + `doneStatus`)
-
-    def enterDFAReject(self):
-        self.fsm.request('walk')
-
-    def exitDFAReject(self):
-        pass
-
-    def enterTrialerFA(self, requestStatus):
-        teleportDebug(requestStatus, 'enterTrialerFA(%s)' % requestStatus)
-        self.acceptOnce(self.trialerFADoneEvent, self.trialerFACallback, [requestStatus])
-        self.trialerFA = TrialerForceAcknowledge.TrialerForceAcknowledge(self.trialerFADoneEvent)
-        self.trialerFA.enter(requestStatus['hoodId'])
-
-    def exitTrialerFA(self):
-        pass
-
-    def trialerFACallback(self, requestStatus, doneStatus):
-        if doneStatus['mode'] == 'pass':
-            self.fsm.request('DFA', [requestStatus])
-        elif doneStatus['mode'] == 'fail':
-            self.fsm.request('trialerFAReject')
-        else:
-            Place.notify.error('Unknown done status for TrialerForceAcknowledge: %s' % doneStatus)
-
-    def enterTrialerFAReject(self):
-        self.fsm.request('walk')
-
-    def exitTrialerFAReject(self):
-        pass
+            out = {'teleportIn': 'teleportOut',
+             'tunnelIn': 'tunnelOut',
+             'doorIn': 'doorOut'}
+        self.fsm.request(out[requestStatus['how']], [requestStatus])
 
     def enterDoorIn(self, requestStatus):
-        NametagGlobals.setWant2dNametags(False)
+        NametagGlobals.setMasterArrowsOn(0)
         door = base.cr.doId2do.get(requestStatus['doorDoId'])
         if not door is None:
             door.readyToExit()
@@ -549,7 +444,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.startQuestMap()
 
     def exitDoorIn(self):
-        NametagGlobals.setWant2dNametags(True)
+        NametagGlobals.setMasterArrowsOn(1)
         base.localAvatar.obscureMoveFurnitureButton(-1)
 
     def enterDoorOut(self):
@@ -742,6 +637,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.b_setParent(ToontownGlobals.SPRender)
         return
 
+
     def teleportInDone(self):
         if hasattr(self, 'fsm'):
             teleportNotify.debug('teleportInDone: %s' % self.nextState)
@@ -750,7 +646,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
     def exitTeleportIn(self):
         self.removeSetZoneCompleteCallback(self._tiToken)
         self._tiToken = None
-        NametagGlobals.setWant2dNametags(True)
+        NametagGlobals.setMasterArrowsOn(1)
         base.localAvatar.laffMeter.stop()
         base.localAvatar.obscureMoveFurnitureButton(-1)
         base.localAvatar.stopUpdateSmartCamera()
@@ -830,7 +726,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.laffMeter.start()
         base.localAvatar.obscureMoveFurnitureButton(1)
         base.localAvatar.startSleepWatch(self.__handleFallingAsleepBanking)
-        self.enablePeriodTimer()
 
     def __handleFallingAsleepBanking(self, arg):
         if hasattr(self, 'fsm'):
@@ -844,7 +739,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.laffMeter.stop()
         base.localAvatar.obscureMoveFurnitureButton(-1)
         base.localAvatar.stopSleepWatch()
-        self.disablePeriodTimer()
 
     def enterPhone(self):
         base.localAvatar.b_setAnimState('neutral', 1)
@@ -853,7 +747,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.laffMeter.start()
         base.localAvatar.obscureMoveFurnitureButton(1)
         base.localAvatar.startSleepWatch(self.__handleFallingAsleepPhone)
-        self.enablePeriodTimer()
 
     def __handleFallingAsleepPhone(self, arg):
         if hasattr(self, 'fsm'):
@@ -867,7 +760,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.laffMeter.stop()
         base.localAvatar.obscureMoveFurnitureButton(-1)
         base.localAvatar.stopSleepWatch()
-        self.disablePeriodTimer()
 
     def enterStopped(self):
         base.localAvatar.b_setAnimState('neutral', 1)
@@ -880,7 +772,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.laffMeter.start()
         base.localAvatar.obscureMoveFurnitureButton(1)
         base.localAvatar.startSleepWatch(self.__handleFallingAsleepStopped)
-        self.enablePeriodTimer()
 
     def __handleFallingAsleepStopped(self, arg):
         if hasattr(self, 'fsm'):
@@ -895,7 +786,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.laffMeter.stop()
         base.localAvatar.obscureMoveFurnitureButton(-1)
         base.localAvatar.stopSleepWatch()
-        self.disablePeriodTimer()
         messenger.send('exitingStoppedState')
 
     def enterPet(self):

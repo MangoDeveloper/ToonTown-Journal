@@ -1,31 +1,34 @@
 import calendar
 from datetime import datetime
 from datetime import timedelta
-from pandac.PandaModules import Vec3, Vec4, Point3, TextNode, VBase4
-from otp.otpbase import OTPLocalizer
-from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DirectScrolledList, DirectCheckButton
+from direct.directnotify import DirectNotifyGlobal
+from direct.fsm.FSM import FSM
 from direct.gui import DirectGuiGlobals
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DirectScrolledList, DirectCheckButton
 from direct.showbase import DirectObject
 from direct.showbase import PythonUtil
-from direct.fsm.FSM import FSM
-from toontown.toonbase import ToontownGlobals
-from toontown.toonbase import TTLocalizer
-from toontown.toontowngui import TTDialog
-from toontown.toontowngui.TeaserPanel import TeaserPanel
-from toontown.toon import ToonHead
-from toontown.parties import PartyGlobals
-from toontown.friends.FriendsListPanel import determineFriendName
-from toontown.parties.ScrolledFriendList import ScrolledFriendList
-from toontown.parties.CalendarGuiMonth import CalendarGuiMonth
-from toontown.parties.InviteVisual import InviteVisual
-from toontown.parties.PartyInfo import PartyInfo
-from toontown.parties import PartyUtils
-from toontown.parties.PartyEditor import PartyEditor
 from pandac.PandaModules import *
-from direct.directnotify import DirectNotifyGlobal
-from otp.nametag.NametagGroup import NametagGroup
-from otp.nametag.Nametag import Nametag
-from otp.nametag.NametagFloat2d import *
+from pandac.PandaModules import Vec3, Vec4, Point3, TextNode, VBase4
+
+from src.otp.otpbase import OTPGlobals
+from src.otp.otpbase import OTPLocalizer
+from src.toontown.friends.FriendsListPanel import determineFriendName
+from src.otp.nametag.NametagGroup import NametagGroup
+from src.otp.nametag.Nametag import Nametag
+from src.otp.nametag.NametagFloat2d import *
+from src.toontown.parties import PartyGlobals
+from src.toontown.parties import PartyUtils
+from src.toontown.parties.CalendarGuiMonth import CalendarGuiMonth
+from src.toontown.parties.InviteVisual import InviteVisual
+from src.toontown.parties.PartyEditor import PartyEditor
+from src.toontown.parties.PartyInfo import PartyInfo
+from src.toontown.parties.ScrolledFriendList import ScrolledFriendList
+from src.toontown.toon import ToonHead
+from src.toontown.toonbase import TTLocalizer
+from src.toontown.toonbase import ToontownGlobals
+from src.toontown.toontowngui import TTDialog
+from src.toontown.toontowngui.TeaserPanel import TeaserPanel
+
 
 class PartyPlanner(DirectFrame, FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('PartyPlanner')
@@ -58,10 +61,9 @@ class PartyPlanner(DirectFrame, FSM):
          'minute': (15, -15),
          'ampm': (1, -1)}
         self.partyInfo = None
-        self.asapMinuteRounding = config.GetInt('party-asap-minute-rounding', PartyGlobals.PartyPlannerAsapMinuteRounding)
+        self.asapMinuteRounding = base.config.GetInt('party-asap-minute-rounding', PartyGlobals.PartyPlannerAsapMinuteRounding)
         self.load()
         self.request('Welcome')
-        return
 
     def enterWelcome(self, *args):
         self.prevButton['state'] = DirectGuiGlobals.DISABLED
@@ -114,7 +116,6 @@ class PartyPlanner(DirectFrame, FSM):
             self.nextButton.hide()
             self.makePartyNowButton.show()
         self.datePage.show()
-        return
 
     def exitDate(self):
         self.datePage.hide()
@@ -125,7 +126,6 @@ class PartyPlanner(DirectFrame, FSM):
         else:
             self.partyNowTime = self.calcAsapTime()
             self.partyTime = self.partyNowTime
-        return
 
     def calcAsapTime(self):
         curServerTime = base.cr.toontownTimeManager.getCurServerDateTime()
@@ -155,13 +155,14 @@ class PartyPlanner(DirectFrame, FSM):
         self.prevButton['state'] = DirectGuiGlobals.NORMAL
         self.nextButton.hide()
         defaultInviteTheme = PartyGlobals.InviteTheme.GenericMale
-        if hasattr(base.cr, 'newsManager') and base.cr.newsManager:
-            if ToontownGlobals.VICTORY_PARTY_HOLIDAY in base.cr.newsManager.getHolidayIdList():
-                defaultInviteTheme = PartyGlobals.InviteTheme.VictoryParty
-            elif ToontownGlobals.KARTING_TICKETS_HOLIDAY in base.cr.newsManager.getHolidayIdList() or ToontownGlobals.CIRCUIT_RACING_EVENT in base.cr.newsManager.getHolidayIdList():
-                defaultInviteTheme = PartyGlobals.InviteTheme.Racing
-            elif ToontownGlobals.VALENTINES_DAY in base.cr.newsManager.getHolidayIdList():
-                defaultInviteTheme = PartyGlobals.InviteTheme.Valentoons
+
+        if base.cr.newsManager.isHolidayRunning(ToontownGlobals.VICTORY_PARTY_HOLIDAY):
+            defaultInviteTheme = PartyGlobals.InviteTheme.VictoryParty
+        elif base.cr.newsManager.isHolidayRunning(ToontownGlobals.KARTING_TICKETS_HOLIDAY) or base.cr.newsManager.isHolidayRunning(ToontownGlobals.GRAND_PRIX):
+            defaultInviteTheme = PartyGlobals.InviteTheme.Racing
+
+        elif base.cr.newsManager.isHolidayRunning(ToontownGlobals.VALENTOONS_DAY):
+            defaultInviteTheme = PartyGlobals.InviteTheme.Valentoons
         if self.partyInfo is not None:
             del self.partyInfo
         activityList = self.partyEditor.partyEditorGrid.getActivitiesOnGrid()
@@ -186,7 +187,6 @@ class PartyPlanner(DirectFrame, FSM):
             self.setInviteTheme(defaultInviteTheme)
         self.inviteVisual.updateInvitation(base.localAvatar.getName(), self.partyInfo)
         self.invitationPage.show()
-        return
 
     def __prevTheme(self):
         self.nextThemeButton.show()
@@ -265,14 +265,12 @@ class PartyPlanner(DirectFrame, FSM):
         self.invitationPage.hide()
         self.farewellPage = self._createFarewellPage()
         self.farewellPage.hide()
-        return
 
     def _createNavButtons(self):
         self.quitButton = DirectButton(parent=self.frame, relief=None, geom=(self.gui.find('**/cancelButton_up'), self.gui.find('**/cancelButton_down'), self.gui.find('**/cancelButton_rollover')), command=self.__acceptExit)
         self.nextButton = DirectButton(parent=self.frame, relief=None, geom=(self.gui.find('**/bottomNext_button/nextButton_up'), self.gui.find('**/bottomNext_button/nextButton_down'), self.gui.find('**/bottomNext_button/nextButton_rollover')), command=self.__nextItem, state=DirectGuiGlobals.DISABLED)
         self.prevButton = DirectButton(parent=self.frame, relief=None, geom=(self.gui.find('**/bottomPrevious_button/previousButton_up'), self.gui.find('**/bottomPrevious_button/previousButton_down'), self.gui.find('**/bottomPrevious_button/previousButton_rollover')), command=self.__prevItem, state=DirectGuiGlobals.DISABLED)
         self.currentItem = None
-        return
 
     def __createNametag(self, parent):
         if self.nametagGroup == None:
@@ -298,7 +296,6 @@ class PartyPlanner(DirectFrame, FSM):
             self.chatNP = parent.attachNewNode(self.chatNode)
             chatPos = self.gui.find('**/step_01_partymanPeteText_locator').getPos()
             self.chatNP.setPosHprScale(chatPos[0], 0, chatPos[2], 0, 0, 0, 0.08, 1, 0.08)
-        return
 
     def clearNametag(self):
         if self.nametagGroup != None:
@@ -585,14 +582,16 @@ class PartyPlanner(DirectFrame, FSM):
 
     def __handleHolidays(self):
         self.inviteThemes = range(len(PartyGlobals.InviteTheme))
-        if hasattr(base.cr, 'newsManager') and base.cr.newsManager:
-            holidayIds = base.cr.newsManager.getHolidayIdList()
-            if ToontownGlobals.VALENTINES_DAY not in holidayIds:
-                self.inviteThemes.remove(PartyGlobals.InviteTheme.Valentoons)
-            if ToontownGlobals.VICTORY_PARTY_HOLIDAY not in holidayIds:
-                self.inviteThemes.remove(PartyGlobals.InviteTheme.VictoryParty)
-            if ToontownGlobals.WINTER_DECORATIONS not in holidayIds and ToontownGlobals.WACKY_WINTER_DECORATIONS not in holidayIds:
-                self.inviteThemes.remove(PartyGlobals.InviteTheme.Winter)
+
+
+
+        if not base.cr.newsManager.isHolidayRunning(ToontownGlobals.VALENTOONS_DAY):
+            self.inviteThemes.remove(PartyGlobals.InviteTheme.Valentoons)
+        if not base.cr.newsManager.isHolidayRunning(ToontownGlobals.VICTORY_PARTY_HOLIDAY):
+            self.inviteThemes.remove(PartyGlobals.InviteTheme.VictoryParty)
+
+        if not base.cr.newsManager.isHolidayRunning(ToontownGlobals.CHRISTMAS):
+            self.inviteThemes.remove(PartyGlobals.InviteTheme.Winter)
 
     def _createFarewellPage(self):
         page = DirectFrame(self.frame)
@@ -641,7 +640,6 @@ class PartyPlanner(DirectFrame, FSM):
         self.partyEditor = None
         self.destroy()
         del self
-        return
 
     def __handleComplete(self):
         self.inviteButton['state'] = DirectGuiGlobals.DISABLED
@@ -712,7 +710,6 @@ class PartyPlanner(DirectFrame, FSM):
                 self.chooseFutureTimeDialog.show()
                 return
         self.requestNext()
-        return
 
     def okChooseFutureTime(self):
         if hasattr(self, 'chooseFutureTimeDialog'):
@@ -730,7 +727,6 @@ class PartyPlanner(DirectFrame, FSM):
             self.request('Guests')
             return
         self.requestPrev()
-        return
 
     def __moneyChange(self, newMoney):
         if hasattr(self, 'totalMoney'):
