@@ -5,6 +5,7 @@ from toontown.toon import DistributedToon/AI/UD
 from toontown.classicchars import DistributedCCharBase/AI
 from toontown.classicchars import DistributedMickey/AI
 from toontown.classicchars import DistributedVampireMickey/AI
+from toontown.building import DistributedBuildingQueryMgr/AI
 from toontown.classicchars import DistributedMinnie/AI
 from toontown.classicchars import DistributedWitchMinnie/AI
 from toontown.classicchars import DistributedGoofy/AI
@@ -3145,7 +3146,6 @@ dclass DistributedFindFour : DistributedNode {
   illegalMove() broadcast;
   tie() broadcast;
 };
-
 dclass DistributedMailManager : DistributedObject {
   sendSimpleMail(uint32, uint32, string);
   setNumMailItems(uint32, uint32) airecv;
@@ -3206,16 +3206,25 @@ dclass DistributedObjectGlobal : DistributedObject {
 };
 
 dclass GlobalPartyManager : DistributedObjectGlobal {
-    partyManagerAIHello(uint32 channel);
-    queryParty(uint32 hostId);
-    addParty(DoId avId, uint64 partyId, string start, string end, int8 isPrivate,
-             int8 inviteTheme, activity [], decoration [], DoIdList inviteeIds);
-    partyHasStarted(uint64 partyId, uint32 shardId, uint32 zoneId, string hostName);
-    toonJoinedParty(uint64 partyId, uint32 avId);
-    toonLeftParty(uint64 partyId, uint32 avId);
-    requestPartySlot(uint64 partyId, uint32 avId, uint32 gateId);
-    partyDone(uint64 partyId);
-    allocIds(uint16 count);
+  partyManagerAIHello(uint32 channel);
+  heartbeat(uint32 channel);
+  heartbeatResponse() airecv;
+  queryParty(uint32 hostId);
+  addParty(DoId avId, uint64 partyId, string start, string end, int8 isPrivate,
+           int8 inviteTheme, activity [], decoration [], DoIdList inviteeIds);
+  partyHasStarted(uint64 partyId, uint32 shardId, uint32 zoneId, string hostName);
+  toonJoinedParty(uint64 partyId, uint32 avId);
+  toonLeftParty(uint64 partyId, uint32 avId);
+  requestPartySlot(uint64 partyId, uint32 avId, uint32 gateId);
+  partyDone(uint64 partyId);
+  allocIds(uint16 count);
+
+  changePrivateRequest(uint32 hostId, uint64 partyId, int8 isPrivate);
+  changePartyStatusRequest(uint32 hostId, uint64 partyId, int8 partyStatus);
+
+  markInviteAsReadButNotReplied(uint32 avId, uint64 inviteKey);
+  respondToInvite(uint32 fromId, uint32 todo0, uint16 context, uint64 inviteKey, uint8 inviteStatus);
+
 };
 
 struct PotentialToon {
@@ -3268,14 +3277,10 @@ dclass NonRepeatableRandomSourceClient {
   getRandomSamplesReply(uint32, uint32 []) airecv;
 };
 
-dclass TTCodeRedemptionMgr : DistributedObject, NonRepeatableRandomSourceClient {
-  giveAwardToToonResult(uint32, uint32);
-  redeemCode(uint32, char [0-256]) airecv clsend;
-  redeemCodeAiToUd(uint32, DoId, uint32, string, uint32);
-  redeemCodeResultUdToAi(uint32, uint32, uint32, uint32, uint32) airecv;
-  redeemCodeResult(uint32, uint32, uint32);
+dclass TTCodeRedemptionMgr : DistributedObject {
+  redeemCode(char [0-50]) airecv clsend;
+  redeemCodeResult(uint8);
 };
-
 dclass NonRepeatableRandomSource : DistributedObject, NonRepeatableRandomSourceClient {
   getRandomSamples(DoId, string, uint32, uint32);
   randomSample(DoId, uint32);
@@ -3374,4 +3379,15 @@ dclass DistributedTrashcanZeroMgr : DistributedPhaseEventMgr {
 };
 
 dclass DistributedSillyMeterMgr : DistributedPhaseEventMgr {
+};
+
+dclass DistributedBuildingQueryMgr : DistributedObject {
+  isSuit(uint8, uint32) airecv clsend;
+  response(uint8, bool);
+};
+
+dclass MegaInvasionManager : DistributedObjectGlobal {
+  callInvasion(int16 index) airecv;
+  endInvasion(int16 index) airecv;
+  hello();
 };
