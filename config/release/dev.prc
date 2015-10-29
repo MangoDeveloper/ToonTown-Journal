@@ -2,7 +2,7 @@
 distribution dev
 
 # Art assets:
-model-path ../resources
+model-path resources
 
 # Server:
 server-version TTJ-1.0
