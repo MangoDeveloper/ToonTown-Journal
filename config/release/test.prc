@@ -9,10 +9,10 @@ shard-mid-pop 150
 # Core features:
 want-housing #t
 want-pets #f
-want-game-tables #t
-want-find-four #t
-want-chinese-checkers #t
-want-checkers #t
+want-game-tables #f
+want-find-four #f
+want-chinese-checkers #f
+want-checkers #f
 want-gifting #t
 
 want-parties #t

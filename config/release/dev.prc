@@ -23,10 +23,10 @@ dc-file astron/dclass/otp.dc
 want-pets #f
 want-parties #t
 want-gifting #t
-want-game-tables #t
-want-find-four #t
-want-chinese-checkers #t
-want-checkers #t
+want-game-tables #f
+want-find-four #f
+want-chinese-checkers #f
+want-checkers #f
 want-cogdominiums #t
 want-mega-invasions #t
 want-achievements #f
