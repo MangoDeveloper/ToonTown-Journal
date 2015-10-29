@@ -9679,6 +9679,10 @@ DayNamesAbbrev = ('MON',
  'FRI',
  'SAT',
  'SUN')
+SummerFireworksStart = 'Celebrate Summer with a fireworks show every hour in each playground!'
+SummerFireworksEnd = 'Summer Fireworks are over. Hope you had fun.'
+NewYearFireworksStart = 'Happy New Year! Enjoy a fireworks show every hour in each playground!'
+NewYearFireworksEnd = 'New Year Fireworks are over. See you next year!'
 HolidayNamesInCalendar = {1: ('Summer Fireworks', 'Celebrate Summer with a fireworks show every hour in each playground!'),
  2: ('New Year Fireworks', 'Happy New Year! Enjoy a fireworks show every hour in each playground!'),
  3: ('Bloodsucker Invasion', 'Help defend Toontown from the Bloodsucker invasion!'),
