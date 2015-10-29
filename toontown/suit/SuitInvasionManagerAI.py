@@ -237,4 +237,4 @@ class SuitInvasionManagerAI:
             }
         else:
             status = {'invasion': None}
-       self.air.netMessenger.send('shardStatus', [self.air.ourChannel, status])
+        self.air.netMessenger.send('shardStatus', [self.air.ourChannel, status])
