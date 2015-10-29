@@ -1684,4 +1684,4 @@ BMovementSpeedMultiplier = 1.3
 
 BGagAccuracy = 1
 BGagAccuracyMultiplier = 1.3
-SellbotMegaCorpInt
+BugReportSite = 'https://bugs.launchpad.net/toontown/+filebug'

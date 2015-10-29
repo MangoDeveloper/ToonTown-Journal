@@ -693,3 +693,205 @@ class CodesTabPage(DirectFrame):
         self.codeInput['state'] = DGG.NORMAL
         self.codeInput['focus'] = 1
         self.submitButton['state'] = DGG.NORMAL
+
+class BonusOptionsTabPage(DirectFrame):
+    notify = directNotify.newCategory('BonusOptionsTabPage')
+
+    def __init__(self, parent = aspect2d):
+        self.parent = parent
+        self.currentSizeIndex = None
+
+        DirectFrame.__init__(self, parent=self.parent, relief=None, pos=(0.0, 0.0, 0.0), scale=(1.0, 1.0, 1.0))
+        self.load()
+
+    def destroy(self):
+        self.parent = None
+        DirectFrame.destroy(self)
+
+    def load(self):
+        guiButton = loader.loadModel('phase_3/models/gui/quit_button')
+        circleModel = loader.loadModel('phase_3/models/gui/tt_m_gui_mat_nameShop')
+        matGui = loader.loadModel('phase_3/models/gui/tt_m_gui_mat_mainGui')
+        titleHeight = 0.61
+        textStartHeight = 0.45
+        textRowHeight = 0.145
+        leftMargin = -0.72
+        buttonbase_xcoord = 0.35
+        buttonbase_ycoord = 0.45
+        button_image_scale = (0.7, 1, 1)
+        button_textpos = (0, -0.02)
+        options_text_scale = 0.052
+        disabled_arrow_color = Vec4(0.6, 0.6, 0.6, 1.0)
+        button_image = (guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR'))
+        arrow_image = (matGui.find('**/tt_t_gui_mat_shuffleArrowUp'), matGui.find('**/tt_t_gui_mat_shuffleArrowDown'))
+        self.speed_chat_scale = 0.055
+        self.trueFriends_label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=18, pos=(leftMargin, 0, textStartHeight - 2 * textRowHeight))
+        #self.cogInterface_label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=19, pos=(leftMargin, 0, textStartHeight - 3 * textRowHeight))
+        self.nametagStyle_label = DirectLabel(parent=self, relief=None, text=TTLocalizer.NametagStyleLabel, text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=20, pos=(leftMargin, 0, textStartHeight - 4 * textRowHeight))
+        self.trueFriends_toggleButton = DirectButton(parent=self, relief=None, image=button_image, image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - 2 * textRowHeight), command=self.__doToggleTrueFriends)
+        #self.cogInterface_toggleButton = DirectButton(parent=self, relief=None, image=button_image, image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - 3 * textRowHeight), command=self.__doToggleCogInterface)
+        self.nametagStyle_name = DirectLabel(self, relief=None, text='', scale=0.06, text_wordwrap=9, pos=(buttonbase_xcoord, 0, textStartHeight - 4 * textRowHeight))
+        self.nametagStyle_leftButton = DirectButton(self, relief=None, image=arrow_image, scale=0.45, pos=(0.05, 0, textStartHeight - 4 * textRowHeight), command=self.__updateNametagIndex, extraArgs=[-1])
+        self.nametagStyle_rightButton = DirectButton(self, relief=None, image=arrow_image, scale=-0.45, pos=(0.65, 0, textStartHeight - 4 * textRowHeight), command=self.__updateNametagIndex, extraArgs=[1])
+        self.nametagStyle_index = -1
+        self.bugReportButton = DirectButton(parent=self, relief=None, text=TTLocalizer.BugReportButton, image=button_image, image_scale=button_image_scale, text_pos=(0, -0.01), text_fg=(0, 0, 0, 1),
+        command=self.showReportNotice, pos=(0.0, 0.0, -0.6), text_scale=(0.045))
+        #self.WASD_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=16, pos=(leftMargin, 0, textStartHeight - textRowHeight))
+        #self.WASD_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight), command=self.__doToggleWASD) 
+        guiButton.removeNode()
+        circleModel.removeNode()
+        matGui.removeNode()
+
+    def enter(self):
+        self.show()
+        self.settingsChanged = 0
+        self.__setTrueFriendsButton()
+       # self.__setCogInterfaceButton()
+        self.__updateNametagStyle()
+        #self.__setWASDButton()
+        self.accept('refreshNametagStyle', self.__updateNametagStyle)
+
+    def exit(self):
+        self.ignoreAll()
+        self.destroyReportNotice()
+
+        self.hide()
+
+        if self.nametagStyle_index != -1 and self.nametagStyle_index != base.localAvatar.nametagStyles.index(base.localAvatar.getNametagStyle()):
+            base.localAvatar.requestNametagStyle(base.localAvatar.nametagStyles[self.nametagStyle_index])
+
+    def unload(self):
+        self.trueFriends_label.destroy()
+        del self.trueFriends_label
+        #self.cogInterface_label.destroy()
+        #del self.cogInterface_label
+        self.nametagStyle_label.destroy()
+        del self.nametagStyle_label
+        self.speedchatPlus_toggleButton.destroy()
+        del speedchatPlus_toggleButton
+        self.trueFriends_toggleButton.destroy()
+        del self.trueFriends_toggleButton
+        #self.cogInterface_toggleButton.destroy()
+        #del self.cogInterface_toggleButton
+        self.bugReportButton.destroy()
+        del self.bugReportButton
+        self.nametagStyle_name.destroy()
+        del self.nametagStyle_name
+        self.nametagStyle_leftButton.destroy()
+        del self.nametagStyle_leftButton
+        self.nametagStyle_rightButton.destroy()
+        del self.nametagStyle_rightButton
+        self.destroyReportNotice()
+        del self.destroyReportNotice
+        #self.WASD_Label.destroy()
+        #del self.WASD_Label
+        #self.WASD_toggleButton.destroy()
+        #del self.WASD_toggleButton
+
+
+    """def __doToggleCogInterface(self):
+        messenger.send('wakeup')
+        settings['cogInterface'] = not settings['cogInterface']
+        self.settingsChanged = 1
+        self.__setCogInterfaceButton()"""
+
+    """def __setCogInterfaceButton(self):
+        self.cogInterface_label['text'] = TTLocalizer.CogInterfaceLabelOn if settings['cogInterface'] else TTLocalizer.CogInterfaceLabelOff
+        self.cogInterface_toggleButton['text'] = TTLocalizer.OptionsPageToggleOff if settings['cogInterface'] else TTLocalizer.OptionsPageToggleOn"""
+
+    def __doToggleTrueFriends(self):
+        messenger.send('wakeup')
+        settings['trueFriends'] = not settings['trueFriends']
+        Toon.reconsiderAllToonsUnderstandable()
+        self.settingsChanged = 1
+        self.__setTrueFriendsButton()
+
+    def __setTrueFriendsButton(self):
+        self.trueFriends_label['text'] = TTLocalizer.TrueFriendsLabelOn if settings['trueFriends'] else TTLocalizer.TrueFriendsLabelOff
+        self.trueFriends_toggleButton['text'] = TTLocalizer.OptionsPageToggleOff if settings['trueFriends'] else TTLocalizer.OptionsPageToggleOn
+                
+    def __updateNametagStyle(self, resetIndex=True):
+            if resetIndex:
+                self.nametagStyle_index = base.localAvatar.nametagStyles.index(base.localAvatar.getNametagStyle())
+
+            nametagId = base.localAvatar.nametagStyles[self.nametagStyle_index]
+            self.nametagStyle_name['text'] = base.localAvatar.getName() + '\n' + TTLocalizer.NametagFontNames[nametagId]
+            self.nametagStyle_name['text_font'] = ToontownGlobals.getNametagFont(nametagId)
+            nametagCount = len(base.localAvatar.nametagStyles)
+        
+            if self.nametagStyle_index >= (nametagCount - 1):
+                self.nametagStyle_rightButton.hide()
+            else:
+                self.nametagStyle_rightButton.show()
+        
+            if self.nametagStyle_index <= 0:
+                self.nametagStyle_leftButton.hide()
+
+            else:
+                self.nametagStyle_leftButton.show()
+    
+    def __updateNametagIndex(self, offset):
+        self.nametagStyle_index += offset
+        self.__updateNametagStyle(False)
+    
+    """def __doToggleWASD(self):
+        messenger.send('wakeup')
+        if base.wantWASD:
+            base.wantWASD = False
+            base.Move_Up = 'arrow_up'
+            base.Move_Down = 'arrow_down'
+            base.Move_Left = 'arrow_left'
+            base.Move_Right = 'arrow_right'
+            base.JUMP = 'control'
+
+
+            settings['want-WASD'] = False
+            base.localAvatar.controlManager.reload()
+            base.localAvatar.chatMgr.reloadWASD()
+            base.localAvatar.setSystemMessage(0, 'WASD controls disabled.')            
+        else:
+            base.wantWASD = True
+            base.Move_Up = 'w'
+            base.Move_Down = 's'
+            base.Move_Left = 'a'
+            base.Move_Right = 'd'
+            base.JUMP = 'shift'
+
+            settings['want-WASD'] = True
+
+            base.localAvatar.controlManager.reload()
+            base.localAvatar.chatMgr.reloadWASD()            
+            base.localAvatar.setSystemMessage(0, 'You are now using WASD Controls.')
+
+        self.settingsChanged = 1
+        self.__setWASDButton()"""
+        
+    """def __setWASDButton(self):
+        self.WASD_Label['text'] = 'WASD Support:'        
+        if base.wantWASD:
+
+            self.WASD_toggleButton['text'] = 'On'
+        else:
+            self.WASD_toggleButton['text'] = 'Off'"""
+            
+    def destroyReportNotice(self):
+        if hasattr(self, 'dialog'):
+            self.dialog.destroy()
+            del self.dialog
+
+    def showReportNotice(self):
+        self.destroyReportNotice()
+        self.dialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=TTLocalizer.BugReportNotice, command=self.confirmBugReport)
+        self.dialog.show()
+
+    def confirmBugReport(self, value):
+        self.destroyReportNotice()
+
+
+
+
+        if value > 0:
+            webbrowser.open(ToontownGlobals.BugReportSite, new=2, autoraise=True)
+
+
+

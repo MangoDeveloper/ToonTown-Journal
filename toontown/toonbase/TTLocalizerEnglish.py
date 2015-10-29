@@ -2324,14 +2324,14 @@ SuitMicromanagerS = 'a Micromanager'
 SuitDownsizerS = 'a Downsizer'
 SuitHeadHunterS = 'a Head Hunter'
 SuitCorporateRaiderS = 'a Corporate Raider'
-SuitTheBigCheeseS = 'a The Big Cheese'
+SuitTheBigCheeseS = 'The Big Cheese'
 SuitColdCallerS = 'a Cold Caller'
 SuitTelemarketerS = 'a Telemarketer'
 SuitNameDropperS = 'a Name Dropper'
 SuitGladHanderS = 'a Glad Hander'
 SuitMoverShakerS = 'a Mover & Shaker'
 SuitTwoFaceS = 'a Two-Face'
-SuitTheMinglerS = 'a The Mingler'
+SuitTheMinglerS = 'The Mingler'
 SuitMrHollywoodS = 'a Mr. Hollywood'
 SuitShortChangeS = 'a Short Change'
 SuitPennyPincherS = 'a Penny Pincher'
@@ -9467,7 +9467,7 @@ GolfGreenGameScoreString = 'Puzzles Left: %s'
 GolfGreenGamePlayerScore = 'Solved %s'
 GolfGreenGameBonusGag = 'You won %s!'
 GolfGreenGameGotHelp = '%s solved a Puzzle!'
-GolfGreenGameDirections = 'Shoot balls using the the mouse\n\n\nMatching three of a color causes the balls to fall\n\n\nRemove all Cog balls from the board'
+GolfGreenGameDirections = 'Shoot balls using the mouse\n\n\nMatching three of a color causes the balls to fall\n\n\nRemove all Cog balls from the board'
 enterHedgeMaze = 'Race through the Hedge Maze\n for a laff bonus!'
 toonFinishedHedgeMaze = '%s \n  finished in %s place!'
 hedgeMazePlaces = ['first',
@@ -9842,3 +9842,89 @@ def getBuffString(buffId, buffTime):
 
 def getBuffPosterString(buffId):
     return buffIdStrings[buffId][1]
+
+BugReportButton = 'Report a Bug'
+BugReportNotice = 'Attention!\n\nThis button will open a browser which will send you to a third party bug tracker website. This site requires an Ubuntu One account to login. It may ask you to create an account.\n\nAre you sure you want to continue?'
+SuitInvasionPrefix = '%s: ' % lToonHQ
+SuitInvasionBegin = [
+ 'A Cog invasion has begun!!!',
+ '%(plural)s have taken over Toontown!!!'
+]
+SuitInvasionEnd = [
+ 'The %(singular)s invasion has ended!!!',
+ 'The Toons have saved the day once again!!!'
+]
+SuitInvasionUpdate = [
+ 'Keep it up, Toons!!!',
+ "The Cogs are beginning to explode in laughter!!!"
+]
+SuitInvasionBulletin = [
+ 'There is a Cog invasion in progress!!!',
+ '%(plural)s have taken over Toontown!!!'
+]
+SkelecogInvasionBegin = [
+ "This just in, Sellbot HQ's factory is going bonkers!",
+ "Sellbot HQ's factory is pushing out incomplete cogs!",
+ '%(singular)s Skelecogs have taken over Toontown!!!'
+]
+SkelecogInvasionEnd = [
+ 'The %(singular)s Skelecog invasion has ended!!!',
+ 'The Toons have saved the day once again!!!'
+]
+SkelecogInvasionBulletin = [
+ 'There is a Cog invasion in progress!!!',
+ "Sellbot HQ's factory has pushed out incomplete Cogs!",
+ '%(singular)s Skelecogs have taken over Toontown!!!'
+]
+WaiterInvasionBegin = [
+ 'Uh oh, it appears that the Cogs banquet has been rescheduled!',
+ 'The Waiter %(singular)s are invading Toontown!!!'
+]
+WaiterInvasionEnd = [
+ 'The Waiter %(singular)s waiters have been defeated!!!',
+ 'The Toons have saved the day once again!!!'
+]
+WaiterInvasionBulletin = [
+ 'There is a Cog invasion in progress!!!',
+ 'The Cogs banquet has been rescheduled!!!',
+ 'The Waiter %(singular)s are invading Toontown!!!'
+]
+V2InvasionBegin = [
+ "Oh my, stock up on gags toons!",
+ 'The Toon HQ has spotted a Version 2.0 Cog Invasion!',
+ 'The V2 %(plural)s have taken over Toontown!!!'
+]
+V2InvasionEnd = [
+ 'The V2 %(singular)s invasion has ended!!!',
+ 'The Toons have saved the day once again!!!'
+]
+V2InvasionBulletin = [
+ "There is a Cog invasion in progress!!!",
+ 'The Toon HQ has spotted a storm of Version 2.0 Cogs!',
+ 'The V2 %(plural)s have taken over Toontown!!!'
+]
+MegaInvasionBegin = [
+ "A Mega-Invasion has begun!!!",
+ "%(plural)s have taken over Toontown!!!"
+]
+MegaInvasionEnd = [
+ "The Mega %(singular)s invasion has ended!!!",
+ "The Toons have saved the day once again!!!"
+]
+MegaInvasionBulletin = [
+ "There is a Mega-Invasion in progress!!!",
+ "%(plural)s have taken over Toontown!!!"
+]
+CodeRedemptionWarning = 'NOTICE: All codes can only be entered once!'
+CogInterfaceLabelOn = 'Cog battle gui is ON.'
+CogInterfaceLabelOff = 'Cog battle gui is OFF.'
+SpeedchatPlusLabelOn = 'Speedchat Plus is on.'
+SpeedchatPlusLabelOff = 'Speedchat Plus is off.'
+TrueFriendsLabelOn = 'True Friends is on.'
+TrueFriendsLabelOff = 'True Friends is off.'
+def convertSecondsToDate(seconds):
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+
+    return '%d:%02d:%02d' % (h, m, s)
+
