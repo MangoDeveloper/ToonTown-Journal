@@ -1816,14 +1816,14 @@ class OTPClientRepository(ClientRepositoryBase):
         return Task.done
 
     def handleMessageType(self, msgType, di):
+        CLIENT_SYSTEM_MESSAGE = 78
+        CLIENT_SYSTEMMESSAGE_AKNOWLEDGE = 123
         if self.__recordObjectMessage(msgType, di):
             return
         if msgType == CLIENT_EJECT:
             self.handleGoGetLost(di)
         elif msgType == CLIENT_HEARTBEAT:
             self.handleServerHeartbeat(di)
-        CLIENT_SYSTEM_MESSAGE = 78
-        CLIENT_SYSTEMMESSAGE_AKNOWLEDGE = 123
         elif msgType == CLIENT_SYSTEM_MESSAGE:
             self.handleSystemMessage(di)
         elif msgType == CLIENT_SYSTEMMESSAGE_AKNOWLEDGE:
