@@ -1822,6 +1822,12 @@ class OTPClientRepository(ClientRepositoryBase):
             self.handleGoGetLost(di)
         elif msgType == CLIENT_HEARTBEAT:
             self.handleServerHeartbeat(di)
+        CLIENT_SYSTEM_MESSAGE = 78
+        CLIENT_SYSTEMMESSAGE_AKNOWLEDGE = 123
+        elif msgType == CLIENT_SYSTEM_MESSAGE:
+            self.handleSystemMessage(di)
+        elif msgType == CLIENT_SYSTEMMESSAGE_AKNOWLEDGE:
+            self.handleSystemMessageAknowledge(di)
         elif msgType == CLIENT_ENTER_OBJECT_REQUIRED:
             self.handleGenerateWithRequired(di)
         elif msgType == CLIENT_ENTER_OBJECT_REQUIRED_OTHER:
