@@ -552,7 +552,7 @@ class SuitPlannerBase:
                 self.notify.warning('multiple battle cells for zone: %d' % zoneId)
                 self.battlePosDict[zoneId] = vg.getBattleCell(0).getPos()
 
-            if True:
+            """if True:
                 for i in xrange(vg.getNumChildren()):
                     childDnaGroup = vg.at(i)
 
@@ -571,7 +571,7 @@ class SuitPlannerBase:
                                 propType = HoodUtil.calcPropType(name)
                                 if propType in ToontownBattleGlobals.PropTypeToTrackBonus:
                                     trackBonus = ToontownBattleGlobals.PropTypeToTrackBonus[propType]
-                                    self.cellToGagBonusDict[zoneId] = trackBonus
+                                    self.cellToGagBonusDict[zoneId] = trackBonus"""
 
         self.dnaStore.resetDNAGroups()
         self.dnaStore.resetDNAVisGroups()
