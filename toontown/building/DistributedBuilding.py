@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
 from direct.directtools.DirectGeometry import *
@@ -6,7 +6,6 @@ from ElevatorConstants import *
 from ElevatorUtils import *
 from SuitBuildingGlobals import *
 from direct.gui.DirectGui import *
-from pandac.PandaModules import *
 from toontown.toonbase import ToontownGlobals
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import ClassicFSM, State
@@ -17,9 +16,9 @@ from toontown.toonbase import TTLocalizer
 from toontown.distributed import DelayDelete
 from toontown.toon import TTEmote
 from otp.avatar import Emote
-from toontown.hood import ZoneUtil
+import sys
 FO_DICT = {'s': 'tt_m_ara_cbe_fieldOfficeMoverShaker',
- 'l': 'tt_m_ara_cbe_fieldOfficeMoverShaker',
+ 'l': 'tt_m_ara_cbe_fieldOfficeLegalEagle',
  'm': 'tt_m_ara_cbe_fieldOfficeMoverShaker',
  'c': 'tt_m_ara_cbe_fieldOfficeMoverShaker'}
 
@@ -162,7 +161,7 @@ class DistributedBuilding(DistributedObject.DistributedObject):
                     anyOthers = 1
 
             if anyOthers:
-                self.waitingMessage = DirectLabel(text=TTLocalizer.BuildingWaitingForVictors, text_fg=VBase4(1, 1, 1, 1), text_align=TextNode.ACenter, relief=None, pos=(0, 0, 0.35), scale=0.1)
+                self.waitingMessage = DirectLabel(text=TTLocalizer.WaitingForOtherToons, text_fg=VBase4(1, 1, 1, 1), text_align=TextNode.ACenter, relief=None, pos=(0, 0, 0.35), scale=0.1)
         elif victorCount == 0:
             pass
         else:
@@ -200,7 +199,7 @@ class DistributedBuilding(DistributedObject.DistributedObject):
                     anyOthers = 1
 
             if anyOthers:
-                self.waitingMessage = DirectLabel(text=TTLocalizer.BuildingWaitingForVictors, text_fg=VBase4(1, 1, 1, 1), text_align=TextNode.ACenter, relief=None, pos=(0, 0, 0.35), scale=0.1)
+                self.waitingMessage = DirectLabel(text=TTLocalizer.WaitingForOtherToons, text_fg=VBase4(1, 1, 1, 1), text_align=TextNode.ACenter, relief=None, pos=(0, 0, 0.35), scale=0.1)
         elif victorCount == 0:
             pass
         else:
@@ -235,8 +234,11 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         pass
 
     def enterToon(self, ts):
-        if self.getInteractiveProp():
-            self.getInteractiveProp().buildingLiberated(self.doId)
+        prop = self.getInteractiveProp()
+
+        if prop:
+            prop.buildingLiberated(self.doId)
+
         self.setToToon()
 
     def exitToon(self):
@@ -255,7 +257,11 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         pass
 
     def enterSuit(self, ts):
-        self.makePropSad()
+        prop = self.getInteractiveProp()
+
+        if prop and not prop.state == 'Sad':
+            prop.gotoSad(self.doId)
+
         self.setToSuit()
 
     def exitSuit(self):
@@ -314,14 +320,8 @@ class DistributedBuilding(DistributedObject.DistributedObject):
             self.cab = self.elevatorModel.find('**/elevator')
             cogIcons = loader.loadModel('phase_3/models/gui/cog_icons')
             dept = chr(self.track)
-            if dept == 'c':
-                corpIcon = cogIcons.find('**/CorpIcon').copyTo(self.cab)
-            elif dept == 's':
-                corpIcon = cogIcons.find('**/SalesIcon').copyTo(self.cab)
-            elif dept == 'l':
-                corpIcon = cogIcons.find('**/LegalIcon').copyTo(self.cab)
-            elif dept == 'm':
-                corpIcon = cogIcons.find('**/MoneyIcon').copyTo(self.cab)
+            if dept in SuitDNA.suitDeptModelPaths:
+                corpIcon = cogIcons.find(SuitDNA.suitDeptModelPaths[dept]).copyTo(self.cab)
             corpIcon.setPos(0, 6.79, 6.8)
             corpIcon.setScale(3)
             from toontown.suit import Suit
@@ -437,7 +437,6 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         level = int(self.difficulty / 2) + 1
         suitNP = dnaStore.findNode('suit_landmark_' + chr(self.track) + str(level))
         zoneId = dnaStore.getZoneFromBlockNumber(self.block)
-        zoneId = ZoneUtil.getTrueZoneId(zoneId, self.interiorZoneId)
         newParentNP = base.cr.playGame.hood.loader.zoneDict[zoneId]
         suitBuildingNP = suitNP.copyTo(newParentNP)
         buildingTitle = dnaStore.getTitleFromBlockNumber(self.block)
@@ -458,13 +457,13 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         backgroundNP = loader.loadModel('phase_5/models/modules/suit_sign')
         backgroundNP.reparentTo(signOrigin)
         backgroundNP.setPosHprScale(0.0, 0.0, textHeight * 0.8 / zScale, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0 * zScale)
-        backgroundNP.node().setEffect(DecalEffect.make())
         signTextNodePath = backgroundNP.attachNewNode(textNode.generate())
         signTextNodePath.setPosHprScale(0.0, 0.0, -0.21 + textHeight * 0.1 / zScale, 0.0, 0.0, 0.0, 0.1, 0.1, 0.1 / zScale)
         signTextNodePath.setColor(1.0, 1.0, 1.0, 1.0)
         frontNP = suitBuildingNP.find('**/*_front/+GeomNode;+s')
         backgroundNP.wrtReparentTo(frontNP)
         frontNP.node().setEffect(DecalEffect.make())
+        signTextNodePath.setAttrib(DepthOffsetAttrib.make(1))
         suitBuildingNP.setName('sb' + str(self.block) + ':_landmark__DNARoot')
         suitBuildingNP.setPosHprScale(nodePath, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
         suitBuildingNP.flattenMedium()
@@ -537,8 +536,9 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         dnaStore = self.cr.playGame.dnaStore
         level = int(self.difficulty / 2) + 1
         suitNP = dnaStore.findNode(FO_DICT[chr(self.track)])
+        if not suitNP:
+            suitNP = loader.loadModel('phase_5/models/cogdominium/%s' % FO_DICT[chr(self.track)])
         zoneId = dnaStore.getZoneFromBlockNumber(self.block)
-        zoneId = ZoneUtil.getTrueZoneId(zoneId, self.interiorZoneId)
         newParentNP = base.cr.playGame.hood.loader.zoneDict[zoneId]
         suitBuildingNP = suitNP.copyTo(newParentNP)
         buildingTitle = dnaStore.getTitleFromBlockNumber(self.block)
@@ -551,23 +551,21 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         textNode.setFont(ToontownGlobals.getSuitFont())
         textNode.setAlign(TextNode.ACenter)
         textNode.setWordwrap(12.0)
-        textNode.setText(buildingTitle)
+        textNode.setText(buildingTitle.decode(sys.getdefaultencoding()))
         textHeight = textNode.getHeight()
         zScale = (textHeight + 2) / 3.0
         signOrigin = suitBuildingNP.find('**/sign_origin;+s')
         backgroundNP = loader.loadModel('phase_5/models/cogdominium/field_office_sign')
         backgroundNP.reparentTo(signOrigin)
         backgroundNP.setPosHprScale(0.0, 0.0, -1.2 + textHeight * 0.8 / zScale, 0.0, 0.0, 0.0, 20.0, 8.0, 8.0 * zScale)
-        backgroundNP.node().setEffect(DecalEffect.make())
         signTextNodePath = backgroundNP.attachNewNode(textNode.generate())
         signTextNodePath.setPosHprScale(0.0, 0.0, -0.13 + textHeight * 0.1 / zScale, 0.0, 0.0, 0.0, 0.1 * 8.0 / 20.0, 0.1, 0.1 / zScale)
         signTextNodePath.setColor(1.0, 1.0, 1.0, 1.0)
-        frontNP = suitBuildingNP.find('**/*_front/+GeomNode;+s')
+        frontNP = suitBuildingNP.find('**/*_front')
         backgroundNP.wrtReparentTo(frontNP)
-        frontNP.node().setEffect(DecalEffect.make())
+        signTextNodePath.setAttrib(DepthOffsetAttrib.make(1))
         suitBuildingNP.setName('cb' + str(self.block) + ':_landmark__DNARoot')
         suitBuildingNP.setPosHprScale(nodePath, 15.463, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
-        suitBuildingNP.flattenMedium()
         suitBuildingNP.setColorScale(0.6, 0.6, 0.6, 1.0)
         self.loadElevator(suitBuildingNP, cogdo=True)
         return suitBuildingNP
@@ -919,38 +917,22 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         self.elevatorNodePath.setPosHpr(0, 0, 0, 0, 0, 0)
 
     def getSbSearchString(self):
-        result = 'landmarkBlocks/sb' + str(self.block) + ':*_landmark_*_DNARoot'
-        return result
+        return 'landmarkBlocks/sb' + str(self.block) + ':*_landmark_*_DNARoot'
 
     def adjustSbNodepathScale(self, nodePath):
         pass
 
     def getVisZoneId(self):
-        exteriorZoneId = base.cr.playGame.hood.dnaStore.getZoneFromBlockNumber(self.block)
-        visZoneId = ZoneUtil.getTrueZoneId(exteriorZoneId, self.zoneId)
-        return visZoneId
+        return base.cr.playGame.hood.dnaStore.getZoneFromBlockNumber(self.block)
 
     def getInteractiveProp(self):
-        result = None
         if self.interactiveProp:
-            result = self.interactiveProp
-        else:
-            visZoneId = self.getVisZoneId()
-            if base.cr.playGame.hood:
-                loader = base.cr.playGame.hood.loader
-                if hasattr(loader, 'getInteractiveProp'):
-                    self.interactiveProp = loader.getInteractiveProp(visZoneId)
-                    result = self.interactiveProp
-                    self.notify.debug('self.interactiveProp = %s' % self.interactiveProp)
-                else:
-                    self.notify.warning('no loader.getInteractiveProp self.interactiveProp is None')
-            else:
-                self.notify.warning('no hood self.interactiveProp is None')
-        return result
+            return self.interactiveProp
+        elif base.cr.playGame.hood:
+            loader = base.cr.playGame.hood.loader
 
-    def makePropSad(self):
-        self.notify.debug('makePropSad')
-        if self.getInteractiveProp():
-            if self.getInteractiveProp().state == 'Sad':
-                pass
-            self.getInteractiveProp().gotoSad(self.doId)
+            if hasattr(loader, 'getInteractiveProp'):
+                self.interactiveProp = base.cr.playGame.hood.loader.getInteractiveProp(self.getVisZoneId())
+
+                return self.interactiveProp
+        return None
