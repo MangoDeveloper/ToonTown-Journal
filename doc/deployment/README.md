@@ -1,6 +1,6 @@
 Deployment
 ==========
-*Deployment* describes the process of updating both Toontown Journey's client to the latest version. The client's files will then be collected, packaged, compiled, and then made available to the supported platforms via the official launcher.
+*Deployment* describes the process of updating Toontown Journey's client to the latest version. The client's files will then be collected, packaged, compiled, and then made available to the supported platforms via the official launcher.
 
 - - -
 
