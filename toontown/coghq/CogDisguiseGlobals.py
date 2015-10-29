@@ -121,22 +121,6 @@ PartsQueryNames = ({1: PartNameStrings[0],
 suitTypes = PythonUtil.Enum(('NoSuit', 'NoMerits', 'FullSuit'))
 
 
-def makeMeritHierarchy(baseMerits):
-    meritHierarchy = []
-    for _ in xrange(SuitDNA.suitsPerDept):
-        meritTier = []
-        for _ in xrange(SuitDNA.levelsPerSuit):
-            baseMerits += (baseMerits*25) / 100
-            meritTier.append(baseMerits)
-        meritHierarchy.append(tuple(meritTier))
-        baseMerits /= 2
-    return meritHierarchy
-
-
-MeritsPerLevel = makeMeritHierarchy(100)  # Bossbot
-MeritsPerLevel += makeMeritHierarchy(75)  # Lawbot
-MeritsPerLevel += makeMeritHierarchy(50)  # Cashbot
-MeritsPerLevel += makeMeritHierarchy(25)  # Sellbot
 
 def getNextPart(parts, partIndex, dept):
     dept = dept2deptIndex(dept)
