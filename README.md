@@ -5,7 +5,7 @@
 
 Bellow are the rules for contributing to this project.
 
-1. When we are out of pre alpha always merge pull requests into the dev branch. A week before our scheduled release we test the dev branch and make sure its functional then merge it into master
+1. When we are out of open beta always merge pull requests into the dev branch. A week before our scheduled release we test the dev branch and make sure its functional then merge it into master
 
 2. 
 
