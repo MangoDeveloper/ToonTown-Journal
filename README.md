@@ -19,3 +19,8 @@ Bellow are the rules for contributing to this project.
 ### Current contributors
 
 
+###Database
+The local database is for dev servers and you dont want everyone having admin access
+The developer database is also for dev servers but everyone is admin
+The mysql database is for production servers.
+And finally the remote database is for 
