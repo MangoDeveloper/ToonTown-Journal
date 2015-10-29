@@ -2,10 +2,10 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
 import HolidayDecorator
-from src.toontown.toonbase import ToontownGlobals
-from src.toontown.safezone import Playground
-from src.toontown.town import Street
-from src.toontown.estate import Estate
+from toontown.toonbase import ToontownGlobals
+from toontown.safezone import Playground
+from toontown.town import Street
+from toontown.estate import Estate
 from pandac.PandaModules import Vec4, TransformState, NodePath, TransparencyAttrib
 
 class HalloweenHolidayDecorator(HolidayDecorator.HolidayDecorator):

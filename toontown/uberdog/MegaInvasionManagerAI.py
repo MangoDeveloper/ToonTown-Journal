@@ -1,6 +1,6 @@
 from direct.distributed.DistributedObjectGlobalAI import DistributedObjectGlobalAI
-from src.toontown.suit.MegaInvasionGlobals import *
-from src.toontown.suit.SuitInvasionGlobals import *
+from toontown.suit.MegaInvasionGlobals import *
+from toontown.suit.SuitInvasionGlobals import *
 
 import random
 from time import time
