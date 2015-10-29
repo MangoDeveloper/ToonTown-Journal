@@ -9931,3 +9931,5 @@ def convertSecondsToDate(seconds):
 SillySaturdayStart = "It's time for Silly Saturday! Saturdays are silly with Fish Bingo and Grand Prix throughout the day!"
 SillySaturdayOngoing = 'Welcome! Silly Saturday is currently in progress.'
 SillySaturdayEnd = 'Silly Saturday is over. Hope you had fun. See you next week!'
+AprilToonsWeekStart = "It's April Toons Week!"
+AprilToonsWeekEnd = 'April Toons Week is over. See you next year!'
