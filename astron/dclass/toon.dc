@@ -4,6 +4,7 @@ from toontown.building import DistributedAnimatedProp/AI
 from toontown.toon import DistributedToon/AI/UD
 from toontown.classicchars import DistributedCCharBase/AI
 from toontown.classicchars import DistributedMickey/AI
+from src.toontown.ai import DistributedEffectMgr/AI
 from toontown.classicchars import DistributedVampireMickey/AI
 from toontown.building import DistributedBuildingQueryMgr/AI
 from toontown.classicchars import DistributedMinnie/AI
@@ -3391,4 +3392,10 @@ dclass MegaInvasionManager : DistributedObjectGlobal {
   callInvasion(int16 index) airecv;
   endInvasion(int16 index) airecv;
   hello();
+};
+
+dclass DistributedEffectMgr : DistributedObject {
+  setHoliday(uint8) required broadcast;
+  requestEffect() airecv clsend;
+  effectDone(uint8);
 };
