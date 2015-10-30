@@ -21,7 +21,6 @@ from otp.avatar import LocalAvatar
 from otp.avatar import PositionExaminer
 from otp.login import LeaveToPayDialog
 from otp.otpbase import OTPGlobals
-from toontown.achievements import AchievementGui
 from toontown.battle import Fanfare
 from toontown.battle.BattleSounds import *
 from toontown.catalog import CatalogNotifyDialog
@@ -35,7 +34,6 @@ from toontown.parties import PartyGlobals
 from toontown.quest import QuestMap
 from toontown.quest import QuestParser
 from toontown.quest import Quests
-from toontown.shtiker import AchievementsPage
 from toontown.shtiker import DisguisePage
 from toontown.shtiker import EventsPage
 from toontown.shtiker import FishPage
@@ -374,11 +372,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.fishPage.setAvatar(self)
         self.fishPage.load()
         self.book.addPage(self.fishPage, pageName=TTLocalizer.FishPageTitle)
-        if base.wantAchievements:
-            self.achievementsPage = AchievementsPage.AchievementsPage()
-            self.achievementsPage.setAvatar(self)
-            self.achievementsPage.load()
-            self.book.addPage(self.achievementsPage, pageName=TTLocalizer.AchievementsPageTitle)
         if base.wantKarts:
             self.addKartPage()
         if self.disguisePageFlag:

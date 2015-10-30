@@ -12,7 +12,6 @@ from toontown.racing.LeaderboardMgrAI import LeaderboardMgrAI
 from toontown.coderedemption.TTCodeRedemptionMgrAI import TTCodeRedemptionMgrAI
 from toontown.ai import CogSuitManagerAI
 from toontown.ai import PromotionManagerAI
-from toontown.ai.AchievementsManagerAI import AchievementsManagerAI
 from toontown.ai.FishManagerAI import  FishManagerAI
 from toontown.ai.HolidayManagerAI import HolidayManagerAI
 from toontown.building.DistributedBuildingQueryMgrAI import DistributedBuildingQueryMgrAI
@@ -86,7 +85,6 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.wantCogdominiums = self.config.GetBool('want-cogdominiums', True)
         self.doLiveUpdates = self.config.GetBool('want-live-updates', False)
         self.wantTrackClsends = self.config.GetBool('want-track-clsends', False)
-        self.wantAchievements = self.config.GetBool('want-achievements', True)
         self.wantYinYang = self.config.GetBool('want-yin-yang', False)
         self.baseXpMultiplier = self.config.GetFloat('base-xp-multiplier', 1.0)
         self.wantHalloween = self.config.GetBool('want-halloween', False)
@@ -114,7 +112,6 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.friendManager.generateWithRequired(2)
         self.questManager = QuestManagerAI(self)
         self.banManager = BanManagerAI.BanManagerAI(self)
-        self.achievementsManager = AchievementsManagerAI(self)
         self.trophyMgr = DistributedTrophyMgrAI(self)
         self.trophyMgr.generateWithRequired(2)
         self.cogSuitMgr = CogSuitManagerAI.CogSuitManagerAI(self)

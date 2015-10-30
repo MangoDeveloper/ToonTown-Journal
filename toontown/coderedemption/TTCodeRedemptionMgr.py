@@ -10,7 +10,7 @@ class TTCodeRedemptionMgr(DistributedObject):
 
     def announceGenerate(self):
         DistributedObject.announceGenerate(self)
-        base.cr.codeRedemptionMgr = self
+        base.codeRedemptionMgr = self
 
     def delete(self):
         if hasattr(base.cr, 'codeRedemptionMgr'):

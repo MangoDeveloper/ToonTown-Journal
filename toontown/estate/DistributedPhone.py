@@ -1,23 +1,21 @@
+from toontown.toonbase import ToontownGlobals
+import PhoneGlobals
+from toontown.catalog import CatalogScreen
+from toontown.catalog import CatalogItem
+from toontown.catalog import GiftAvatar
+from toontown.toontowngui import TTDialog
+from toontown.toonbase import TTLocalizer
+import DistributedHouseInterior
 from direct.actor import Actor
-from direct.directnotify.DirectNotifyGlobal import *
+import DistributedFurnitureItem
 from direct.distributed import ClockDelta
-from direct.interval.IntervalGlobal import *
 from direct.showbase import PythonUtil
 from direct.showutil import Rope
-from direct.task import Task
-from pandac.PandaModules import *
-
-import DistributedFurnitureItem
-import PhoneGlobals
-from toontown.catalog import CatalogItem
-from toontown.catalog.CatalogGUI import CatalogGUI
-from toontown.catalog.CatalogItemListGUI import CatalogItemListGUI
-from toontown.catalog.CatalogItemSorter import CatalogItemSorter
+from direct.directnotify.DirectNotifyGlobal import *
+from panda3d.core import *
+from direct.interval.IntervalGlobal import *
 from toontown.quest import Quests
-from toontown.toonbase import TTLocalizer
-from toontown.toonbase import ToontownGlobals
-from toontown.toontowngui import TTDialog
-
+from direct.task import Task
 
 class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
     notify = directNotify.newCategory('DistributedPhone')
@@ -104,7 +102,7 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         if self.initialScale:
             mount.setScale(*self.initialScale)
             self.usedInitialScale = 1
-        phoneSphere = CollisionSphere(0, -0.66, 0, 0.2)
+        phoneSphere = CollisionSphere(0, -0.88, 0, 0.2)
         phoneSphere.setTangible(0)
         phoneSphereNode = CollisionNode(self.phoneSphereEvent)
         phoneSphereNode.setIntoCollideMask(ToontownGlobals.WallBitmask)
@@ -117,7 +115,9 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
     def setupCamera(self, mode):
         camera.wrtReparentTo(render)
         if mode == PhoneGlobals.PHONE_MOVIE_PICKUP:
-            camera.posQuatInterval(1, (4, -4, base.localAvatar.getHeight()- 0.5), (35, -8, 0), other=base.localAvatar, blendType='easeOut').start()
+            quat = Quat()
+            quat.setHpr((35, -8, 0))
+            LerpPosQuatInterval(camera, 1, (4, -4, base.localAvatar.getHeight() - 0.5), quat, blendType='easeOut', other=base.localAvatar).start()
 
     def setupCord(self):
         if self.cord:
@@ -165,25 +165,26 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
             self.usedInitialScale = 1
 
     def __handleEnterSphere(self, collEntry):
-        if self.smoothStarted:
+        if self.phoneGui or self.smoothStarted:
             return
+
         if base.localAvatar.doId == self.lastAvId and globalClock.getFrameTime() <= self.lastTime + 0.5:
             self.notify.debug('Ignoring duplicate entry for avatar.')
             return
+
         if self.hasLocalAvatar:
             self.freeAvatar()
-        if hasattr(base, 'wantPets') and base.wantPets:
-            base.localAvatar.lookupPetDNA()
+
         self.notify.debug('Entering Phone Sphere....')
         taskMgr.remove(self.uniqueName('ringDoLater'))
-        self.ignore(self.phoneSphereEnterEvent)
         self.cr.playGame.getPlace().detectedPhoneCollision()
         self.hasLocalAvatar = 1
-        self.sendUpdate('avatarEnter')
+        self.sendUpdate('avatarEnter', [])
 
     def __handlePhoneDone(self):
-        self.sendUpdate('avatarExit')
+        self.sendUpdate('avatarExit', [])
         self.ignore(self.phoneGuiDoneEvent)
+        self.setPos(self.getPos())
         self.phoneGui = None
 
     def freeAvatar(self):
@@ -195,8 +196,6 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
                 base.cr.playGame.getPlace().setState('walk')
             self.hasLocalAvatar = 0
         self.ignore(self.pickupMovieDoneEvent)
-        self.accept(self.phoneSphereEnterEvent, self.__handleEnterSphere)
-        self.stopSmooth()
         self.lastTime = globalClock.getFrameTime()
 
     def setLimits(self, numHouseItems):
@@ -208,25 +207,20 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         self.ignore(self.pickupMovieDoneEvent)
         if avId != 0:
             self.lastAvId = avId
+
         self.lastTime = globalClock.getFrameTime()
         isLocalToon = avId == base.localAvatar.doId
         avatar = self.cr.doId2do.get(avId)
+        self.notify.debug('setMovie: %s %s %s' % (mode, avId, isLocalToon))
+
         if mode == PhoneGlobals.PHONE_MOVIE_CLEAR:
+            self.notify.debug('setMovie: clear')
+            self.numHouseItems = None
             if self.phoneInUse:
                 self.clearInterval()
-            self.numHouseItems = None
-            self.phoneInUse = 0
-        elif mode == PhoneGlobals.PHONE_MOVIE_EMPTY:
-            if isLocalToon:
-                self.phoneDialog = TTDialog.TTDialog(dialogName='PhoneEmpty', style=TTDialog.Acknowledge, text=TTLocalizer.DistributedPhoneEmpty, text_wordwrap=15, fadeScreen=1, command=self.__clearDialog)
-            self.numHouseItems = None
-            self.phoneInUse = 0
-        elif mode == PhoneGlobals.PHONE_MOVIE_NO_HOUSE:
-            if isLocalToon:
-                self.phoneDialog = TTDialog.TTDialog(dialogName='PhoneNoHouse', style=TTDialog.Acknowledge, text=TTLocalizer.DistributedPhoneNoHouse, text_wordwrap=15, fadeScreen=1, command=self.__clearDialog)
-            self.numHouseItems = None
             self.phoneInUse = 0
         elif mode == PhoneGlobals.PHONE_MOVIE_PICKUP:
+            self.notify.debug('setMovie: gui')
             if avatar:
                 interval = self.takePhoneInterval(avatar)
                 if isLocalToon:
@@ -236,6 +230,7 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
                 self.playInterval(interval, elapsed, avatar)
                 self.phoneInUse = 1
         elif mode == PhoneGlobals.PHONE_MOVIE_HANGUP:
+            self.notify.debug('setMovie: gui')
             if avatar:
                 interval = self.replacePhoneInterval(avatar)
                 self.playInterval(interval, elapsed, avatar)
@@ -247,74 +242,10 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
     def __showPhoneGui(self):
         if self.toonScale:
             self.sendUpdate('setNewScale', [self.toonScale[0], self.toonScale[1], self.toonScale[2]])
-
-        self.phoneGui = CatalogGUI(self, doneEvent=self.phoneGuiDoneEvent)
-        # Hide the phone until we get our popular items set.
-        self.phoneGui.hide()
-        self.__generateCatalogPages()
-
-        self.acceptOnce('PopularItemsSet', self.__setPopularItems)
-        self.cr.catalogManager.fetchPopularItems()
-
+        self.phoneGui = CatalogScreen.CatalogScreen(phone=self, doneEvent=self.phoneGuiDoneEvent)
+        self.phoneGui.show()
         self.accept(self.phoneGuiDoneEvent, self.__handlePhoneDone)
         self.accept('phoneAsleep', self.__handlePhoneAsleep)
-
-    def __generateCatalogPages(self):
-        itemList = base.localAvatar.monthlyCatalog.generateList()
-        itemList += base.localAvatar.weeklyCatalog.generateList()
-        itemList += base.localAvatar.backCatalog.generateList()
-
-        sortedItems = CatalogItemSorter(itemList).sortItems()
-
-        catalogItemList = CatalogItemListGUI(self.phoneGui)
-        for item in sortedItems['FURNITURE']:
-            catalogItemList.addItem(item, 'Furniture')
-        for item in sortedItems['UNSORTED']:
-            catalogItemList.addItem(item, 'Unsorted Items')
-        self.phoneGui.tabButtons['FURNITURE_TAB'].setCatalogItemPages(catalogItemList.generatePages())
-        self.phoneGui.tabButtons['FURNITURE_TAB'].tabClicked()
-
-        catalogItemList = CatalogItemListGUI(self.phoneGui)
-        for item in sortedItems['EMOTIONS']:
-            catalogItemList.addItem(item, 'Emotions')
-        self.phoneGui.tabButtons['EMOTE_TAB'].setCatalogItemPages(catalogItemList.generatePages())
-        self.phoneGui.tabButtons['EMOTE_TAB'].tabClicked()
-
-        catalogItemList = CatalogItemListGUI(self.phoneGui)
-        for item in sortedItems['SPECIAL']:
-            catalogItemList.addItem(item, 'Special')
-        self.phoneGui.tabButtons['SPECIAL_TAB'].setCatalogItemPages(catalogItemList.generatePages())
-        self.phoneGui.tabButtons['SPECIAL_TAB'].tabClicked()
-
-        catalogItemList = CatalogItemListGUI(self.phoneGui)
-        for item in sortedItems['CLOTHING']:
-            catalogItemList.addItem(item, 'Clothing')
-        self.phoneGui.tabButtons['CLOTHING_TAB'].setCatalogItemPages(catalogItemList.generatePages())
-        self.phoneGui.tabButtons['CLOTHING_TAB'].tabClicked()
-
-        catalogItemList = CatalogItemListGUI(self.phoneGui)
-        for item in sortedItems['PHRASES']:
-            catalogItemList.addItem(item, 'Phrases')
-        self.phoneGui.tabButtons['PHRASES_TAB'].setCatalogItemPages(catalogItemList.generatePages())
-        self.phoneGui.tabButtons['PHRASES_TAB'].tabClicked()
-
-        catalogItemList = CatalogItemListGUI(self.phoneGui)
-        for item in sortedItems['NAMETAG']:
-            catalogItemList.addItem(item, 'Nametag')
-        self.phoneGui.tabButtons['NAMETAG_TAB'].setCatalogItemPages(catalogItemList.generatePages())
-        self.phoneGui.tabButtons['NAMETAG_TAB'].tabClicked()
-
-    def __setPopularItems(self):
-        # Generate a list of popular items.
-        itemList = self.cr.catalogManager.popularItems.generateList()
-        catalogItemList = CatalogItemListGUI(self.phoneGui)
-        for item in itemList:
-            catalogItemList.addItem(item, 'Popular')
-        self.phoneGui.tabButtons['POPULAR_TAB'].setCatalogItemPages(catalogItemList.generatePages())
-        # Now that the popular items are set we can show the CatalogGUI
-        self.phoneGui.show()
-        # We want our default tab to be the popular tab. We need to click it twice to prevent a glitch.
-        self.phoneGui.tabButtons['POPULAR_TAB'].tabClicked()
 
     def __handlePhoneAsleep(self):
         self.ignore('phoneAsleep')
@@ -330,8 +261,7 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
     def requestGiftPurchase(self, item, targetDoID, callback, optional = -1):
         blob = item.getBlob(store=CatalogItem.Customization)
         context = self.getCallbackContext(callback, [item])
-        self.sendUpdate('requestGiftPurchaseMessage', [context, targetDoID,
-                                                       blob, optional])
+        self.sendUpdate('requestGiftPurchaseMessage', [context, targetDoID, blob, optional])
 
     def requestPurchaseResponse(self, context, retcode):
         self.doCallbackContext(context, [retcode])
@@ -432,6 +362,15 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
 
         ringIval = Parallel(Func(base.playSfx, self.ringSfx), shakeSeq, Func(phone.setR, 0))
         self.playInterval(ringIval, 0.0, None)
+    
+    def requestGiftAvatar(self, doId):
+        if not self.phoneGui:
+            return
 
-    def purchaseItemComplete(self):
-        self.phoneGui.updateItems()
+        self.sendUpdate('requestGiftAvatar', [doId])
+    
+    def setGiftAvatar(self, fields):
+        if not self.phoneGui:
+            return
+
+        self.phoneGui.setFriendReady(GiftAvatar.createFromJson(fields))

@@ -51,7 +51,6 @@ from ToontownMsgTypes import *
 import HoodMgr
 import PlayGame
 from toontown.toontowngui import ToontownLoadingBlocker
-from toontown.hood import StreetSign
 import random
 
 

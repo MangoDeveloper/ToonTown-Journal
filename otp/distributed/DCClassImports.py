@@ -2,7 +2,7 @@
 from pandac.PandaModules import *
 
 
-hashVal = 724134176
+hashVal = 1487392189
 
 
 from toontown.cogdominium import DistributedCogdoInterior, DistributedCogdoBattleBldg, DistributedCogdoElevatorExt, DistributedCogdoElevatorInt, DistributedCogdoBarrel, DistCogdoGame, DistCogdoLevelGame, DistCogdoBoardroomGame, DistCogdoCraneGame, DistCogdoMazeGame, DistCogdoFlyingGame, DistCogdoCrane, DistCogdoCraneMoneyBag, DistCogdoCraneCog
@@ -42,7 +42,6 @@ from toontown.rpc.AwardManager import AwardManager
 from toontown.parties import DistributedParty, DistributedPartyActivity, DistributedPartyTeamActivity, DistributedPartyCannon, DistributedPartyCannonActivity, DistributedPartyCatchActivity, DistributedPartyWinterCatchActivity, DistributedPartyCogActivity, DistributedPartyWinterCogActivity, DistributedPartyFireworksActivity, DistributedPartyDanceActivityBase, DistributedPartyDanceActivity, DistributedPartyDance20Activity, DistributedPartyValentineDanceActivity, DistributedPartyValentineDance20Activity, DistributedPartyTrampolineActivity, DistributedPartyValentineTrampolineActivity, DistributedPartyVictoryTrampolineActivity, DistributedPartyWinterTrampolineActivity, DistributedPartyTugOfWarActivity, DistributedPartyJukeboxActivityBase, DistributedPartyJukeboxActivity, DistributedPartyJukebox40Activity, DistributedPartyValentineJukeboxActivity, DistributedPartyValentineJukebox40Activity
 from otp.snapshot import SnapshotDispatcher, SnapshotRenderer
 from toontown.uberdog.DistributedInGameNewsMgr import DistributedInGameNewsMgr
-from toontown.coghq.InGameEditorDCImports import *
 from toontown.friends import TTPlayerFriendsManager, TTJFriendsManager
 from otp.status import StatusDatabase
 from toontown.uberdog.DistributedSecurityMgr import DistributedSecurityMgr

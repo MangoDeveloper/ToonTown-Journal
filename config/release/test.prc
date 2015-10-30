@@ -17,7 +17,6 @@ want-gifting #t
 
 want-parties #t
 want-cogdominiums #t
-want-achievements #f
 boarding-group-merges #t
 want-mega-invasions #t
 safe-harbours Toon Valley

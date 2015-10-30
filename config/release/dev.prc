@@ -29,7 +29,6 @@ want-chinese-checkers #f
 want-checkers #f
 want-cogdominiums #t
 want-mega-invasions #t
-want-achievements #f
 safe-harbours Toon Valley
 # Chat:
 want-whitelist #f

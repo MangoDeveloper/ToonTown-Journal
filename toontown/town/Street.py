@@ -382,7 +382,6 @@ class Street(BattlePlace.BattlePlace):
         geom = base.cr.playGame.getPlace().loader.geom
         signs = geom.findAllMatches('**/*tunnelAheadSign*;+s')
         if signs.getNumPaths() > 0:
-            streetSign = base.cr.streetSign
             signTexturePath = streetSign.StreetSignBaseDir + '/' + streetSign.StreetSignFileName
             loaderTexturePath = Filename(str(signTexturePath))
             alphaPath = 'phase_4/maps/tt_t_ara_gen_tunnelAheadSign_a.rgb'
