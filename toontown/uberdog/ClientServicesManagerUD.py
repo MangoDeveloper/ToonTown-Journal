@@ -1337,16 +1337,16 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
 
         # Ensure that our authentication key is the correct size:
         if len(authKey) > 22:
-            rejectKey(sender, 'the specified authentication key was too big')
+            self.rejectKey(sender, 'the specified authentication key was too big')
         elif len(authKey) < 22:
-            rejectKey(sender, 'the specified authentication key was too small')
+            self.rejectKey(sender, 'the specified authentication key was too small')
 
         if not authKey in ['ttjsecretkey3234523423', '3243254323yektercesjtt']:
             if not authKey in 'ttjsecretkey3234523423':
                 # INTRUDER ALERT! Wrong key!
-                rejectKey("the specified authentication key did not match up to the server's set key", dumb=False)
+                self.rejectKey("the specified authentication key did not match up to the server's set key", dumb=False)
             else:
-                rejectKey("you reversed the server's set authentication key", securityIssue=False, dumb=False)
+                self.rejectKey("you reversed the server's set authentication key", securityIssue=False, dumb=False)
 
         if sender >> 32:
             self.killConnection(sender, 'Client is already logged in.')
