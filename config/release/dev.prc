@@ -61,3 +61,4 @@ cog-thief-ortho 0
 accountdb-type mysqldb
 mysql-login toontown
 mysql-password some_pass
+
