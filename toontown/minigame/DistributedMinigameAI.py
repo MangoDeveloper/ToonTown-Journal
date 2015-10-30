@@ -11,7 +11,6 @@ from direct.task import Task
 import random
 import MinigameGlobals
 from direct.showbase import PythonUtil
-import TravelGameGlobals
 from toontown.toonbase import ToontownGlobals
 EXITED = 0
 EXPECTED = 1
@@ -332,61 +331,6 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         else:
             self.handleRegularPurchaseManager(scoreList)
         self.frameworkFSM.request('frameworkOff')
-
-    def handleMetagamePurchaseManager(self, scoreList):
-        self.notify.debug('self.newbieIdList = %s' % self.newbieIdList)
-        votesToUse = self.startingVotes
-        if hasattr(self, 'currentVotes'):
-            votesToUse = self.currentVotes
-        votesArray = []
-        for avId in self.avIdList:
-            if avId in votesToUse:
-                votesArray.append(votesToUse[avId])
-            else:
-                self.notify.warning('votesToUse=%s does not have avId=%d' % (votesToUse, avId))
-                votesArray.append(0)
-
-        if self.metagameRound < TravelGameGlobals.FinalMetagameRoundIndex:
-            newRound = self.metagameRound
-            if not self.minigameId == ToontownGlobals.TravelGameId:
-                for index in xrange(len(scoreList)):
-                    votesArray[index] += scoreList[index]
-
-            self.notify.debug('votesArray = %s' % votesArray)
-            desiredNextGame = None
-            if hasattr(self, 'desiredNextGame'):
-                desiredNextGame = self.desiredNextGame
-            numToons = 0
-            lastAvId = 0
-            for avId in self.avIdList:
-                av = simbase.air.doId2do.get(avId)
-                if av:
-                    numToons += 1
-                    lastAvId = avId
-
-            doNewbie = False
-            if numToons == 1 and lastAvId in self.newbieIdList:
-                doNewbie = True
-            if doNewbie:
-                pm = NewbiePurchaseManagerAI.NewbiePurchaseManagerAI(self.air, lastAvId, self.avIdList, scoreList, self.minigameId, self.trolleyZone)
-                MinigameCreatorAI.acquireMinigameZone(self.zoneId)
-                pm.generateWithRequired(self.zoneId)
-            else:
-                pm = PurchaseManagerAI.PurchaseManagerAI(self.air, self.avIdList, scoreList, self.minigameId, self.trolleyZone, self.newbieIdList, votesArray, newRound, desiredNextGame)
-                pm.generateWithRequired(self.zoneId)
-        else:
-            self.notify.debug('last minigame, handling newbies')
-            if ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY in simbase.air.holidayManager.currentHolidays or ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY_MONTH in simbase.air.holidayManager.currentHolidays:
-                votesArray = map(lambda x: MinigameGlobals.JellybeanTrolleyHolidayScoreMultiplier * x, votesArray)
-            for id in self.newbieIdList:
-                pm = NewbiePurchaseManagerAI.NewbiePurchaseManagerAI(self.air, id, self.avIdList, scoreList, self.minigameId, self.trolleyZone)
-                MinigameCreatorAI.acquireMinigameZone(self.zoneId)
-                pm.generateWithRequired(self.zoneId)
-
-            if len(self.avIdList) > len(self.newbieIdList):
-                pm = PurchaseManagerAI.PurchaseManagerAI(self.air, self.avIdList, scoreList, self.minigameId, self.trolleyZone, self.newbieIdList, votesArray=votesArray, metagameRound=self.metagameRound)
-                pm.generateWithRequired(self.zoneId)
-        return
 
     def handleRegularPurchaseManager(self, scoreList):
         for id in self.newbieIdList:

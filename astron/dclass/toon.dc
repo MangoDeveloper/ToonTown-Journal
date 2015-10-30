@@ -192,7 +192,6 @@ from toontown.coghq import DistributedMintBattle/AI
 from toontown.coghq import DistributedStage/AI
 from toontown.coghq import DistributedStageRoom/AI
 from toontown.coghq import DistributedStageBattle/AI
-from toontown.pets.PetDCImports/AI import *
 from toontown.pets import DistributedPetProxy/AI
 from toontown.coghq.InGameEditorDCImports/AI import *
 from toontown.distributed import ToontownDistrict/AI

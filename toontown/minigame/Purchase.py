@@ -6,9 +6,8 @@ from direct.task.Task import Task
 import MinigameGlobals
 from PurchaseBase import *
 from toontown.distributed import DelayDelete
-from toontown.minigame import TravelGameGlobals
-from toontown.nametag import NametagGlobals
-from toontown.nametag.NametagFloat2d import *
+from otp.nametag.NametagFloat2d import *
+from otp.nametag import NametagGlobals
 from toontown.toon import ToonHead
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownTimer
@@ -30,7 +29,7 @@ OVERMAX_SFX_START_T = 0.021
 class Purchase(PurchaseBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('Purchase')
 
-    def __init__(self, toon, pointsArray, playerMoney, ids, states, remain, doneEvent, metagameRound = -1, votesArray = None):
+    def __init__(self, toon, pointsArray, playerMoney, ids, states, remain, doneEvent):
         PurchaseBase.__init__(self, toon, doneEvent)
         self.ids = ids
         self.pointsArray = pointsArray
@@ -38,9 +37,6 @@ class Purchase(PurchaseBase):
         self.states = states
         self.remain = remain
         self.tutorialMode = 0
-        self.metagameRound = metagameRound
-        self.votesArray = votesArray
-        self.voteMultiplier = 1
         self.fsm.addState(State.State('reward', self.enterReward, self.exitReward, ['purchase']))
         doneState = self.fsm.getStateNamed('done')
         doneState.addTransition('reward')
@@ -149,8 +145,6 @@ class Purchase(PurchaseBase):
         self.door.setScale(1.5, 1.5, 2.0)
         self.door.setColor(1.0, 0.8, 0, 1)
         doors.removeNode()
-        self.convertingVotesToBeansLabel = DirectLabel(text=TTLocalizer.TravelGameConvertingVotesToBeans, text_fg=VBase4(1, 1, 1, 1), relief=None, pos=(0.0, 0, -0.58), scale=0.075)
-        self.convertingVotesToBeansLabel.hide()
         self.rewardDoubledJellybeanLabel = DirectLabel(text=TTLocalizer.PartyRewardDoubledJellybean, text_fg=(1.0, 0.125, 0.125, 1.0), text_shadow=(0, 0, 0, 1), relief=None, pos=(0.0, 0, -0.67), scale=0.08)
         self.rewardDoubledJellybeanLabel.hide()
         self.countSound = base.loadSfx('phase_3.5/audio/sfx/tick_counter.ogg')
@@ -191,9 +185,7 @@ class Purchase(PurchaseBase):
         loader.unloadModel('phase_3.5/models/modules/street_modules')
         loader.unloadModel('phase_4/models/modules/doors')
         taskMgr.remove('countUpTask')
-        taskMgr.remove('countVotesUpTask')
         taskMgr.remove('countDownTask')
-        taskMgr.remove('countVotesDownTask')
         taskMgr.remove('celebrate')
         taskMgr.remove('purchase-trans')
         taskMgr.remove('delayAdd')
@@ -216,9 +208,7 @@ class Purchase(PurchaseBase):
         del self.collisionFloor
         del self.countSound
         del self.celebrateSound
-        self.convertingVotesToBeansLabel.removeNode()
         self.rewardDoubledJellybeanLabel.removeNode()
-        del self.convertingVotesToBeansLabel
         del self.rewardDoubledJellybeanLabel
 
     def showStatusText(self, text):
@@ -238,7 +228,7 @@ class Purchase(PurchaseBase):
         self.toon.inventory.hide()
         taskMgr.remove('resetStatusText')
         taskMgr.remove('showBrokeMsgTask')
-        self.statusLabel['text'] = TTLocalizer.GagShopWaitingOtherPlayers
+        self.statusLabel['text'] = TTLocalizer.WaitingForOtherToons
         messenger.send('purchasePlayAgain')
 
     def handleDone(self, playAgain):
@@ -314,7 +304,7 @@ class Purchase(PurchaseBase):
         floorNode = CollisionNode('collision_floor')
         floorNode.addSolid(floor)
         self.collisionFloor = render.attachNewNode(floorNode)
-        NametagGlobals.setForceOnscreenChat(True)
+        NametagGlobals.setOnscreenChatForced(1)
         for index in xrange(len(self.ids)):
             avId = self.ids[index]
             if self.states[index] != PURCHASE_NO_CLIENT_STATE and self.states[index] != PURCHASE_DISCONNECTED_STATE and avId in base.cr.doId2do:
@@ -355,14 +345,6 @@ class Purchase(PurchaseBase):
             pos += 1
 
         self.maxPoints = max(self.pointsArray)
-        if self.votesArray:
-            self.maxVotes = max(self.votesArray)
-            numToons = len(self.toons)
-            self.voteMultiplier = TravelGameGlobals.PercentOfVotesConverted[numToons] / 100.0
-            self.maxBeansFromVotes = int(self.voteMultiplier * self.maxVotes)
-        else:
-            self.maxVotes = 0
-            self.maxBeansFromVotes = 0
 
         def reqCountUp(state):
             self.countUp()
@@ -399,22 +381,6 @@ class Purchase(PurchaseBase):
         celebrateTask.pointsArray = self.pointsArray
         celebrateTask.ids = self.ids
         celebrateTask.celebrateSound = self.celebrateSound
-
-        def reqCountVotesUp(state):
-            self.countVotesUp()
-            return Task.done
-
-        def reqCountVotesDown(state):
-            self.countVotesDown()
-            return Task.done
-
-        if self.metagameRound == TravelGameGlobals.FinalMetagameRoundIndex:
-            countVotesUpDelay = celebrateDelay + DELAY_AFTER_CELEBRATE
-            taskMgr.doMethodLater(countVotesUpDelay, reqCountVotesUp, 'countVotesUpTask')
-            countVotesUpTime = self.maxVotes * COUNT_UP_RATE + DELAY_AFTER_COUNT_UP
-            countVotesDownDelay = countVotesUpDelay + countVotesUpTime
-            taskMgr.doMethodLater(countVotesDownDelay, reqCountVotesDown, 'countVotesDownTask')
-            celebrateDelay += countVotesUpTime + self.maxVotes * COUNT_DOWN_RATE + DELAY_AFTER_COUNT_DOWN
 
         def reqPurchase(state):
             self.fsm.request('purchase')
@@ -512,75 +478,10 @@ class Purchase(PurchaseBase):
         countDownTask.overMaxSound = self.overMaxSound
         countDownTask.lastSfxT = 0
 
-    def countVotesUp(self):
-        totalDelay = 0
-        self.convertingVotesToBeansLabel.show()
-        if base.cr.newsManager.isHolidayRunning(ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY) or base.cr.newsManager.isHolidayRunning(ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY_MONTH):
-            self.rewardDoubledJellybeanLabel.show()
-        counterIndex = 0
-        for index in xrange(len(self.ids)):
-            avId = self.ids[index]
-            if self.states[index] != PURCHASE_NO_CLIENT_STATE and self.states[index] != PURCHASE_DISCONNECTED_STATE and avId in base.cr.doId2do:
-                self.counters[counterIndex].count = 0
-                self.counters[counterIndex].max = self.votesArray[index]
-                self.counters[counterIndex].show()
-                counterIndex += 1
-
-        def delayAdd(state):
-            state.counter.count += 1
-            state.counter['text'] = str(state.counter.count)
-            if state.toonId == base.localAvatar.doId:
-                base.playSfx(state.countSound)
-            return Task.done
-
-        for count in xrange(0, self.maxVotes):
-            for counter in self.counters:
-                index = self.counters.index(counter)
-                if count < counter.max:
-                    addTask = taskMgr.doMethodLater(totalDelay, delayAdd, 'delayAdd')
-                    addTask.counter = counter
-                    addTask.toonId = self.ids[index]
-                    addTask.countSound = self.countSound
-
-            totalDelay += COUNT_UP_RATE
-
-    def countVotesDown(self):
-        totalDelay = 0
-
-        def delaySubtract(state):
-            state.counter.count -= 1
-            state.counter['text'] = str(state.counter.count)
-            state.total.count += 1 * self.voteMultiplier
-            if state.total.count <= state.total.max:
-                state.total['text'] = str(int(state.total.count))
-            if state.total.count == state.total.max + 1:
-                state.total['text_fg'] = (1, 0, 0, 1)
-            if state.toonId == base.localAvatar.doId:
-                if state.total.count <= state.total.max:
-                    base.playSfx(state.countSound)
-                else:
-                    base.playSfx(state.overMaxSound)
-            return Task.done
-
-        for count in xrange(0, self.maxVotes):
-            for counter in self.counters:
-                if count < counter.max:
-                    index = self.counters.index(counter)
-                    subtractTask = taskMgr.doMethodLater(totalDelay, delaySubtract, 'delaySubtract')
-                    subtractTask.counter = counter
-                    subtractTask.total = self.totalCounters[index]
-                    subtractTask.toonId = self.ids[index]
-                    subtractTask.countSound = self.countSound
-                    subtractTask.overMaxSound = self.overMaxSound
-
-            totalDelay += COUNT_DOWN_RATE
-
     def exitReward(self):
         self.ignore('clientCleanup')
         taskMgr.remove('countUpTask')
-        taskMgr.remove('countVotesUpTask')
         taskMgr.remove('countDownTask')
-        taskMgr.remove('countVotesDownTask')
         taskMgr.remove('celebrate')
         taskMgr.remove('purchase-trans')
         taskMgr.remove('delayAdd')
@@ -608,10 +509,9 @@ class Purchase(PurchaseBase):
         self.sidewalkR.reparentTo(hidden)
         self.door.reparentTo(hidden)
         self.title.reparentTo(self.frame)
-        self.convertingVotesToBeansLabel.hide()
         self.rewardDoubledJellybeanLabel.hide()
-        base.camLens.setMinFov(ToontownGlobals.DefaultCameraFov/(4./3.))
-        NametagGlobals.setForceOnscreenChat(False)
+        base.camLens.setMinFov(settings['fov']/(4./3.))
+        NametagGlobals.setOnscreenChatForced(0)
 
     def _handleClientCleanup(self):
         if hasattr(self, 'toonsKeep'):
@@ -623,7 +523,6 @@ class Purchase(PurchaseBase):
 
     def enterPurchase(self):
         PurchaseBase.enterPurchase(self)
-        self.convertingVotesToBeansLabel.hide()
         self.rewardDoubledJellybeanLabel.hide()
         self.bg.reparentTo(render)
         base.setBackgroundColor(0.78, 0.65, 0.53)
@@ -636,16 +535,10 @@ class Purchase(PurchaseBase):
             headFrame[1].show()
             headFrame[1].reparentTo(self.toon.inventory.purchaseFrame)
 
-        if base.cr.periodTimerExpired:
-            base.cr.loginFSM.request('periodTimeout')
-            return
         if not self.tutorialMode:
             if not config.GetBool('disable-purchase-timer', 0):
                 self.timer.show()
                 self.timer.countdown(self.remain, self.__timerExpired)
-            if config.GetBool('metagame-disable-playAgain', 0):
-                if self.metagameRound > -1:
-                    self.disablePlayAgain()
         else:
             self.timer.hide()
             self.disablePlayAgain()
@@ -658,7 +551,7 @@ class Purchase(PurchaseBase):
                     headFrame.hide()
 
         messenger.send('gagScreenIsUp')
-        if base.autoPlayAgain or self.doMetagamePlayAgain():
+        if base.autoPlayAgain:
             base.transitions.fadeOut(0)
             self.__handlePlayAgain()
 
@@ -675,7 +568,7 @@ class Purchase(PurchaseBase):
         self.statusLabel.reparentTo(self.frame)
         self.ignore('purchaseStateChange')
         base.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
-        if base.autoPlayAgain or self.doMetagamePlayAgain():
+        if base.autoPlayAgain:
             base.transitions.fadeIn()
 
     def disableBackToPlayground(self):
@@ -700,20 +593,6 @@ class Purchase(PurchaseBase):
 
     def handleGagTutorialDone(self):
         self.enableBackToPlayground()
-
-    def doMetagamePlayAgain(self):
-        if hasattr(self, 'metagamePlayAgainResult'):
-            return self.metagamePlayAgainResult
-        numToons = 0
-        for avId in self.ids:
-            if avId in base.cr.doId2do and avId not in self.unexpectedExits:
-                numToons += 1
-
-        self.metagamePlayAgainResult = False
-        if numToons > 1:
-            if self.metagameRound > -1 and self.metagameRound < TravelGameGlobals.FinalMetagameRoundIndex:
-                self.metagamePlayAgainResult = True
-        return self.metagamePlayAgainResult
 
     def setupUnexpectedExitHooks(self):
         for avId in self.ids:
@@ -747,16 +626,13 @@ class PurchaseHeadFrame(DirectFrame):
         self.headModel.setupHead(self.av.style, forGui=1)
         self.headModel.reparentTo(self.head)
         self.tag2Node = NametagFloat2d()
-        self.tag2Node.hideChat()
-        self.tag2Node.hideThought()
-        self.tag2Node.update()
-        self.av.nametag.add(self.tag2Node)
+        self.tag2Node.setContents(Nametag.CName)
+        self.av.nametag.addNametag(self.tag2Node)
         self.tag2 = self.attachNewNode(self.tag2Node)
         self.tag2.setPosHprScale(-0.22, 10.0, 0.12, 0, 0, 0, 0.046, 0.046, 0.046)
         self.tag1Node = NametagFloat2d()
-        self.tag1Node.hideNametag()
-        self.tag1Node.update()
-        self.av.nametag.add(self.tag1Node)
+        self.tag1Node.setContents(Nametag.CSpeech | Nametag.CThought)
+        self.av.nametag.addNametag(self.tag1Node)
         self.tag1 = self.attachNewNode(self.tag1Node)
         self.tag1.setPosHprScale(-0.15, 0, -0.1, 0, 0, 0, 0.046, 0.046, 0.046)
         self.hide()
@@ -768,8 +644,8 @@ class PurchaseHeadFrame(DirectFrame):
         del self.headModel
         self.head.removeNode()
         del self.head
-        self.av.nametag.remove(self.tag1Node)
-        self.av.nametag.remove(self.tag2Node)
+        self.av.nametag.removeNametag(self.tag1Node)
+        self.av.nametag.removeNametag(self.tag2Node)
         self.tag1.removeNode()
         self.tag2.removeNode()
         del self.tag1

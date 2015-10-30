@@ -26,7 +26,6 @@ from toontown.uberdog.DistributedCpuInfoMgr import DistributedCpuInfoMgr
 from toontown.parties.GlobalPartyManager import GlobalPartyManager
 from toontown.racing.DistributedStartingBlock import DistributedViewingBlock
 from toontown.ai.DistributedPhaseEventMgr import DistributedPhaseEventMgr
-from toontown.pets.PetDCImports import *
 from toontown.suit import DistributedSuitPlanner, DistributedSuitBase, DistributedSuit, DistributedTutorialSuit, DistributedFactorySuit, DistributedMintSuit, DistributedStageSuit, DistributedSellbotBoss, DistributedCashbotBoss, DistributedCashbotBossGoon, DistributedGoon, DistributedGridGoon, DistributedLawbotBoss, DistributedLawbotBossSuit, DistributedBossbotBoss
 from toontown.distributed import ToontownDistrict, ToontownDistrictStats, DistributedTimer
 from toontown.fishing import DistributedFishingPond, DistributedFishingTarget, DistributedPondBingoManager
