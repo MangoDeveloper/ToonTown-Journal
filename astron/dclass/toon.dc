@@ -226,7 +226,6 @@ from toontown.estate import DistributedChangingStatuary/AI
 from toontown.estate import DistributedAnimatedStatuary/AI
 from toontown.estate import DistributedPlantBase/AI
 from toontown.estate import DistributedLawnDecor/AI
-from toontown.minigame import DistributedTravelGame/AI
 from toontown.minigame import DistributedPairingGame/AI
 from toontown.minigame import DistributedVineGame/AI
 from toontown.golf import DistributedPhysicsWorld/AI
@@ -2718,17 +2717,6 @@ dclass DistributedFlower : DistributedPlantBase {
 dclass DistributedGagTree : DistributedPlantBase {
   setWilted(int8) required broadcast ram;
   requestHarvest() airecv clsend;
-};
-
-dclass DistributedTravelGame : DistributedMinigame {
-  setTimerStartTime(int16) broadcast;
-  setAvatarChoice(uint16, uint8) airecv clsend;
-  setAvatarVotes(uint32, uint16) broadcast;
-  setAvatarChose(uint32) broadcast;
-  setServerChoices(int16[], uint8[], uint8, uint8) broadcast;
-  setMinigames(uint8[], uint8[]) broadcast;
-  setBonuses(uint8[], uint8[]) broadcast;
-  setBoardIndex(uint8) required broadcast ram;
 };
 
 dclass DistributedPairingGame : DistributedMinigame {

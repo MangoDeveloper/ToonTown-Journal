@@ -9,6 +9,8 @@ import string
 
 import ArrowKeys
 from DistributedMinigame import *
+from toontown.toon import Toon
+from toontown.toon import ToonDNA
 import PatternGameGlobals
 from toontown.char import Char
 from toontown.char import CharDNA
@@ -129,12 +131,12 @@ class DistributedPatternGame(DistributedMinigame):
         minnieX.removeNode()
         minnieCircle.removeNode()
         matchingGameGui.removeNode()
-        self.minnie = Char.Char()
+        self.minnie = Toon.Toon()
         m = self.minnie
-        dna = CharDNA.CharDNA()
-        dna.newChar('mn')
+        dna = ToonDNA.ToonDNA()
+        dna.newToonRandom(11237, 'm', 1)
         m.setDNA(dna)
-        m.setName(TTLocalizer.Minnie)
+        m.setName('Toon')
         m.reparentTo(hidden)
         self.backRowHome = Point3(3, 11, 0)
         self.backRowXSpacing = 1.8
