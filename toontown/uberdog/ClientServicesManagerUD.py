@@ -1307,13 +1307,13 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.killAccount(accountId, 'An operation is already underway: ' + fsm.name)
 
     def rejectKey(self, sender, issue, securityIssue=True, dumb=True):
-        initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. You will need to fix this issue before you can login to Toontown Journey.'
+        initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey, " + issue + '. You will need to fix this issue before you can login to Toontown Journey.'
         if securityIssue:
-            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. This appears to be an accidential security issue while connecting. You will need to fix this issue before you can login to Toontown Journey.'
+            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey, " + issue + '. This appears to be an accidential security issue while connecting. You will need to fix this issue before you can login to Toontown Journey.'
         if dumb:
-            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. This may be a faulty security bypass attempt due to the issue. You will need to fix this issue before you can login to Toontown Journey.'
+            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey, " + issue + '. This may be a faulty security bypass attempt due to the issue. You will need to fix this issue before you can login to Toontown Journey.'
         if securityIssue and dumb:
-            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. This appears to be an accidential security issue while connecting. This may be a faulty security bypass attempt due to the issue. You will need to fix this issue before you can login to Toontown Journey.'
+            initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey, " + issue + '. This appears to be an accidential security issue while connecting. This may be a faulty security bypass attempt due to the issue. You will need to fix this issue before you can login to Toontown Journey.'
         finalString = initialString
         print finalString
         self.killConnection(sender, finalString)
