@@ -19,7 +19,7 @@ class ClientServicesManager(DistributedObjectGlobal):
 
         token = self.cr.playToken or 'dev'
 
-        accountServerKey = simbase.config.GetString(
+        accountServerKey = base.config.GetString(
     'account-server-key', 'NOKEYSPECIFIEDTHIRDPARTYLOGINDETECTED')
 
         key = accountServerKey
