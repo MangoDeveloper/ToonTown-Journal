@@ -1315,6 +1315,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         if securityIssue and dumb:
             initialString = "ClientServicesManagerUD: While trying to remotely connect to Toontown Journey,", issue + '. This appears to be an accidential security issue while connecting. This may be a faulty security bypass attempt due to the issue. You will need to fix this issue before you can login to Toontown Journey.'
         finalString = initialString
+        print finalString
         self.killConnection(sender, finalString)
 
     def runAccountFSM(self, fsmtype, *args):
