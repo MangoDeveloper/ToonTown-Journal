@@ -736,8 +736,8 @@ class BonusOptionsTabPage(DirectFrame):
         self.nametagStyle_index = -1
         self.bugReportButton = DirectButton(parent=self, relief=None, text=TTLocalizer.BugReportButton, image=button_image, image_scale=button_image_scale, text_pos=(0, -0.01), text_fg=(0, 0, 0, 1),
         command=self.showReportNotice, pos=(0.0, 0.0, -0.6), text_scale=(0.045))
-        #self.WASD_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=16, pos=(leftMargin, 0, textStartHeight - textRowHeight))
-        #self.WASD_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight), command=self.__doToggleWASD) 
+        self.WASD_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=16, pos=(leftMargin, 0, textStartHeight - textRowHeight))
+        self.WASD_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight), command=self.__doToggleWASD) 
         guiButton.removeNode()
         circleModel.removeNode()
         matGui.removeNode()
@@ -748,7 +748,7 @@ class BonusOptionsTabPage(DirectFrame):
         self.__setTrueFriendsButton()
        # self.__setCogInterfaceButton()
         self.__updateNametagStyle()
-        #self.__setWASDButton()
+        self.__setWASDButton()
         self.accept('refreshNametagStyle', self.__updateNametagStyle)
 
     def exit(self):
@@ -783,10 +783,10 @@ class BonusOptionsTabPage(DirectFrame):
         del self.nametagStyle_rightButton
         self.destroyReportNotice()
         del self.destroyReportNotice
-        #self.WASD_Label.destroy()
-        #del self.WASD_Label
-        #self.WASD_toggleButton.destroy()
-        #del self.WASD_toggleButton
+        self.WASD_Label.destroy()
+        del self.WASD_Label
+        self.WASD_toggleButton.destroy()
+        del self.WASD_toggleButton
 
 
     """def __doToggleCogInterface(self):
@@ -834,7 +834,7 @@ class BonusOptionsTabPage(DirectFrame):
         self.nametagStyle_index += offset
         self.__updateNametagStyle(False)
     
-    """def __doToggleWASD(self):
+    def __doToggleWASD(self):
         messenger.send('wakeup')
         if base.wantWASD:
             base.wantWASD = False
@@ -855,24 +855,24 @@ class BonusOptionsTabPage(DirectFrame):
             base.Move_Down = 's'
             base.Move_Left = 'a'
             base.Move_Right = 'd'
-            base.JUMP = 'shift'
+            base.JUMP = 'space'
 
             settings['want-WASD'] = True
 
             base.localAvatar.controlManager.reload()
             base.localAvatar.chatMgr.reloadWASD()            
-            base.localAvatar.setSystemMessage(0, 'You are now using WASD Controls.')
+            base.localAvatar.setSystemMessage(0, 'You are now using WASD Controls. Use space to jump and T to talk.')
 
         self.settingsChanged = 1
-        self.__setWASDButton()"""
+        self.__setWASDButton()
         
-    """def __setWASDButton(self):
+    def __setWASDButton(self):
         self.WASD_Label['text'] = 'WASD Support:'        
         if base.wantWASD:
 
             self.WASD_toggleButton['text'] = 'On'
         else:
-            self.WASD_toggleButton['text'] = 'Off'"""
+            self.WASD_toggleButton['text'] = 'Off'
             
     def destroyReportNotice(self):
         if hasattr(self, 'dialog'):

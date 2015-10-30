@@ -9943,3 +9943,4 @@ AprilToonsWeekStart = "It's April Toons Week!"
 AprilToonsWeekEnd = 'April Toons Week is over. See you next year!'
 WaitingForOtherToons = 'Waiting for other toons...'
 WaitingForOtherToonsDots = 'Waiting for other toons%s'
+BonusOptionsPageTitle = 'Bonus'
