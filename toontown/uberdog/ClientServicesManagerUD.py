@@ -1344,9 +1344,9 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         if not authKey in ['ttjsecretkey3234523423', '3243254323yektercesjtt']:
             if not authKey in 'ttjsecretkey3234523423':
                 # INTRUDER ALERT! Wrong key!
-                self.rejectKey("the specified authentication key did not match up to the server's set key", dumb=False)
+                self.rejectKey(sender, "the specified authentication key did not match up to the server's set key", dumb=False)
             else:
-                self.rejectKey("you reversed the server's set authentication key", securityIssue=False, dumb=False)
+                self.rejectKey(sender, "you reversed the server's set authentication key", securityIssue=False, dumb=False)
 
         if sender >> 32:
             self.killConnection(sender, 'Client is already logged in.')
