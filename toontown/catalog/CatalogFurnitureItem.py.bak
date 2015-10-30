@@ -1017,7 +1017,7 @@ class CatalogFurnitureItem(CatalogAtticItem.CatalogAtticItem):
         return 24 * 60
 
     def getPicture(self, avatar):
-        model = self.loadModel()
+        model = self.loadModel(animate=0)
         spin = 1
         flags = self.getFlags()
         if flags & FLRug:

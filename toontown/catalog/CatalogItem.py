@@ -1,4 +1,5 @@
-from pandac.PandaModules import *
+from direct.directnotify import DirectNotifyGlobal
+from panda3d.core import *
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownGlobals
 from direct.interval.IntervalGlobal import *
@@ -6,10 +7,8 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 import types
 import sys
-
-
 CatalogReverseType = None
-CatalogItemVersion = 8
+CatalogItemVersion = 0
 CatalogBackorderMarkup = 1.2
 CatalogSaleMarkdown = 0.75
 Customization = 1
@@ -21,11 +20,10 @@ CatalogTypeUnspecified = 0
 CatalogTypeWeekly = 1
 CatalogTypeBackorder = 2
 CatalogTypeMonthly = 3
-CatalogTypeLoyalty = 4
-
+CatalogTypeSpecial = 4
 
 class CatalogItem:
-    notify = directNotify.newCategory('CatalogItem')
+    notify = DirectNotifyGlobal.directNotify.newCategory('CatalogItem')
 
     def __init__(self, *args, **kw):
         self.saleItem = 0
@@ -34,6 +32,7 @@ class CatalogItem:
         self.giftTag = None
         self.giftCode = 0
         self.hasPicture = False
+        self.isSpecial = False
         self.volume = 0
         self.specialEventId = 0
         if len(args) >= 1 and isinstance(args[0], DatagramIterator):
@@ -43,8 +42,8 @@ class CatalogItem:
         return
 
     def isAward(self):
-        result = self.specialEventId != 0
-        return result
+        #result = self.specialEventId != 0
+        return False
 
     def makeNewItem(self):
         pass
@@ -77,9 +76,6 @@ class CatalogItem:
         return None
 
     def storedInCloset(self):
-        return 0
-
-    def storedInTrunk(self):
         return 0
 
     def storedInAttic(self):
@@ -129,11 +125,8 @@ class CatalogItem:
     def forGirlsOnly(self):
         return 0
 
-    def setLoyaltyRequirement(self, days):
-        self.loyaltyDays = 0
-
-    def loyaltyRequirement(self):
-        return 0
+    def getIsSpecial(self):
+        return self.isSpecial
 
     def getPrice(self, catalogType):
         if catalogType == CatalogTypeBackorder:
@@ -200,6 +193,8 @@ class CatalogItem:
             return TTLocalizer.CatalogPurchaseGiftLimitReached
         elif retcode == ToontownGlobals.P_NotEnoughMoney:
             return TTLocalizer.CatalogPurchaseGiftNotEnoughMoney
+        elif retcode == ToontownGlobals.P_TooFast:
+            return TTLocalizer.CatalogPurchaseGiftTooFast
         else:
             return TTLocalizer.CatalogPurchaseGiftGeneralError % {'friend': '%s',
              'error': retcode}
@@ -208,6 +203,7 @@ class CatalogItem:
         mailbox.acceptItem(self, index, callback)
 
     def discardItem(self, mailbox, index, callback):
+        print 'Item discardItem'
         mailbox.discardItem(self, index, callback)
 
     def acceptItemCleanup(self):
@@ -267,6 +263,9 @@ class CatalogItem:
     def getEmblemPrices(self):
         return ()
 
+    def hasEmblemPrices(self):
+        return len(self.getEmblemPrices()) >= ToontownGlobals.NumEmblemTypes
+
     def loadModel(self):
         return None
 
@@ -277,22 +276,9 @@ class CatalogItem:
             x = di.getArg(STInt16, 10)
             y = di.getArg(STInt16, 10)
             z = di.getArg(STInt16, 100)
-            if versionNumber < 2:
-                h = di.getArg(STInt16, 10)
-                p = 0.0
-                r = 0.0
-            elif versionNumber < 5:
-                h = di.getArg(STInt8, 256.0 / 360.0)
-                p = di.getArg(STInt8, 256.0 / 360.0)
-                r = di.getArg(STInt8, 256.0 / 360.0)
-                hpr = oldToNewHpr(VBase3(h, p, r))
-                h = hpr[0]
-                p = hpr[1]
-                r = hpr[2]
-            else:
-                h = di.getArg(STInt8, 256.0 / 360.0)
-                p = di.getArg(STInt8, 256.0 / 360.0)
-                r = di.getArg(STInt8, 256.0 / 360.0)
+            h = di.getArg(STInt16, 256.0 / 360.0)
+            p = di.getArg(STInt16, 256.0 / 360.0)
+            r = di.getArg(STInt16, 256.0 / 360.0)
             self.posHpr = (x,
              y,
              z,
@@ -300,11 +286,8 @@ class CatalogItem:
              p,
              r)
         if store & GiftTag:
-            self.giftTag = di.getString()
-        if versionNumber >= 8:
-            self.specialEventId = di.getUint8()
-        else:
-            self.specialEventId = 0
+            self.giftTag = di.getUint32()
+        self.specialEventId = di.getUint8()
 
     def encodeDatagram(self, dg, store):
         if store & DeliveryDate:
@@ -313,9 +296,9 @@ class CatalogItem:
             dg.putArg(self.posHpr[0], STInt16, 10)
             dg.putArg(self.posHpr[1], STInt16, 10)
             dg.putArg(self.posHpr[2], STInt16, 100)
-            dg.putArg(self.posHpr[3], STInt8, 256.0 / 360.0)
-            dg.putArg(self.posHpr[4], STInt8, 256.0 / 360.0)
-            dg.putArg(self.posHpr[5], STInt8, 256.0 / 360.0)
+            dg.putArg(self.posHpr[3], STInt16, 256.0 / 360.0)
+            dg.putArg(self.posHpr[4], STInt16, 256.0 / 360.0)
+            dg.putArg(self.posHpr[5], STInt16, 256.0 / 360.0)
         if store & GiftTag:
             dg.addString(self.giftTag)
         dg.addUint8(self.specialEventId)
@@ -392,14 +375,6 @@ class CatalogItem:
 
     def getRequestPurchaseErrorTextTimeout(self):
         return 6
-
-    def getDaysToGo(self, avatar):
-        accountDays = avatar.getAccountDays()
-        daysToGo = self.loyaltyRequirement() - accountDays
-        if daysToGo < 0:
-            daysToGo = 0
-        return int(daysToGo)
-
 
 def encodeCatalogItem(dg, item, store):
     import CatalogItemTypes

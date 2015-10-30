@@ -108,14 +108,11 @@ class CatalogFlooringItem(CatalogSurfaceItem):
 
     def decodeDatagram(self, di, versionNumber, store):
         CatalogAtticItem.CatalogAtticItem.decodeDatagram(self, di, versionNumber, store)
-        if versionNumber < 3:
-            self.patternIndex = di.getUint8()
-        else:
-            self.patternIndex = di.getUint16()
-        if versionNumber < 4 or store & CatalogItem.Customization:
+        self.patternIndex = di.getUint16()
+        if store & CatalogItem.Customization:
             self.colorIndex = di.getUint8()
         else:
-            self.colorIndex = None
+            self.colorIndex = 0
         wtype = FlooringTypes[self.patternIndex]
         return
 
@@ -123,10 +120,7 @@ class CatalogFlooringItem(CatalogSurfaceItem):
         CatalogAtticItem.CatalogAtticItem.encodeDatagram(self, dg, store)
         dg.addUint16(self.patternIndex)
         if store & CatalogItem.Customization:
-            colorIndex = self.colorIndex
-            if self.colorIndex is None:
-                colorIndex = 0
-            dg.addUint8(colorIndex)
+            dg.addUint8(self.colorIndex)
 
 
 def getFloorings(*indexList):

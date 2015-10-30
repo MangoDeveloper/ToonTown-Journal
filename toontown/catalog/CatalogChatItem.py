@@ -1,4 +1,4 @@
-from pandac.PandaModules import *
+from panda3d.core import *
 import CatalogItem
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPLocalizer
@@ -15,9 +15,7 @@ class CatalogChatItem(CatalogItem.CatalogItem):
         return 1
 
     def reachedPurchaseLimit(self, avatar):
-        if self in avatar.onOrder or self in avatar.mailboxContents or self in avatar.onGiftOrder or self in avatar.awardMailboxContents or self in avatar.onAwardOrder:
-            return 1
-        return avatar.customMessages.count(self.customIndex) != 0
+        return self in avatar.onOrder or self in avatar.mailboxContents or self in avatar.onGiftOrder or avatar.customMessages.count(self.customIndex) != 0
 
     def getTypeName(self):
         return TTLocalizer.ChatTypeName
@@ -27,7 +25,7 @@ class CatalogChatItem(CatalogItem.CatalogItem):
 
     def getDisplayName(self):
         return OTPLocalizer.CustomSCStrings[self.customIndex]
-        
+
     def getDeliveryTime(self):
         return 0
 
@@ -103,6 +101,7 @@ class CatalogChatItem(CatalogItem.CatalogItem):
         if status == 'pick':
             self.mailbox.acceptItem(self, self.index, self.callback, pickedMessage)
         else:
+            print 'picker canceled'
             self.callback(ToontownGlobals.P_UserCancelled, None, self.index)
         self.messagePicker.hide()
         self.messagePicker.destroy()
@@ -121,7 +120,7 @@ class CatalogChatItem(CatalogItem.CatalogItem):
         del self.phone
 
     def getPicture(self, avatar):
-        chatBalloon = loader.loadModel('phase_3/models/props/chatbox.bam')
+        chatBalloon = loader.loadModel('phase_3/models/props/chatbox')
         chatBalloon.find('**/top').setPos(1, 0, 5)
         chatBalloon.find('**/middle').setScale(1, 1, 3)
         frame = self.makeFrame()

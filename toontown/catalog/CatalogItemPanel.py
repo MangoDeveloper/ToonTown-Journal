@@ -1,5 +1,5 @@
 from direct.gui.DirectGui import *
-from pandac.PandaModules import *
+from panda3d.core import *
 from toontown.toonbase import ToontownGlobals
 from toontown.toontowngui import TTDialog
 from toontown.toonbase import TTLocalizer
@@ -10,8 +10,6 @@ from CatalogFlooringItem import getAllFloorings
 from CatalogMouldingItem import getAllMouldings
 from CatalogWainscotingItem import getAllWainscotings
 from CatalogFurnitureItem import getAllFurnitures
-from CatalogFurnitureItem import FLTrunk
-from toontown.toontowngui.TeaserPanel import TeaserPanel
 from otp.otpbase import OTPGlobals
 CATALOG_PANEL_WORDWRAP = 10
 CATALOG_PANEL_CHAT_WORDWRAP = 9
@@ -280,25 +278,9 @@ class CatalogItemPanel(DirectFrame):
         self.unload()
         return
 
-    def getTeaserPanel(self):
-        typeName = self['item'].getTypeName()
-        if typeName == TTLocalizer.EmoteTypeName or typeName == TTLocalizer.ChatTypeName:
-            page = 'emotions'
-        elif typeName == TTLocalizer.GardenTypeName or typeName == TTLocalizer.GardenStarterTypeName:
-            page = 'gardening'
-        else:
-            page = 'clothing'
-
-        def showTeaserPanel():
-            TeaserPanel(pageName=page)
-
-        return showTeaserPanel
-
     def updateBuyButton(self):
         if not self.loaded:
             return
-        if not base.cr.isPaid():
-            self.buyButton['command'] = self.getTeaserPanel()
         self.buyButton.show()
         typeCode = self['item'].getTypeCode()
         orderCount = base.localAvatar.onOrder.count(self['item'])
@@ -309,18 +291,7 @@ class CatalogItemPanel(DirectFrame):
                 auxText = TTLocalizer.CatalogOnOrderText
         else:
             auxText = ''
-        isNameTag = typeCode == CatalogItemTypes.NAMETAG_ITEM
-        if isNameTag and not base.localAvatar.getGameAccess() == OTPGlobals.AccessFull:
-            if self['item'].nametagStyle == 100:
-                if base.localAvatar.getFont() == ToontownGlobals.getToonFont():
-                    auxText = TTLocalizer.CatalogCurrent
-                    self.buyButton['state'] = DGG.DISABLED
-            elif self['item'].getPrice(self['type']) > base.localAvatar.getMoney() + base.localAvatar.getBankMoney():
-                self.buyButton['state'] = DGG.DISABLED
-        elif isNameTag and self['item'].nametagStyle == base.localAvatar.getNametagStyle():
-            auxText = TTLocalizer.CatalogCurrent
-            self.buyButton['state'] = DGG.DISABLED
-        elif self['item'].reachedPurchaseLimit(base.localAvatar):
+        if self['item'].reachedPurchaseLimit(base.localAvatar):
             max = self['item'].getPurchaseLimit()
             if max <= 1:
                 auxText = TTLocalizer.CatalogPurchasedText
@@ -335,11 +306,10 @@ class CatalogItemPanel(DirectFrame):
         elif hasattr(self['item'], 'isSkillTooLow') and self['item'].isSkillTooLow(base.localAvatar):
             auxText = TTLocalizer.SkillTooLow
             self.buyButton['state'] = DGG.DISABLED
-        elif hasattr(self['item'], 'getDaysToGo') and self['item'].getDaysToGo(base.localAvatar):
-            auxText = TTLocalizer.DaysToGo % self['item'].getDaysToGo(base.localAvatar)
-            self.buyButton['state'] = DGG.DISABLED
         elif self['item'].getEmblemPrices() and not base.localAvatar.isEnoughMoneyAndEmblemsToBuy(self['item'].getPrice(self['type']), self['item'].getEmblemPrices()):
             self.buyButton['state'] = DGG.DISABLED
+        elif hasattr(self['item'], 'houseId') and self['item'].houseId == localAvatar.houseType:
+            auxText = TTLocalizer.CatalogPurchasedMaxText
         elif self['item'].getPrice(self['type']) <= base.localAvatar.getMoney() + base.localAvatar.getBankMoney():
             self.buyButton['state'] = DGG.NORMAL
             self.buyButton.show()
@@ -350,13 +320,9 @@ class CatalogItemPanel(DirectFrame):
 
     def __handlePurchaseRequest(self):
         if self['item'].replacesExisting() and self['item'].hasExisting():
-            if self['item'].getFlags() & FLTrunk:
-                message = TTLocalizer.CatalogVerifyPurchase % {'item': self['item'].getName(),
-                 'price': self['item'].getPrice(self['type'])}
-            else:
-                message = TTLocalizer.CatalogOnlyOnePurchase % {'old': self['item'].getYourOldDesc(),
-                 'item': self['item'].getName(),
-                 'price': self['item'].getPrice(self['type'])}
+            message = TTLocalizer.CatalogOnlyOnePurchase % {'old': self['item'].getYourOldDesc(),
+             'item': self['item'].getName(),
+             'price': self['item'].getPrice(self['type'])}
         elif self['item'].isRental():
             message = TTLocalizer.CatalogVerifyRent % {'item': self['item'].getName(),
              'price': self['item'].getPrice(self['type'])}
@@ -427,14 +393,9 @@ class CatalogItemPanel(DirectFrame):
              'item': self['item'].getName(),
              'price': self['item'].getPrice(self['type'])}
         else:
-            friendIndex = self.parentCatalogScreen.friendGiftIndex
-            friendText = 'Error'
-            numFriends = len(base.localAvatar.friendsList) + len(base.cr.avList) - 1
-            if numFriends > 0:
-                friendText = self.parentCatalogScreen.receiverName
             message = TTLocalizer.CatalogVerifyGift % {'item': self['item'].getName(),
              'price': self['item'].getPrice(self['type']),
-             'friend': friendText}
+             'friend': self.parentCatalogScreen.friendName if self.parentCatalogScreen.friendName else TTLocalizer.CatalogGiftError}
         self.verify = TTDialog.TTGlobalDialog(doneEvent='verifyGiftDone', message=message, style=TTDialog.TwoChoice)
         self.verify.show()
         self.accept('verifyGiftDone', self.__handleVerifyGift)
@@ -466,46 +427,38 @@ class CatalogItemPanel(DirectFrame):
     def updateGiftButton(self, giftUpdate = 0):
         if not self.loaded:
             return
+
         self.giftButton.show()
+
         if giftUpdate == 0:
             return
-        if not base.cr.isPaid():
-            self.giftButton['command'] = self.getTeaserPanel()
-        self.auxText['text'] = ' '
-        numFriends = len(base.localAvatar.friendsList) + len(base.cr.avList) - 1
-        if numFriends > 0:
-            self.giftButton['state'] = DGG.DISABLED
-            self.giftButton.show()
-            auxText = ' '
-            if self['item'].isGift() <= 0:
-                self.giftButton.show()
-                self.giftButton['state'] = DGG.DISABLED
-                auxText = TTLocalizer.CatalogNotAGift
-                self.auxText['text'] = auxText
-                return
-            elif self.parentCatalogScreen.gotAvatar == 1:
-                avatar = self.parentCatalogScreen.giftAvatar
-                if self['item'].forBoysOnly() and avatar.getStyle().getGender() == 'f' or self['item'].forGirlsOnly() and avatar.getStyle().getGender() == 'm':
-                    self.giftButton.show()
-                    self.giftButton['state'] = DGG.DISABLED
-                    auxText = TTLocalizer.CatalogNoFit
-                    self.auxText['text'] = auxText
-                    return
-                elif self['item'].reachedPurchaseLimit(avatar):
-                    self.giftButton.show()
-                    self.giftButton['state'] = DGG.DISABLED
-                    auxText = TTLocalizer.CatalogPurchasedGiftText
-                    self.auxText['text'] = auxText
-                    return
-                elif len(avatar.mailboxContents) + len(avatar.onGiftOrder) >= ToontownGlobals.MaxMailboxContents:
-                    self.giftButton.show()
-                    self.giftButton['state'] = DGG.DISABLED
-                    auxText = TTLocalizer.CatalogMailboxFull
-                    self.auxText['text'] = auxText
-                    return
-                elif self['item'].getPrice(self['type']) <= base.localAvatar.getMoney() + base.localAvatar.getBankMoney():
-                    self.giftButton['state'] = DGG.NORMAL
-                    self.giftButton.show()
+
+        self.auxText['text'] = ''
+        self.giftButton['state'] = DGG.DISABLED
+        self.giftButton.show()
+
+        if self['item'].isGift() <= 0:
+            self.auxText['text'] = TTLocalizer.CatalogNotAGift
+            return
+        
+        if not self.parentCatalogScreen.friend:
+            return
+        
+        avatar = self.parentCatalogScreen.friend
+        
+        if self['item'].forBoysOnly() and avatar.getStyle().getGender() == 'f' or self['item'].forGirlsOnly() and avatar.getStyle().getGender() == 'm':
+            self.auxText['text'] = TTLocalizer.CatalogNoFit
+        elif self['item'].reachedPurchaseLimit(avatar):
+            self.auxText['text'] = TTLocalizer.CatalogPurchasedGiftText
+        elif len(avatar.mailboxContents) + len(avatar.onOrder) + len(avatar.onGiftOrder) + 1 >= ToontownGlobals.MaxMailboxContents:
+            self.auxText['text'] = TTLocalizer.CatalogMailboxFull
+        else:
+            orderCount = avatar.onGiftOrder.count(self['item'])
+            
+            if orderCount:
+                self.auxText['text'] = TTLocalizer.CatalogOnOrderText if orderCount == 1 else '%d %s' % (orderCount, TTLocalizer.CatalogOnOrderText)
+            if self['item'].getPrice(self['type']) <= base.localAvatar.getMoney() + base.localAvatar.getBankMoney():
+                self.giftButton['state'] = DGG.NORMAL
 
     def handleSoundOnButton(self):
         item = self.items[self.itemIndex]

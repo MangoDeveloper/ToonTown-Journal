@@ -22,11 +22,6 @@ class CatalogGardenItem(CatalogItem.CatalogItem):
         else:
             return 100
 
-    def reachedPurchaseLimit(self, avatar):
-        if self in avatar.onOrder or self in avatar.mailboxContents or self in avatar.onGiftOrder or self in avatar.awardMailboxContents or self in avatar.onAwardOrder:
-            return 1
-        return 0
-
     def getAcceptItemErrorText(self, retcode):
         if retcode == ToontownGlobals.P_ItemAvailable:
             return TTLocalizer.CatalogAcceptGarden
@@ -39,8 +34,7 @@ class CatalogGardenItem(CatalogItem.CatalogItem):
         return TTLocalizer.GardenTypeName
 
     def getName(self):
-        name = GardenGlobals.Specials[self.gardenIndex]['photoName']
-        return name
+        return GardenGlobals.Specials[self.gardenIndex]['photoName']
 
     def recordPurchase(self, avatar, optional):
         if avatar:
@@ -49,6 +43,7 @@ class CatalogGardenItem(CatalogItem.CatalogItem):
 
     def getPicture(self, avatar):
         photoModel = GardenGlobals.Specials[self.gardenIndex]['photoModel']
+
         if 'photoAnimation' in GardenGlobals.Specials[self.gardenIndex]:
             modelPath = photoModel + GardenGlobals.Specials[self.gardenIndex]['photoAnimation'][0]
             animationName = GardenGlobals.Specials[self.gardenIndex]['photoAnimation'][1]
@@ -74,12 +69,12 @@ class CatalogGardenItem(CatalogItem.CatalogItem):
             self.model.setScale(photoScale)
             self.hasPicture = True
             return (frame, None)
-        return None
 
     def cleanupPicture(self):
         CatalogItem.CatalogItem.cleanupPicture(self)
-        self.model.detachNode()
-        self.model = None
+        if hasattr(self, 'model') and self.model:
+            self.model.detachNode()
+            self.model = None
         return
 
     def output(self, store = -1):
@@ -121,6 +116,12 @@ class CatalogGardenItem(CatalogItem.CatalogItem):
 
     def getRequestPurchaseErrorTextTimeout(self):
         return 20
+
+    def getDeliveryTime(self):
+        if self.gardenIndex == GardenGlobals.GardenAcceleratorSpecial:
+            return 24 * 60
+        else:
+            return 0
 
     def getPurchaseLimit(self):
         if self.gardenIndex == GardenGlobals.GardenAcceleratorSpecial:

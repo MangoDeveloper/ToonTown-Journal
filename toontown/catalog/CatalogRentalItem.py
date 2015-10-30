@@ -24,9 +24,7 @@ class CatalogRentalItem(CatalogItem.CatalogItem):
         return 0
 
     def reachedPurchaseLimit(self, avatar):
-        if self in avatar.onOrder or self in avatar.mailboxContents or self in avatar.onGiftOrder or self in avatar.awardMailboxContents or self in avatar.onAwardOrder:
-            return 1
-        return 0
+        return self in avatar.onOrder or self in avatar.mailboxContents or self in avatar.onGiftOrder
 
     def saveHistory(self):
         return 1
@@ -47,15 +45,14 @@ class CatalogRentalItem(CatalogItem.CatalogItem):
             return TTLocalizer.RentalTypeName
 
     def recordPurchase(self, avatar, optional):
-        self.notify.debug('rental -- record purchase')
         if avatar:
-            self.notify.debug('rental -- has avater')
-            estate = simbase.air.estateManager._lookupEstate(avatar.doId)
+            self.notify.debug('rental -- has avatar')
+            estate = simbase.air.estateManager._lookupEstate(avatar)
             if estate:
                 self.notify.debug('rental -- has estate')
                 estate.rentItem(self.typeIndex, self.duration)
             else:
-                self.notify.debug('rental -- something not there')
+                self.notify.warning('rental -- something not there')
         return ToontownGlobals.P_ItemAvailable
 
     def getPicture(self, avatar):
@@ -93,10 +90,7 @@ class CatalogRentalItem(CatalogItem.CatalogItem):
 
     def decodeDatagram(self, di, versionNumber, store):
         CatalogItem.CatalogItem.decodeDatagram(self, di, versionNumber, store)
-        if versionNumber >= 7:
-            self.cost = di.getUint16()
-        else:
-            self.cost = 1000
+        self.cost = di.getUint16()
         self.duration = di.getUint16()
         self.typeIndex = di.getUint16()
 
@@ -105,6 +99,9 @@ class CatalogRentalItem(CatalogItem.CatalogItem):
         dg.addUint16(self.cost)
         dg.addUint16(self.duration)
         dg.addUint16(self.typeIndex)
+
+    def getDeliveryTime(self):
+        return 1
 
     def isRental(self):
         return 1
@@ -128,5 +125,7 @@ def getAllRentalItems():
     list = []
     for rentalType in (ToontownGlobals.RentalCannon,):
         list.append(CatalogRentalItem(rentalType, 2880, 1000))
+    for rentalType in (ToontownGlobals.RentalGameTable,):
+        list.append(CatalogRentalItem(rentalType, 2890, 1000))
 
     return list
