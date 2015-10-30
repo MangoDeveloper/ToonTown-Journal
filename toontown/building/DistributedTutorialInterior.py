@@ -127,7 +127,7 @@ class DistributedTutorialInterior(DistributedObject.DistributedObject):
             self.cr.doId2do[self.npcId].clearMat()
         self.createSuit()
         base.localAvatar.setPosHpr(-2, 12, 0, -10, 0, 0)
-        self.cr.doId2do[self.npcId].setChatAbsolute(TTLocalizer.QuestScriptTutorialMickey_4, CFSpeech)
+        self.cr.doId2do[self.npcId].setChatAbsolute("Hello, new citizen! Welcome to Toontown! Come over here so I can tell you what's been going on in town recently. Use " + base.moveKeys + " to move.", CFSpeech)
         place = base.cr.playGame.getPlace()
         if place and hasattr(place, 'fsm') and place.fsm.getCurrentState().getName():
             self.notify.info('Tutorial movie: Place ready.')

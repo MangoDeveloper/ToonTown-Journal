@@ -126,11 +126,6 @@ class Street(BattlePlace.BattlePlace):
         if base.cr.newsManager.isHolidayRunning(ToontownGlobals.HALLOWEEN) and self.loader.hood.spookySkyFile:
             lightsOff = Sequence(LerpColorScaleInterval(base.cr.playGame.hood.loader.geom, 0.1, Vec4(0.55, 0.55, 0.65, 1)), Func(self.loader.hood.startSpookySky))
             lightsOff.start()
-
-            else:
-                self.loader.hood.startSky()
-                lightsOn = LerpColorScaleInterval(base.cr.playGame.hood.loader.geom, 0.1, Vec4(1, 1, 1, 1))
-                lightsOn.start()
         else:
             self.loader.hood.startSky()
             lightsOn = LerpColorScaleInterval(base.cr.playGame.hood.loader.geom, 0.1, Vec4(1, 1, 1, 1))

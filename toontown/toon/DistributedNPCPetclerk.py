@@ -1,16 +1,13 @@
 from direct.gui.DirectGui import *
 from direct.task.Task import Task
-from pandac.PandaModules import *
-from pandac.PandaModules import *
+from panda3d.core import *
 
 from DistributedNPCToonBase import *
 import NPCToons
-from toontown.chat.ChatGlobals import *
-from toontown.hood import ZoneUtil
-from toontown.nametag.NametagGlobals import *
-from toontown.pets import PetshopGUI
-from toontown.toonbase import TTLocalizer
-from toontown.toontowngui import TeaserPanel
+from src.toontown.hood import ZoneUtil
+from src.toontown.pets import PetshopGUI
+from src.toontown.toonbase import TTLocalizer
+from src.otp.nametag.NametagConstants import *
 
 
 class DistributedNPCPetclerk(DistributedNPCToonBase):
@@ -51,16 +48,6 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
 
     def getCollSphereRadius(self):
         return 4.0
-
-    def allowedToEnter(self):
-        return True
-
-    def handleOkTeaser(self):
-        self.dialog.destroy()
-        del self.dialog
-        place = base.cr.playGame.getPlace()
-        if place:
-            place.fsm.request('walk')
 
     def handleCollisionSphereEnter(self, collEntry):
         base.cr.playGame.getPlace().fsm.request('purchase')

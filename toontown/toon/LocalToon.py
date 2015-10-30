@@ -149,6 +149,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.shovelRelatedDoId = 0
             self.shovelAbility = ''
             self.plantToWater = 0
+            self.petId = 0
             self.shovelButtonActiveCount = 0
             self.wateringCanButtonActiveCount = 0
             self.showingWateringCan = 0
@@ -1944,18 +1945,24 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.questMap.stop()
 
     def getPetId(self):
-        return False
+        return self.petId
 
     def hasPet(self):
-        return False
+        return self.petId != 0
 
-    def setAchievements(self, achievements):
-        if base.wantAchievements:
-            if self.canEarnAchievements:
-                for achievementId in achievements:
-                    if not achievementId in self.achievements:
-                        self.achievementGui.earnAchievement(achievementId)
-            else:
-                self.canEarnAchievements = True
+    def getPetDNA(self):
+        if self.hasPet():
+            pet = base.cr.identifyFriend(self.petId)
+            return pet.style if pet else None
+        return None
 
-        DistributedToon.DistributedToon.setAchievements(self, achievements)
+    def setPetId(self, petId):
+        self.petId = petId
+        if self.isLocal():
+            base.cr.addPetToFriendsMap()
+
+    def startAprilToonsControls(self):
+        self.controlManager.currentControls.setGravity(ToontownGlobals.GravityValue * 0.75)
+
+    def stopAprilToonsControls(self):
+        self.controlManager.currentControls.setGravity(ToontownGlobals.GravityValue * 2.0)

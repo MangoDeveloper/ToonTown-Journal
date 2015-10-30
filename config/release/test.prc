@@ -8,7 +8,7 @@ shard-low-pop 100
 shard-mid-pop 150
 # Core features:
 want-housing #t
-want-pets #f
+want-pets #t
 want-game-tables #f
 want-find-four #f
 want-chinese-checkers #f

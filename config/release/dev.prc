@@ -20,7 +20,7 @@ dc-file astron/dclass/toon.dc
 dc-file astron/dclass/otp.dc
 
 # Core features:
-want-pets #f
+want-pets #t
 want-parties #t
 want-gifting #t
 want-game-tables #f
@@ -59,6 +59,6 @@ smooth-prediction-lag 1
 cog-thief-ortho 0
 
 #database stuff
-accountdb-type local
+accountdb-type mysqldb
 mysql-login toontown
 mysql-password some_pass
