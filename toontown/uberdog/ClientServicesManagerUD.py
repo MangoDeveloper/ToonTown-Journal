@@ -240,11 +240,13 @@ class MySQLAccountDB(AccountDB):
         row = self.cur.fetchone()
         if row[0] != 0:
             return
-
-        filename = simbase.config.GetString(
-            'account-bridge-filename', 'account-bridge')
-        dbm = semidbm.open(filename, 'c')
-
+        filename = config.GetString('accountdb-local-file',
+                                            'astron/databases/dev-accounts.db')
+        if platform == 'darwin':
+            self.dbm = dumbdbm.open(filename, 'c')
+        else:
+            self.dbm = anydbm.open(filename, 'c')
+        dbm = self.dbm
         for account in dbm.keys():
             accountid = dbm[account]
             print "%s maps to %s"%(account, accountid)
@@ -256,17 +258,17 @@ class MySQLAccountDB(AccountDB):
         self.csm = csm
 
         # Just a few configuration options
-        self.username = simbase.config.GetString('mysql-username', 'toontown')
-        self.password = simbase.config.GetString('mysql-password', 'password')
-        self.db = simbase.config.GetString('mysql-db', 'toontown')
-        self.host = simbase.config.GetString('mysql-host', '127.0.0.1')
-        self.port = simbase.config.GetInt('mysql-port', 3306)
-        self.ssl = simbase.config.GetBool('mysql-ssl', False)
-        self.ssl_ca = simbase.config.GetString('mysql-ssl-ca', '')
-        self.ssl_cert = simbase.config.GetString('mysql-ssl-cert', '')
-        self.ssl_key = simbase.config.GetString('mysql-ssl-key', '')
-        self.ssl_verify_cert = simbase.config.GetBool('mysql-ssl-verify-cert', False)
-        self.auto_new_account = simbase.config.GetBool('mysql-auto-new-account', True)
+        self.username = config.GetString('mysql-username', 'toontown')
+        self.password = config.GetString('mysql-password', 'password')
+        self.db = config.GetString('mysql-db', 'toontown')
+        self.host = config.GetString('mysql-host', '127.0.0.1')
+        self.port = config.GetInt('mysql-port', 3306)
+        self.ssl = config.GetBool('mysql-ssl', False)
+        self.ssl_ca = config.GetString('mysql-ssl-ca', '')
+        self.ssl_cert = config.GetString('mysql-ssl-cert', '')
+        self.ssl_key = config.GetString('mysql-ssl-key', '')
+        self.ssl_verify_cert = config.GetBool('mysql-ssl-verify-cert', False)
+        self.auto_new_account = config.GetBool('mysql-auto-new-account', True)
         self.auto_migrate = True
 
         # Lets try connection to the db
@@ -310,8 +312,8 @@ class MySQLAccountDB(AccountDB):
                 exit(1)
 
         self.count_account = ("SELECT COUNT(*) from Accounts")
-        self.select_account = ("SELECT password,accountId,accessLevel,status,canPlay,banRelease FROM Accounts where username = %s")
-        self.add_account = ("REPLACE INTO Accounts (username, password, accountId, accessLevel, rawPassword) VALUES (%s, %s, %s, %s)")
+        self.select_account = ("SELECT password,accountId,adminAccess,status,canPlay,banRelease FROM Accounts where username = %s")
+        self.add_account = ("REPLACE INTO Accounts (username, password, accountId, adminAccess) VALUES (%s, %s, %s, %s)")
         self.update_avid = ("UPDATE Accounts SET accountId = %s where username = %s")
         self.count_avid = ("SELECT COUNT(*) from Accounts WHERE username = %s")
         self.insert_avoid = ("INSERT IGNORE Toons SET accountId = %s,toonid=%s")
@@ -412,38 +414,38 @@ class MySQLAccountDB(AccountDB):
                     self.account = None
                     self.accountid = row[1]
                     self.csm.air.dbInterface.queryObject(self.csm.air.dbId,  self.accountid, self.__handleRetrieve)
-
+                
                 response = {
                     'success': True,
                     'userId': username,
-                    'accessLevel': int(row[2]),
+                    'adminAccess': int(row[2]),
                     'accountId': row[1]
                 }
 
                 print response
                 callback(response)
                 return response
+                
             if self.auto_new_account:
-                self.cur.execute(self.add_account, (username, self.get_hashed_password(password), 0, max(100, minAccessLevel), 2))
+                self.cur.execute(self.add_account, (username, self.get_hashed_password(password) , 0, 0 ))
                 self.cnx.commit()
 
                 response = {
                   'success': True,
                   'userId': username,
                   'accountId': 0,
-                  'accessLevel': max(100, minAccessLevel)
+                  'adminAccess': max(0, minAdminAccess)
                 }
 
                 callback(response)
                 return response
             else:
                 response = {
-                'success': False,
-                'reason': "unknown user"
-                } 
-            print response
-            callback(response)
-            return response
+                  'success': False,
+                  'reason': "unknown user"
+                }
+                callback(response)
+                return response
 
         except mysql.connector.Error as err:
             print("mysql exception {}".format(err))
@@ -474,7 +476,7 @@ class MySQLAccountDB(AccountDB):
             self.cnx.commit()
             callback(True)
         else:
-            print ("storeAccountId", self.update_avid, (aceountId, userId))
+            print ("storeAccountId", self.update_avid, (accountId, userId))
             self.notify.warning('Unable to associate user %s with account %d!' % (userId, accountId))
             callback(False)
 
