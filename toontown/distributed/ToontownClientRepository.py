@@ -85,7 +85,6 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         self.tutorialManager = None
         self.welcomeValleyManager = None
         self.newsManager = None
-        self.streetSign = None
         self.distributedDistrict = None
         self.partyManager = None
         self.inGameNewsMgr = None
@@ -102,7 +101,6 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         if config.GetBool('want-code-redemption', 1):
             self.codeRedemptionManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_TOONTOWN_CODE_REDEMPTION_MANAGER, 'TTCodeRedemptionMgr')
 
-        self.streetSign = None
         self.furnitureManager = None
         self.objectManager = None
         self.openAvatarPanels = set()
@@ -443,8 +441,6 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
          base.localAvatar.defaultZone,
          -1])
         self._userLoggingOut = False
-        if not self.streetSign:
-            self.streetSign = StreetSign.StreetSign()
         return
 
     def exitPlayingGame(self):
