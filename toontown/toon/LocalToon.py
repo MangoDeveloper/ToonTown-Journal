@@ -413,7 +413,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.accept('InputState-turnRight', self.__toonMoved)
         self.accept('InputState-slide', self.__toonMoved)
 
-        self.achievementGui = AchievementGui.AchievementGui()
 
         QuestParser.init()
         return

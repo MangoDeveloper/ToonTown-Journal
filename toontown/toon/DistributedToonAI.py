@@ -5045,24 +5045,6 @@ def suit(command, suitName):
     else:
         return 'Invalid command.'
 
-@magicWord(category=CATEGORY_PROGRAMMER, types=[str, int])
-def achievements(command, achId):
-    invoker = spellbook.getInvoker()
-    if command.lower() == 'earn':
-        achievements = invoker.getAchievements()
-        achievements.append(achId)
-
-        invoker.b_setAchievements(achievements)
-        return 'Earnt Achievement %s'%(achId)
-    elif command.lower() == 'remove':
-        achievements = invoker.getAchievements()
-        achievements.remove(achId)
-
-        invoker.b_setAchievements(achievements)
-        return 'Removed Achievement %s'%(achId)
-    else:
-        return "Unknown Command '%s'"%(command)
-
 @magicWord(category=CATEGORY_PROGRAMMER)
 def getZone():
     invoker = spellbook.getInvoker()
