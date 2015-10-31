@@ -240,13 +240,11 @@ class MySQLAccountDB(AccountDB):
         row = self.cur.fetchone()
         if row[0] != 0:
             return
-        filename = config.GetString('accountdb-local-file',
-                                            'astron/databases/dev-accounts.db')
-        if platform == 'darwin':
-            self.dbm = dumbdbm.open(filename, 'c')
-        else:
-            self.dbm = anydbm.open(filename, 'c')
-        dbm = self.dbm
+
+        filename = simbase.config.GetString(
+            'account-bridge-filename', 'account-bridge')
+        dbm = semidbm.open(filename, 'c')
+
         for account in dbm.keys():
             accountid = dbm[account]
             print "%s maps to %s"%(account, accountid)
