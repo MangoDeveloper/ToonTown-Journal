@@ -278,8 +278,6 @@ class HoodMgr(DirectObject.DirectObject):
                 zoneStr = nameParts[2]
                 hoodId = self.getIdFromName(hoodStr)
                 zoneId = int(zoneStr)
-                hoodId = ZoneUtil.getTrueZoneId(hoodId, currentZoneId)
-                zoneId = ZoneUtil.getTrueZoneId(zoneId, currentZoneId)
                 linkSphere = linkTunnel.find('**/tunnel_trigger')
                 if linkSphere.isEmpty():
                     linkSphere = linkTunnel.find('**/tunnel_sphere')
