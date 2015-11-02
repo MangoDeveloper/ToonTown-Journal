@@ -221,12 +221,18 @@ os.system(cmd)
 # Next, run the build_client utility:
 if sys.platform == 'win32':
     output = 'GameData.pyd'
-else:
-    output = 'GameData.so'
-cmd = (pythonPath + ' ../tools/build_client.py' +
+    cmd = (pythonPath + ' ../tools/build_client.py' +
        ' --output ' + output +
        ' --main-module ' + mainModule +
        ' --build-dir build')
+    
+else:
+    output = 'GameData.so'
+    cmd = (pythonPath + ' ../tools/build_client_mac.py' +
+       ' --output ' + output +
+       ' --main-module ' + mainModule +
+       ' --build-dir build')
+    
 for module in modules:
     cmd += ' ' + module
 os.system(cmd)
